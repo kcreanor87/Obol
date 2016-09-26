@@ -4,6 +4,8 @@ using System.Collections;
 
 public class EnemyWM : MonoBehaviour {
 
+	public int _health = 100;
+
 	public NavMeshAgent _agent;
 	public PlayerControls_WM _player;
 	public PlayerSpotted _playerSpot;
@@ -11,7 +13,7 @@ public class EnemyWM : MonoBehaviour {
 	public bool _spotted;
 	public bool _returning;
 	public SaveGame _saveGame;
-	public float _chaseDistance = 50.0f;
+	public float _chaseDistance = 70.0f;	
 
 	void Start(){	
 		_playerSpot = gameObject.GetComponentInChildren<PlayerSpotted>();
@@ -43,14 +45,7 @@ public class EnemyWM : MonoBehaviour {
 	}
 
 	public void AtPlayer(){
-		_spotted = false;
-		_agent.SetDestination(transform.position);
-		_player._agent.SetDestination(_player.transform.position);
-		_player.enabled = false;
-		_thisSpawn._fought = true;
 		print("Combat!");
-		_saveGame.Save();
-		SceneManager.LoadScene("Combat");
 	}
 
 	public IEnumerator Returning(){
@@ -60,5 +55,12 @@ public class EnemyWM : MonoBehaviour {
 			yield return new WaitForSeconds(1.0f);
 		}
 		_playerSpot._chasing = false;
+	}
+
+	public void BeenHit(int damage){
+		_health -= damage;
+		if (_health <= 0){
+			Destroy(gameObject);
+		}
 	}
 }

@@ -130,14 +130,14 @@ public class PlayerTurn : MonoBehaviour {
 				}
 				else{
 					_combatUI.ErrorMessage(false);
-					_moveIndicator.ActiveStatus(true, true);;
+					_moveIndicator.ActiveStatus(true, true);
 					//On mouse press, set the mouse point as target and deduct approriate AP, set moving to true
 					if (Input.GetMouseButtonDown(0) && _distance > 0.5f){
 						_agent.SetDestination(_targetPos);
 						_moving = true;
 						_anim.SetBool("Running", true);
 						_ap -= Mathf.CeilToInt(_distance);
-						_moveIndicator.ActiveStatus(false, false);;
+						_moveIndicator.ActiveStatus(false, false);
 						_playerTurnUI.SetActive(false);
 						_combatUI.UpdateAP();
 					}
@@ -207,47 +207,21 @@ public class PlayerTurn : MonoBehaviour {
 					_combatUI._errorText.text = "No Line of Sight";
 				}
 				else{					
-					_distance = Vector3.Distance(transform.position, target.position);
-					if (_meleeToggle){						
-						if (_distance  < 3.0f){	
-							float APCostPercent = ((float) _attackCost/_ap) * -1;		
-							_combatUI._apImage.sprite = (APCostPercent < -1) ? _combatUI._apNegative : _combatUI._apPositive;
-							_combatUI._apLoss.transform.localScale = (APCostPercent < -1) ? new Vector3 (-1.0f,1.0f,1.0f) : new Vector3 (APCostPercent, 1, 1);
-							_combatUI.ErrorMessage(false);
-							_enemyTrans = hit.collider.transform;
-							_calcDam.CalculateChance();
-							_targetedEnemy._target = target.position;
-							_targetedEnemy._targetText = "" + target.name + "\n" + _calcDam._chanceToHit + " % To Hit";
-							_targetedEnemy.EnableTarget();
-							if (Input.GetMouseButtonDown(0) && _ap >= _attackCost){
-								_targetPos = target.position;
-								_enemyAnim = hit.collider.GetComponentInChildren<Animator>();
-								_attackType = 2;								
-								StartCoroutine(Attack());
-								
-							}
-						}
-						else {
-							_combatUI.ErrorMessage(false);
-							_combatUI._errorText.text = "Out of Range!";
-						}
-					}
-					else{				
-						float APCostPercent = ((float) _attackCost/_ap) * -1;		
-						_combatUI._apLoss.transform.localScale = (APCostPercent > -1) ? new Vector3 (APCostPercent, 1, 1) : new Vector3 (-1.0f,1.0f,1.0f);
-						_combatUI.ErrorMessage(false);
-						_enemyTrans = hit.collider.transform;
-						_calcDam._rangeModifier = (_distance > _CombatManager._equipRanged._range) ? -30 : 0;
-						_calcDam.CalculateChance();
-						_targetedEnemy._target = hit.collider.transform.position;
-						_targetedEnemy._targetText = "" + hit.collider.name + "\n" + _calcDam._chanceToHit + " % To Hit";
-						_targetedEnemy.EnableTarget();
-						if (Input.GetMouseButtonDown(0) && _ap >= _attackCost){
-							_targetPos = target.position;
-							_enemyAnim = hit.collider.GetComponentInChildren<Animator>();							
-							_attackType = 1;
-							StartCoroutine(Attack());
-						}
+					_distance = Vector3.Distance(transform.position, target.position);			
+					float APCostPercent = ((float) _attackCost/_ap) * -1;		
+					_combatUI._apLoss.transform.localScale = (APCostPercent > -1) ? new Vector3 (APCostPercent, 1, 1) : new Vector3 (-1.0f,1.0f,1.0f);
+					_combatUI.ErrorMessage(false);
+					_enemyTrans = hit.collider.transform;
+					_calcDam._rangeModifier = 0;
+					_calcDam.CalculateChance();
+					_targetedEnemy._target = hit.collider.transform.position;
+					_targetedEnemy._targetText = "" + hit.collider.name + "\n" + _calcDam._chanceToHit + " % To Hit";
+					_targetedEnemy.EnableTarget();
+					if (Input.GetMouseButtonDown(0) && _ap >= _attackCost){
+						_targetPos = target.position;
+						_enemyAnim = hit.collider.GetComponentInChildren<Animator>();							
+						_attackType = 1;
+						StartCoroutine(Attack());						
 					}
 				}
 			}

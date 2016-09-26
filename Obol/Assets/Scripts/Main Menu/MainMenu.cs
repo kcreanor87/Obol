@@ -30,7 +30,7 @@ public class MainMenu : MonoBehaviour {
 	public void StartNewGame(){
 		NewGame._newGame = true;
 		PlayerPrefs.DeleteAll();
-		SceneManager.LoadScene("CharCreation");		
+		SceneManager.LoadScene("CharCreation");	
 	}
 
 	public void ExitGame(){

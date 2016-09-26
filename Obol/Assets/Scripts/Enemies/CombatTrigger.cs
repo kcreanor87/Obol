@@ -11,7 +11,7 @@ public class CombatTrigger : MonoBehaviour {
 	void OnTriggerEnter(Collider col){
 		if (col.tag == "Player"){
 			//Start combat
-			_parentScript.AtPlayer();			
+			_parentScript.AtPlayer();	
 		}
 	}
 }

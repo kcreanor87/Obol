@@ -53,10 +53,6 @@ public class DayTimer : MonoBehaviour {
 		_dayCycle.SetLightColor();
 	}
 	void EndOfDay(bool restart){
-		_manager._resources[0] += _manager._factoryOuput[0];
-		_manager._resources[1] += _manager._factoryOuput[1];
-		_manager._resources[2] += _manager._factoryOuput[2];
-		_manager._resources[3] += _manager._factoryOuput[3];
 		WM_UI.UpdateUI();
 		ResetPrices();
 		_saveGame.Save();

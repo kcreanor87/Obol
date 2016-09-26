@@ -46,7 +46,6 @@ public class CharacterCreation : MonoBehaviour {
 		_CombatManager._str = _database._chars[index]._str;
 		_CombatManager._dex = _database._chars[index]._dex;
 		_CombatManager._vit = _database._chars[index]._vit;
-		_CombatManager._equipMelee = _weaponDb._meleeDatabase[_database._chars[index]._melee];
 		_CombatManager._equipRanged = _weaponDb._rangedDatabase[_database._chars[index]._ranged];
 		_CombatManager._headSlot = _armourDb._headDatabase[_database._chars[index]._head];
 		_CombatManager._chestSlot = _armourDb._chestDatabase[_database._chars[index]._chest];

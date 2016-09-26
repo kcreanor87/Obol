@@ -101,7 +101,7 @@ public class PlayerControls_WM : MonoBehaviour {
 			RaycastHit hit;
 			Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
 			if (Physics.Raycast(ray, out hit, 100f, _layerMask) && !UnityEngine.EventSystems.EventSystem.current.IsPointerOverGameObject()){
-				if (hit.collider.tag == "Ground" || hit.collider.tag == "Resource"){
+				if (hit.collider.tag == "Ground" || hit.collider.tag == "Resource" || hit.collider.tag == "Enemy"){
 					_agent.SetDestination(transform.position);
 					_anim.SetBool("Running", false);
 					_anim.SetBool("Aim", true);
@@ -112,9 +112,17 @@ public class PlayerControls_WM : MonoBehaviour {
         			transform.rotation = Quaternion.Slerp(transform.rotation, newRotation, Time.deltaTime * 10);
         			if (Input.GetMouseButtonDown(0)){
         				if (hit.collider.tag == "Ground"){
-        					Shoot(hit.point);
+        					var dist = Vector3.Distance(hit.point, transform.position);
+        					if (dist > 2.2f){
+        						Shoot(hit.point);
+        					}        					
         				}
-        				else{
+        				else if (hit.collider.tag == "Resource"){
+        					var h = 5 + hit.collider.transform.position.y;
+        					var target = new Vector3(hit.collider.transform.position.x, h, hit.collider.transform.position.z);
+        					Shoot(target);
+        				}
+        				else if (hit.collider.tag == "Enemy"){
         					Shoot(hit.collider.transform.position);
         				}
         			}

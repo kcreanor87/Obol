@@ -22,7 +22,6 @@ public class _CombatManager : MonoBehaviour {
 	public static int _auxPower;
 
 	//ITEM SLOTS
-	public static Weapon _equipMelee;
 	public static Weapon _equipRanged;
 	public static Armour _headSlot;
 	public static Armour _chestSlot;
@@ -36,7 +35,6 @@ public class _CombatManager : MonoBehaviour {
 
 	//Initialized once only, stop _manager GO from being destroyed when loading a new scene
 	void Awake () {
-		print("_CombatManager Awake() Called");
 		if (NewGame._newGame){
 			_skills.Add(0);
 			_skills.Add(1);
@@ -46,7 +44,6 @@ public class _CombatManager : MonoBehaviour {
 		DontDestroyOnLoad(gameObject);
 		_weaponDb = gameObject.GetComponent<WeaponDatabase>();
 		_armourDb = gameObject.GetComponent<ArmourDatabase>();
-		_equipMelee = _weaponDb._meleeDatabase[0];
 		_equipRanged = _weaponDb._rangedDatabase[0];
 		_headSlot = _armourDb._headDatabase[0];
 		_chestSlot = _armourDb._chestDatabase[0];
@@ -57,7 +54,6 @@ public class _CombatManager : MonoBehaviour {
 	//Calculate derivative stats
 	public static void CalculateStats(){
 		_rangedDam = _equipRanged._dam;
-		_meleeDam = _equipMelee._dam;
 		_armourRating = _headSlot._armourBonus + _chestSlot._armourBonus + _legSlot._armourBonus;
 		_maxHealth = 300 + 50*_vit;
 		_maxAP = 40 + 5*_dex;	
