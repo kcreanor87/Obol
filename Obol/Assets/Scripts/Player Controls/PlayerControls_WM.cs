@@ -8,11 +8,13 @@ public class PlayerControls_WM : MonoBehaviour {
 	public bool _movingToHarbour;
 	public float _range;
 	public static bool _inMenu;
+	public Animator _anim;
 	public Vector3 _objectPos;
 	public ResourceGen _resourceScript;
 	public TownCanvas _townCanvas;
 	public EndGame _endGame;
 	public LayerMask _layerMask;
+	public bool _moving;
 
 	// Use this for initialization
 	void Start () {		
@@ -30,6 +32,7 @@ public class PlayerControls_WM : MonoBehaviour {
 	void Spawn(){
 		_endGame = GameObject.Find("HarbourCanvas").GetComponent<EndGame>();
 		_townCanvas = GameObject.Find("TownCanvas").GetComponent<TownCanvas>();
+		_anim = gameObject.GetComponentInChildren<Animator>();
 		_agent = gameObject.GetComponent<NavMeshAgent>();
 		_agent.enabled = true;
 		_agent.Stop();
@@ -37,6 +40,11 @@ public class PlayerControls_WM : MonoBehaviour {
 	}
 
 	void DetectInput(){
+		DetectMove();
+		DetectAim();		
+	}
+
+	void DetectMove(){
 		if (Input.GetMouseButton(0)){
 			RaycastHit hit;
 			Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
@@ -46,6 +54,9 @@ public class PlayerControls_WM : MonoBehaviour {
 					if (dist > 1.0f){
 						_agent.Resume();
 						_agent.SetDestination(hit.point);
+						_anim.SetBool("Aim", false);
+						_anim.SetBool("Running", true);
+						_moving = true;
 					}
 				}		
 			}
@@ -86,6 +97,36 @@ public class PlayerControls_WM : MonoBehaviour {
 					break;
 				}		
 			}
+		}
+		if (_moving){
+			float dist = Vector3.Distance(transform.position, _agent.destination);
+			if (dist <= 0.3f){
+				_agent.SetDestination(transform.position);
+				_anim.SetBool("Running", false);
+				_moving = false;
+			}
+		}
+	}
+
+	void DetectAim(){
+		if (Input.GetMouseButton(1)){
+			RaycastHit hit;
+			Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+			if (Physics.Raycast(ray, out hit, 100f, _layerMask) && !UnityEngine.EventSystems.EventSystem.current.IsPointerOverGameObject()){
+				if (hit.collider.tag == "Ground"){
+					_agent.SetDestination(transform.position);
+					_anim.SetBool("Running", false);
+					_anim.SetBool("Aim", true);
+					_moving = false;
+					Quaternion newRotation = Quaternion.LookRotation(hit.point - transform.position);
+					newRotation.x = 0f;
+       				newRotation.z = 0f;
+        			transform.rotation = Quaternion.Slerp(transform.rotation, newRotation, Time.deltaTime * 10);
+				}		
+			}			
+		}
+		else{
+			_anim.SetBool("Aim", false);
 		}
 	}
 
