@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 using System.Collections.Generic;
+using UnityEngine.SceneManagement;
 
 public class TownCanvas : MonoBehaviour {
 
@@ -76,7 +77,10 @@ public class TownCanvas : MonoBehaviour {
 			break;
 			case "AcademyGO":
 			EnableCanvas(5);
-			break;		
+			break;
+			case "CaravanGO":
+			EnableCanvas(7);
+			break;	
 		}
 		_market._multiple = 1;
 		_market.UpdatePrices();
@@ -178,5 +182,9 @@ public class TownCanvas : MonoBehaviour {
 
 	void CheckRumour(){
 		_rumourGen.EnterText();
+	}
+	public void StartCombat(int index){
+		_saveGame.Save();
+		SceneManager.LoadScene(3 + index);
 	}
 }

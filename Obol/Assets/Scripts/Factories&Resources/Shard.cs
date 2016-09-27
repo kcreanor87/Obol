@@ -2,10 +2,7 @@
 using System.Collections;
 
 public class Shard : MonoBehaviour {
-
-	public int _amount;
-	public int _min;
-	public int _max;
+	
 	public int _type;
 	public Transform _player;
 	public Vector3 _chasePos;
@@ -15,7 +12,6 @@ public class Shard : MonoBehaviour {
 	public bool _active;
 
 	void Start(){
-		_amount = Random.Range(_min, _max);
 		_player = GameObject.Find("Player").GetComponent<Transform>();	
 	}
 
@@ -40,7 +36,7 @@ public class Shard : MonoBehaviour {
 	}
 
 	void CollectResource(){
-		_manager._resources[_type] += _amount;
+		_manager._resources[_type] += 3;
 		WM_UI.UpdateUI();
 		Destroy(gameObject);
 	}
