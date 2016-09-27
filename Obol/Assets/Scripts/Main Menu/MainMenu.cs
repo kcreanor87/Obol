@@ -13,7 +13,7 @@ public class MainMenu : MonoBehaviour {
 	}
 
 	public void ResumeGame(){
-		SceneManager.LoadScene("World Map");
+		SceneManager.LoadScene("TownCentre");
 		NewGame._newGame = false;
 	}
 

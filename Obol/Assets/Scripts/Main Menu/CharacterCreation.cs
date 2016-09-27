@@ -66,6 +66,6 @@ public class CharacterCreation : MonoBehaviour {
 		_moveRight.interactable = (_charIndex < (_database._chars.Count-1));
 	}
 	public void StartGame(){
-		SceneManager.LoadScene("World Map");
+		SceneManager.LoadScene("TownCentre");
 	}
 }

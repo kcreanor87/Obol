@@ -3,24 +3,9 @@ using System.Collections.Generic;
 
 public class SaveGame : MonoBehaviour {
 
-	public List <GameObject> _towns = new List <GameObject>();
-	public List <TownManager> _buildingScripts = new List<TownManager>();
-	public List <GameObject> _factoryGO = new List <GameObject>();
-	public List <GameObject> _resourceSpawns = new List <GameObject>();
-	public List <ResourceGen> _resourceGens = new List <ResourceGen>();
-	public List <GameObject> _fowGO = new List <GameObject>();
-	public List <FOW> _fow = new List <FOW>();
-	public List <GameObject> _spawnGOs = new List <GameObject>();
-	public List <SpawnPoint> _spawns = new List <SpawnPoint>();
-	public EndGame _endGame;
-	public Vector3 _playerPos;
-	public GameObject _player;
-	public PlayerControls_WM _playerControls;
-	public DayTimer _dayTimer;
-	public DayCycle _dayCycle;
 	public RumourGenerator _rumourScript;
-	public bool _combatOver;
-	public bool _skipDay;
+	public TownCanvas _townCanvas;
+	public MarketSpawn _marketSpawn;
 
 	void Awake(){
 		PopulateLists();
@@ -28,127 +13,53 @@ public class SaveGame : MonoBehaviour {
 		else PlayerPrefs.DeleteAll();
 	}
 
-	void Start(){
-		if (!NewGame._newGame) LoadTowns();
-	}
-
 	void PopulateLists(){
-		_player = GameObject.FindWithTag("Player");
-		_endGame = GameObject.Find("HarbourCanvas").GetComponent<EndGame>();
-		_dayTimer = GameObject.Find("Timer").GetComponent<DayTimer>();
-		_dayCycle = GameObject.Find("MainLight").GetComponent<DayCycle>();
 		_rumourScript = GameObject.Find("TownCanvas").GetComponent<RumourGenerator>();
-		_playerControls = _player.GetComponent<PlayerControls_WM>();
-		_towns.AddRange(GameObject.FindGameObjectsWithTag("Town"));
-		for (int i = 0; i < _towns.Count; i++){
-			_buildingScripts.Add(_towns[i].GetComponent<TownManager>());
-		}
-		_resourceSpawns.AddRange(GameObject.FindGameObjectsWithTag("ResourceSpawn"));
-		for (int i = 0; i < _resourceSpawns.Count; i++){
-			_resourceGens.Add(_resourceSpawns[i].GetComponent<ResourceGen>());
-		}
-		_fowGO.AddRange(GameObject.FindGameObjectsWithTag("FOW"));
-		for (int i = 0; i < _fowGO.Count; i++){
-			_fow.Add(_fowGO[i].GetComponent<FOW>());
-		}
-		_spawnGOs.AddRange(GameObject.FindGameObjectsWithTag("Spawn Point"));
-		for (int i = 0; i < _spawnGOs.Count; i++){
-			_spawns.Add(_spawnGOs[i].GetComponent<SpawnPoint>());
-		}
+		_townCanvas = GameObject.Find("TownCanvas").GetComponent<TownCanvas>();
+		_marketSpawn = GameObject.Find("TownCanvas").GetComponent<MarketSpawn>();
 	}
 
 	public void Save(){
-		SaveTowns();
-		SavePlayerPos();
+		SaveTownStatus();
 		SavePlayerResources();
-		SaveResourceSpawns();
-		SaveTimeOfDay();
-		SaveRumour();
-		SaveHarbourProgress();
-		SaveFOW();
-		SaveEnemies();
 		SaveCombatStats();
+		SavePrices();
 		NewGame._newGame = false;
 	}
 
 	public void Load(){
-		LoadResourceSpawns();				
-		LoadHarbourProgress();
-		LoadFOW();
-		LoadEnemies();
+		LoadPrices();
+		LoadTownStatus();
 		LoadCombatStats();
-		//Load Combat Specific Stats
-		if (_CombatManager._inCombat){
-			PostCombatLoad();
-		}
-		else{
-			NormalLoad();
-		}		
-	}
-
-	void NormalLoad(){
-		LoadPlayerPos();
 		LoadPlayerResources();
-		LoadTimeOfDay();
-		LoadRumour();		
+		LoadRumour();	
 	}
 
-	void PostCombatLoad(){
-		print("Combat Load");
-		if (_CombatManager._victory){
-			NormalLoad();
+	void SavePrices(){
+		PlayerPrefs.SetInt("Resource Count", _marketSpawn._basePrice.Count);
+		for (int i = 0; i < _marketSpawn._basePrice.Count; i++){
+			PlayerPrefs.SetFloat("Price" + i, _marketSpawn._basePrice[i]);
+		}	
+	}
+
+	void LoadPrices(){
+		for (int i = 0; i < PlayerPrefs.GetInt("Resource Count"); i++){
+			_marketSpawn._basePrice.Add(PlayerPrefs.GetFloat("Price" + i));
+		}	
+	}
+
+	void SaveTownStatus(){
+		PlayerPrefs.SetInt("Total Buildings", 0);
+		for (int i = 0; i < _townCanvas._activeBuildings.Count; i++){
+			PlayerPrefs.SetInt("Active Buildings" + i, (_townCanvas._activeBuildings[i] ? 1 : 0));
+			PlayerPrefs.SetInt("Total Buildings", PlayerPrefs.GetInt("Total Buildings") + 1);
+		}				
+	}
+
+	void LoadTownStatus(){
+		for (int i = 0; i < PlayerPrefs.GetInt("Total Buildings"); i++){
+			_townCanvas._activeBuildings.Add(PlayerPrefs.GetInt("Active Buildings" + i) > 0);
 		}
-		else{
-			LoadLastTownPos();
-			LoadTimeOfDay();
-			_skipDay = true;
-			LoadRumour();
-			LoadPlayerResources();
-		}		
-		_CombatManager._inCombat = false;
-		_CombatManager._victory = false;
-		Save();
-	}
-
-	void SaveTowns(){
-		for (int i = 0; i < _buildingScripts.Count; i++){
-			for (int j = 0; j < _buildingScripts[i]._activeBuildings.Count; j++){
-				PlayerPrefs.SetInt(_buildingScripts[i]._name + i + "_" + j, _buildingScripts[i]._activeBuildings[j] ? 1 : 0);				
-			}
-			PlayerPrefs.SetInt("TownSeen" + i, (_buildingScripts[i]._seen ? 1 : 0));
-			PlayerPrefs.SetInt("TownVisited" + i, (_buildingScripts[i]._visited ? 1 : 0));
-		}
-	}
-
-	void LoadTowns(){
-		for (int i = 0; i < _buildingScripts.Count; i++){
-			for (int j = 0; j < _buildingScripts[i]._activeBuildings.Count; j++){
-				_buildingScripts[i]._activeBuildings[j] = PlayerPrefs.GetInt(_buildingScripts[i]._name + i + "_" + j) > 0;				
-			}
-			_buildingScripts[i]._seen = (PlayerPrefs.GetInt("TownSeen" + i) > 0);
-			_buildingScripts[i]._visited = (PlayerPrefs.GetInt("TownVisited" + i) > 0);
-		}
-	}
-
-	void SavePlayerPos(){
-		PlayerPrefs.SetFloat("PosX", _player.transform.position.x);
-		PlayerPrefs.SetFloat("PosY", _player.transform.position.y);
-		PlayerPrefs.SetFloat("PosZ", _player.transform.position.z);
-	}
-	void LoadPlayerPos(){
-		var pos = new Vector3(PlayerPrefs.GetFloat("PosX"), PlayerPrefs.GetFloat("PosY"), PlayerPrefs.GetFloat("PosZ"));
-		_player.transform.position = pos;
-		if (_playerControls._agent != null)	_playerControls._agent.SetDestination(pos);
-	}
-	public void SaveLastTownPos(Vector3 town){
-		PlayerPrefs.SetFloat("TownPosX", town.x);
-		PlayerPrefs.SetFloat("TownPosY", town.y);
-		PlayerPrefs.SetFloat("TownPosZ", town.z);
-	}
-	void LoadLastTownPos(){
-		var pos = new Vector3(PlayerPrefs.GetFloat("TownPosX"), PlayerPrefs.GetFloat("TownPosY"), PlayerPrefs.GetFloat("TownPosZ"));
-		_player.transform.position = pos;
-		if (_playerControls._agent != null)	_playerControls._agent.SetDestination(pos);
 	}
 
 	void SavePlayerResources(){
@@ -172,93 +83,19 @@ public class SaveGame : MonoBehaviour {
 			_manager._factoryOuput[i] = PlayerPrefs.GetInt("Output" + i);
 		}
 	}
-	void SaveResourceSpawns(){
-		for (int i = 0; i < _resourceGens.Count; i++){
-			PlayerPrefs.SetInt("RandomResource" + i, (_resourceGens[i]._taken ? 1 : 0));
-		}
-	}
-
-	void LoadResourceSpawns(){
-		for (int i = 0; i < _resourceGens.Count; i++){
-			_resourceGens[i]._taken = (PlayerPrefs.GetInt("RandomResource" + i) > 0);
-		}
-	}
-	void SaveTimeOfDay(){
-		PlayerPrefs.SetInt("Days", _dayTimer._days);
-		PlayerPrefs.SetInt("Hours", _dayTimer._hours);
-		PlayerPrefs.SetInt("RumourTimer", _dayTimer._rumourTimer);
-		PlayerPrefs.SetInt("RumourActive", (_rumourScript._rumourActive ? 1 : 0));
-	}
-
-	void LoadTimeOfDay(){
-		_dayTimer._days = PlayerPrefs.GetInt("Days");
-		_dayTimer._hours = PlayerPrefs.GetInt("Hours");
-		_dayTimer._rumourTimer = PlayerPrefs.GetInt("RumourTimer");
-		_rumourScript._rumourActive = (PlayerPrefs.GetInt("RumourActive") > 0);
-		_dayCycle.AdvanceTime();
-	}
 
 	void SaveRumour(){
+		PlayerPrefs.SetFloat("Value", _rumourScript._value);
+		PlayerPrefs.SetInt("RumourActive", (_rumourScript._rumourActive ?1: 0));
 		PlayerPrefs.SetInt("RumourType", _rumourScript._loadedRumourType);
-		PlayerPrefs.SetInt("RumourTown", _rumourScript._loadedRumourTown);
 		PlayerPrefs.SetInt("Increase", (_rumourScript._increase ? 1 : 0));
 	}
 
 	void LoadRumour(){
 		_rumourScript._rumourActive = (PlayerPrefs.GetInt("RumourActive") > 0);
-		_rumourScript._loadedRumourTown = PlayerPrefs.GetInt("RumourTown");
 		_rumourScript._loadedRumourType = PlayerPrefs.GetInt("RumourType");
 		_rumourScript._increase = (PlayerPrefs.GetInt("Increase") > 0);
-	}
-
-	void SaveHarbourProgress(){
-		PlayerPrefs.SetInt("PartA", (_endGame._partA ? 1 : 0));
-		PlayerPrefs.SetInt("PartB", (_endGame._partB ? 1 : 0));
-		PlayerPrefs.SetInt("PartC", (_endGame._partC ? 1 : 0));
-		PlayerPrefs.SetInt("PartD", (_endGame._partD ? 1 : 0));
-		PlayerPrefs.SetInt("Built", (_endGame._built ? 1 : 0));
-		PlayerPrefs.SetInt("Bought", (_endGame._bought ? 1 : 0));
-		PlayerPrefs.SetInt("Bragged", (_endGame._bragged ? 1 : 0));
-		PlayerPrefs.SetInt("Ticket", (_endGame._ticket ? 1 : 0));
-		PlayerPrefs.SetInt("WinType", _endGame._winType);
-		PlayerPrefs.SetInt("HarbourSeen", (_endGame._seen ? 1 :0));
-	}
-
-	void LoadHarbourProgress(){
-		_endGame._partA = (PlayerPrefs.GetInt("PartA") > 0);
-		_endGame._partB = (PlayerPrefs.GetInt("PartB") > 0);
-		_endGame._partC = (PlayerPrefs.GetInt("PartC") > 0);
-		_endGame._partD = (PlayerPrefs.GetInt("PartD") > 0);
-		_endGame._built = (PlayerPrefs.GetInt("Built") > 0);
-		_endGame._bought = (PlayerPrefs.GetInt("Bought") > 0);
-		_endGame._bragged = (PlayerPrefs.GetInt("Bragged") > 0);
-		_endGame._ticket = (PlayerPrefs.GetInt("Ticket") > 0);
-		_endGame._winType = PlayerPrefs.GetInt("WinType");
-		_endGame._seen = (PlayerPrefs.GetInt("HarbourSeen") > 0);
-	}
-
-	void SaveFOW(){
-		for (int i = 0; i < _fow.Count; i++){
-			PlayerPrefs.SetInt("FOW" + i, (_fow[i]._active ? 1 : 0));
-		}
-	}
-
-	void LoadFOW(){
-		for (int i = 0; i < _fow.Count; i++){
-			_fow[i]._active = (PlayerPrefs.GetInt("FOW" + i) > 0);
-		}
-	}
-
-	void SaveEnemies(){
-		for (int i = 0; i < _spawns.Count; i++){
-			PlayerPrefs.SetInt("SpawnFought" + i, (_spawns[i]._fought ? 1 : 0));
-		}
-	}
-
-	void LoadEnemies(){
-		for (int i = 0; i < _spawns.Count; i++){
-			_spawns[i]._fought = (PlayerPrefs.GetInt("SpawnFought" + i) > 0);
-		}
+		_rumourScript._value = PlayerPrefs.GetFloat("Value");
 	}
 
 	void SaveCombatStats(){

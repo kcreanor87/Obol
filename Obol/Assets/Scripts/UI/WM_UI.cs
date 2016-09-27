@@ -4,17 +4,10 @@ using UnityEngine.UI;
 public class WM_UI : MonoBehaviour {
 
 	public static Text _woodTxt, _stoneTxt, _ironTxt, _coalTxt, _steelTxt, _diamondTxt, _obolTxt;
-	public static GameObject _resourcePrompt;
-	public static Text _promptText;
-	public static ResourceGen _resourceScript;
 	public static GameObject _mapToggle;
 
 	// Use this for initialization
 	void Start () {
-		_mapToggle = GameObject.Find("MapToggle");
-		_resourcePrompt = GameObject.Find("ResourcePrompt");
-		_promptText = GameObject.Find("PromptText").GetComponent<Text>();
-		_resourcePrompt.SetActive(false);
 		_woodTxt = GameObject.Find("Wood").GetComponent<Text>();
 		_stoneTxt = GameObject.Find("Stone").GetComponent<Text>();
 		_ironTxt = GameObject.Find("Iron").GetComponent<Text>();
@@ -33,20 +26,5 @@ public class WM_UI : MonoBehaviour {
 		_steelTxt.text = "Steel: " + _manager._resources[4];
 		_diamondTxt.text = "Diamonds: " + _manager._resources[5];
 		_obolTxt.text = "Obols: " + _manager._obols;
-	}
-
-	public static void ResourcePrompt(){
-		_mapToggle.SetActive(false);
-		_resourceScript.AddResource();
-		_resourcePrompt.SetActive(true);
-		_promptText.text = "+" + _resourceScript._amount + " " + _manager._resourceNames[_resourceScript._type];
-		Time.timeScale = 0.0f;
-		UpdateUI();
-	}
-
-	public void ClosePrompt(){
-		_mapToggle.SetActive(true);
-		_resourcePrompt.SetActive(false);
-		Time.timeScale = 1.0f;
 	}
 }

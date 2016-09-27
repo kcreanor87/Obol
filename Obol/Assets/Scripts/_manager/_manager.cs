@@ -20,10 +20,10 @@ public class _manager : MonoBehaviour {
 		_resourceNames.Add("Diamonds");
 
 		_resources.Clear();
-		_resources.Add(0);
-		_resources.Add(0);
-		_resources.Add(0);
-		_resources.Add(0);
+		_resources.Add(1000);
+		_resources.Add(1000);
+		_resources.Add(1000);
+		_resources.Add(1000);
 		_resources.Add(0);
 		_resources.Add(0);
 

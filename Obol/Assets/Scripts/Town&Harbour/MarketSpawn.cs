@@ -1,10 +1,8 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
 
-public class TownManager : MonoBehaviour {
+public class MarketSpawn : MonoBehaviour {
 
-	public string _name;
-	public bool _visited;
 	public List <float> _basePrice = new List <float>();
 	public List <int> _buyPrices = new List <int>();
 	public List <int> _sellPrices = new List <int>();
@@ -19,18 +17,18 @@ public class TownManager : MonoBehaviour {
 	// Use this for initialization
 	void Awake () {
 		_player	= GameObject.Find("Player").GetComponent<Transform>();
-		CheckStartDistance();
 		SpawnPrices();
-		PopulateBuildings();
 	}
 
 	void SpawnPrices(){
-		_basePrice.Add(Random.Range(5.0f, 15.0f));
-		_basePrice.Add(Random.Range(10.0f, 20.0f));
-		_basePrice.Add(Random.Range(25.0f, 40.0f));
-		_basePrice.Add(Random.Range(25.0f, 40.0f));
-		_basePrice.Add(Random.Range(175.0f, 265.0f));
-		_basePrice.Add(Random.Range(275.0f, 440.0f));
+		if (NewGame._newGame){
+			_basePrice.Add(Random.Range(5.0f, 15.0f));
+			_basePrice.Add(Random.Range(10.0f, 20.0f));
+			_basePrice.Add(Random.Range(25.0f, 40.0f));
+			_basePrice.Add(Random.Range(25.0f, 40.0f));
+			_basePrice.Add(Random.Range(175.0f, 265.0f));
+			_basePrice.Add(Random.Range(275.0f, 440.0f));
+		}		
 
 		for (int i = 0; i < _basePrice.Count; i++){
 			_buyPrices.Add(Mathf.FloorToInt(_basePrice[i]*_marketBuyMod));
@@ -56,21 +54,5 @@ public class TownManager : MonoBehaviour {
 			_buyPrices[i] = Mathf.FloorToInt(_basePrice[i] * _marketBuyMod);
 			_sellPrices[i] = Mathf.FloorToInt(_basePrice[i] * _marketSellMod);
 		}
-	}
-
-	void PopulateBuildings(){
-		for (int i = 0; i < 12; i++){
-			_activeBuildings.Add(false);
-		}
-		_activeBuildings[0] = true;
-		_activeBuildings[1] = true;
- 	}
-
- 	void OnTriggerEnter(Collider other){
-		_seen |= (other.gameObject.tag == "Player");
-	}
-
-	void CheckStartDistance(){
-		_seen |= (Vector3.Distance(_player.position, transform.position) < 10.0f);
 	}
 }

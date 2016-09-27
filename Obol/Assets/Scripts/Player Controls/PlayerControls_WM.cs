@@ -10,10 +10,10 @@ public class PlayerControls_WM : MonoBehaviour {
 	public Animator _anim;
 	public Vector3 _objectPos;
 	public TownCanvas _townCanvas;
-	public EndGame _endGame;
 	public Shooting _shooting;
 	public LayerMask _layerMask;
 	public bool _moving;
+	public string _target;
 
 	// Use this for initialization
 	void Start () {		
@@ -29,7 +29,6 @@ public class PlayerControls_WM : MonoBehaviour {
 	}
 
 	void Spawn(){
-		_endGame = GameObject.Find("HarbourCanvas").GetComponent<EndGame>();
 		_townCanvas = GameObject.Find("TownCanvas").GetComponent<TownCanvas>();
 		_anim = gameObject.GetComponentInChildren<Animator>();
 		_shooting = transform.FindChild("Launcher").GetComponent<Shooting>();
@@ -65,24 +64,14 @@ public class PlayerControls_WM : MonoBehaviour {
 			RaycastHit hit;
 			Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
 			if (Physics.Raycast(ray, out hit, 100f, _layerMask) && !UnityEngine.EventSystems.EventSystem.current.IsPointerOverGameObject()){
-				switch (hit.collider.tag){
-					case "Town":
+				if (hit.collider.tag == "Town"){
 					_objectPos = hit.transform.FindChild("Entrance").position;
 					_agent.SetDestination(_objectPos);
 					_agent.Resume();
-					_townCanvas._townManager = hit.collider.gameObject.GetComponent<TownManager>();
 					_movingToTown = true;
 					_movingToHarbour = false;
-					_range = 1.0f;				
-					break;
-					case "Harbour":
-					_objectPos = hit.transform.FindChild("Entrance").position;
-					_agent.SetDestination(_objectPos);
-					_agent.Resume();
-					_movingToHarbour = true;
-					_movingToTown = false;
-					_range = 1.0f;	
-					break;
+					_range = 1.0f;
+					_target = hit.collider.name;
 				}		
 			}
 		}
@@ -139,21 +128,13 @@ public class PlayerControls_WM : MonoBehaviour {
 	}
 
 	void MoveToObject(){
-		if (_movingToTown || _movingToHarbour){
+		if (_movingToTown){
 			float distance = Vector3.Distance(transform.position, _objectPos);
 			if (distance <= _range){
-				if (_movingToHarbour){
-					_endGame.OpenCanvas();
-					_movingToHarbour = false;
-				}
-				else{
-					_townCanvas._townManager._visited = true;
-					_townCanvas.OpenCanvas();
-					_agent.SetDestination(transform.position);
-					_agent.Stop();
-					_movingToTown = false;
-				}				
+				_townCanvas.OpenCanvas(_target);
 				_agent.SetDestination(transform.position);
+				_agent.Stop();
+				_movingToTown = false;
 				_agent.ResetPath();
 			}
 		}

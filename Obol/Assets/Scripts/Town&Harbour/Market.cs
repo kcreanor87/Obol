@@ -3,7 +3,7 @@ using UnityEngine.UI;
 
 public class Market : MonoBehaviour {
 
-	public TownManager _townManager;
+	public MarketSpawn _marketSpawn;
 	public Text _buy0, _buy1, _buy2, _buy3, _buy4, _buy5;
 	public Text _sell0, _sell1, _sell2, _sell3, _sell4, _sell5;
 	public Text _stock0, _stock1, _stock2, _stock3, _stock4, _stock5;
@@ -12,6 +12,8 @@ public class Market : MonoBehaviour {
 	public int _multiple = 1;
 
 	void Awake(){
+
+		_marketSpawn = gameObject.GetComponent<MarketSpawn>();
 		_buy0 = GameObject.Find("WoodBP").GetComponent<Text>();
 		_buy1 = GameObject.Find("StoneBP").GetComponent<Text>();
 		_buy2 = GameObject.Find("IronBP").GetComponent<Text>();
@@ -39,9 +41,9 @@ public class Market : MonoBehaviour {
 	}
 
 	public void BuyResource(int resource){
-		if (_manager._obols >= (_multiple * _townManager._buyPrices[resource])){
+		if (_manager._obols >= (_multiple * _marketSpawn._buyPrices[resource])){
 			_manager._resources[resource] += _multiple;
-			_manager._obols -= (_townManager._buyPrices[resource] * _multiple);
+			_manager._obols -= (_marketSpawn._buyPrices[resource] * _multiple);
 			UpdatePrices();
 			WM_UI.UpdateUI();
 		}		
@@ -50,26 +52,26 @@ public class Market : MonoBehaviour {
 	public void SellResource(int resource){
 		if (_manager._resources[resource] >= _multiple){
 			_manager._resources[resource] -= _multiple;
-			_manager._obols += (_townManager._sellPrices[resource] * _multiple);
+			_manager._obols += (_marketSpawn._sellPrices[resource] * _multiple);
 			UpdatePrices();
 			WM_UI.UpdateUI();
 		}		
 	}
 
 	public void UpdatePrices(){
-		_buy0.text = (_multiple * _townManager._buyPrices[0]).ToString();
-		_buy1.text =( _multiple * _townManager._buyPrices[1]).ToString();
-		_buy2.text = (_multiple * _townManager._buyPrices[2]).ToString();
-		_buy3.text = (_multiple * _townManager._buyPrices[3]).ToString();
-		_buy4.text = (_multiple * _townManager._buyPrices[4]).ToString();
-		_buy5.text = (_multiple * _townManager._buyPrices[5]).ToString();
+		_buy0.text = (_multiple * _marketSpawn._buyPrices[0]).ToString();
+		_buy1.text =( _multiple * _marketSpawn._buyPrices[1]).ToString();
+		_buy2.text = (_multiple * _marketSpawn._buyPrices[2]).ToString();
+		_buy3.text = (_multiple * _marketSpawn._buyPrices[3]).ToString();
+		_buy4.text = (_multiple * _marketSpawn._buyPrices[4]).ToString();
+		_buy5.text = (_multiple * _marketSpawn._buyPrices[5]).ToString();
 
-		_sell0.text = (_multiple * _townManager._sellPrices[0]).ToString();
-		_sell1.text = (_multiple * _townManager._sellPrices[1]).ToString();
-		_sell2.text = (_multiple * _townManager._sellPrices[2]).ToString();
-		_sell3.text = (_multiple * _townManager._sellPrices[3]).ToString();
-		_sell4.text = (_multiple * _townManager._sellPrices[4]).ToString();
-		_sell5.text = (_multiple * _townManager._sellPrices[5]).ToString();
+		_sell0.text = (_multiple * _marketSpawn._sellPrices[0]).ToString();
+		_sell1.text = (_multiple * _marketSpawn._sellPrices[1]).ToString();
+		_sell2.text = (_multiple * _marketSpawn._sellPrices[2]).ToString();
+		_sell3.text = (_multiple * _marketSpawn._sellPrices[3]).ToString();
+		_sell4.text = (_multiple * _marketSpawn._sellPrices[4]).ToString();
+		_sell5.text = (_multiple * _marketSpawn._sellPrices[5]).ToString();
 
 		_obols.text = _manager._obols.ToString();
 
