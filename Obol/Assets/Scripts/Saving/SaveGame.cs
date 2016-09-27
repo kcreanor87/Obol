@@ -130,4 +130,8 @@ public class SaveGame : MonoBehaviour {
 		}
 		_CombatManager.CalculateStats();
 	}
+
+	public void CombatOverSave(){
+		SavePlayerResources();
+	}
 }
