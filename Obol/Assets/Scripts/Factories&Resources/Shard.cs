@@ -6,13 +6,18 @@ public class Shard : MonoBehaviour {
 	public int _type;
 	public Transform _player;
 	public Vector3 _chasePos;
+	public CombatCounters _counters;
+	public Combat_UI _ui;
+	public int _value = 1;
 
-	public float _speed = 5.0f;
+	public float _speed = 1.0f;
 
 	public bool _active;
 
-	void Start(){
-		_player = GameObject.Find("Player").GetComponent<Transform>();	
+	void Awake(){
+		_counters = GameObject.Find("Counters").GetComponent<CombatCounters>();
+		_player = GameObject.Find("Player").GetComponent<Transform>();
+		_ui = GameObject.Find("UI").GetComponent<Combat_UI>();
 	}
 
 	void OnTriggerEnter(Collider col){
@@ -27,17 +32,32 @@ public class Shard : MonoBehaviour {
 			 var step = _speed * Time.deltaTime;
 			transform.position = Vector3.MoveTowards(transform.position, _chasePos, step);
 	     	var dist = Vector3.Distance(transform.position, _player.position);
-			_active |= (dist > 7.0f);
-			if (dist <= 2.0f){
+			//_active |= (dist > 7.0f);
+			if (dist <= 3.0f){
 				CollectResource();
 			}
+			else if (dist <= 3.5f){
+				Shrink();
+			}
 			_speed += 0.1f;
+			if (_speed > 3.0f){
+				Shrink();
+			}			
 		}		
 	}
 
+	void Shrink(){
+		float h = Mathf.Max(0, transform.localScale.x - 0.01f);
+		float i = Mathf.Max(0, transform.localScale.x - 0.01f);
+		float j = Mathf.Max(0, transform.localScale.x - 0.01f);
+		transform.localScale = new Vector3(h, i, j);
+		_speed += 0.1f;
+	}
+
 	void CollectResource(){
-		_manager._resources[_type] += 3;
-		WM_UI.UpdateUI();
+		_counters._resources[_type] += _value;
+		_counters._resourcesCollected += _value;
+		_ui.UpdateUI();
 		Destroy(gameObject);
 	}
 }

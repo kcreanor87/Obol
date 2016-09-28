@@ -5,8 +5,10 @@ public class ExitDetect : MonoBehaviour {
 
 	public GameObject _exitPrompt;
 	public SaveGame _saveGame;
+	public CombatCounters _counters;
 
 	void Start(){
+		_counters = GameObject.Find("Counters").GetComponent<CombatCounters>();
 		_exitPrompt = GameObject.Find("ExitButton");
 		_saveGame = GameObject.Find("Loader").GetComponent<SaveGame>();
 		_exitPrompt.SetActive(false);
@@ -25,7 +27,11 @@ public class ExitDetect : MonoBehaviour {
 	}
 
 	public void Exit(){
+		for (int i = 0; i < _counters._resources.Count; i++){
+			_manager._resources[i] += _counters._resources[i];
+		}
 		_saveGame.CombatOverSave();
+		SaveGame._combat = false;
 		SceneManager.LoadScene("TownCentre");
 	}
 }

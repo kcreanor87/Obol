@@ -185,6 +185,7 @@ public class TownCanvas : MonoBehaviour {
 	}
 	public void StartCombat(int index){
 		_saveGame.Save();
+		SaveGame._combat = true;
 		SceneManager.LoadScene(3 + index);
 	}
 }

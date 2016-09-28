@@ -5,7 +5,7 @@ using System.Collections;
 public class SpawnPoint : MonoBehaviour {
 
 	public List <GameObject> _enemyDatabase = new List <GameObject>();
-	public int _spawnChance = 50;
+	public int _spawnChance = 100;
 	public bool _spawnOnScreen;
 	public EnemyWM _spawnScript;
 	public CombatCounters _counterScript;
@@ -15,37 +15,39 @@ public class SpawnPoint : MonoBehaviour {
 		transform.FindChild("Indicator").gameObject.SetActive(false);
 		CheckCurrentSpawn();
 	}
-	//Only run spawn RNG if the current enemy isn't currently chasing player, nor if the spawn is on screen
 	void CheckCurrentSpawn(){
 		//Is the spawn on screen? 
 		var ScreenPos = Camera.main.WorldToScreenPoint(transform.position);
 		_spawnOnScreen = ((ScreenPos.x <= Screen.width && ScreenPos.x >= 0) && (ScreenPos.y <= Screen.height && ScreenPos.y >= 0));
-		//Did this spawn create an enemy recently?
-		if (!_spawnOnScreen){			
-			CheckRNG();
+		//Has the spawn limit been reached?
+		if (!(_counterScript._enemiesSpawned >= _counterScript._totalEnemies)){
+			if (!_spawnOnScreen){			
+				CheckRNG();
+			}
+			else{
+				var timer = Random.Range(4.0f, 5.0f);
+				StartCoroutine(Timer(timer));
+			}	
 		}
-		else{
-			StartCoroutine(Timer(3.0f));
-		}		
 	}
 	//Function to control the RNG that determines whether an enemy spawns or not
 	void CheckRNG(){
 		var chance = Random.Range(0, 101);
 		if (chance <= _spawnChance){
+			_counterScript._enemiesSpawned++;
 			SpawnEnemy();
 		}
 		else{
-			StartCoroutine(Timer(5.0f));
+			var timer = Random.Range(4.0f, 5.0f);
+			StartCoroutine(Timer(timer));
 		}
 	}
-	//Spawn a random prefab from the editor-populated list, assign it as the actice script and set _generated bool
-	void SpawnEnemy(){
-		if (_counterScript._enemiesSpawned < _counterScript._totalEnemies){
-			var enemyType = Random.Range(0, _enemyDatabase.Count);
-			Instantiate(_enemyDatabase[enemyType], transform.position, Quaternion.identity);
-			_counterScript._enemiesSpawned++;
-			StartCoroutine(Timer(5.0f));
-		}		
+	//Spawn a random prefab from the editor-populated list
+	void SpawnEnemy(){		
+		var enemyType = Random.Range(0, _enemyDatabase.Count);
+		Instantiate(_enemyDatabase[enemyType], transform.position, Quaternion.identity);			
+		var timer = Random.Range(4.0f, 5.0f);
+		StartCoroutine(Timer(timer));		
 	}
 
 	public IEnumerator Timer(float timer){

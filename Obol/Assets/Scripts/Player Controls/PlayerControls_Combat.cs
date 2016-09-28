@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using System.Collections;
 
 public class PlayerControls_Combat : MonoBehaviour {
 
@@ -9,6 +10,7 @@ public class PlayerControls_Combat : MonoBehaviour {
 	public Shooting _shooting;
 	public LayerMask _layerMask;
 	public bool _moving;
+	public bool _firing;
 	public string _target;
 
 	// Use this for initialization
@@ -75,31 +77,43 @@ public class PlayerControls_Combat : MonoBehaviour {
 					newRotation.x = 0f;
        				newRotation.z = 0f;
         			transform.rotation = Quaternion.Slerp(transform.rotation, newRotation, Time.deltaTime * 10);
-        			if (Input.GetMouseButtonDown(0)){
-        				if (hit.collider.tag == "Ground"){
-        					var dist = Vector3.Distance(hit.point, transform.position);
-        					if (dist > 2.2f){
-        						Shoot(hit.point);
-        					}        					
-        				}
-        				else if (hit.collider.tag == "Resource"){
-        					var h = 5 + hit.collider.transform.position.y;
-        					var target = new Vector3(hit.collider.transform.position.x, h, hit.collider.transform.position.z);
-        					Shoot(target);
-        				}
-        				else if (hit.collider.tag == "Enemy"){
-        					Shoot(hit.collider.transform.position);
-        				}
+        			if (Input.GetMouseButton(0) && !_firing){
+        				Shoot(hit.collider.gameObject, hit.point);
+        			}
+        			if (Input.GetMouseButtonDown(0) && !_firing){
+        				Shoot(hit.collider.gameObject, hit.point);
         			}
 				}					
 			}			
-		}
+		}		
 		if (Input.GetMouseButtonUp(1)){
 			_anim.SetBool("Aim", false);
 		}	
 	}
 
-	void Shoot(Vector3 target){
-		_shooting.CalcVelocity(target);
+	void Shoot(GameObject go, Vector3 target){
+		if (go.tag == "Ground"){
+        	var dist = Vector3.Distance(target, transform.position);
+        	if (dist > 2.2f){
+        		_shooting.CalcVelocity(target);
+        		StartCoroutine(FireRate());
+        	}        					
+        }
+        else if (go.tag == "Resource"){
+       		var h = 5 + go.transform.position.y;
+       		var _aimTarget = new Vector3(go.transform.position.x, h, go.transform.position.z);
+       		_shooting.CalcVelocity(_aimTarget);
+       		StartCoroutine(FireRate());
+       	}
+        else if (tag == "Enemy"){
+        	_shooting.CalcVelocity(go.transform.position);
+        	StartCoroutine(FireRate());
+        }		
+	}
+
+	public IEnumerator FireRate(){
+		_firing = true;
+		yield return new WaitForSeconds(_CombatManager._equipRanged._fireRate);
+		_firing = false;
 	}
 }

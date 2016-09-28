@@ -1,16 +1,18 @@
 ﻿using UnityEngine;
-using System.Collections.Generic;
 
 public class SaveGame : MonoBehaviour {
 
 	public RumourGenerator _rumourScript;
 	public TownCanvas _townCanvas;
 	public MarketSpawn _marketSpawn;
+	public static bool _combat;
 
 	void Awake(){
-		PopulateLists();
-		if (!NewGame._newGame) Load();
-		else PlayerPrefs.DeleteAll();
+		if (!_combat){
+			PopulateLists();
+			if (!NewGame._newGame) Load();
+			else PlayerPrefs.DeleteAll();
+		}		
 	}
 
 	void PopulateLists(){

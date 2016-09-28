@@ -28,9 +28,11 @@ public class Projectiles : MonoBehaviour {
 			resScript.BeenHit(_damage);
 			break;
 			case "Enemy":
-			if (!_hit) Explode();
+			Explode();
 			var enemyScript = col.GetComponentInParent<EnemyWM>();
-			enemyScript.BeenHit(_damage);
+			if (enemyScript._health > 0){
+				enemyScript.BeenHit(_damage);
+			}			
 			break;
 		}
 	}
