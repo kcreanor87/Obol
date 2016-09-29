@@ -116,4 +116,8 @@ public class PlayerControls_Combat : MonoBehaviour {
 		yield return new WaitForSeconds(_CombatManager._equipRanged._fireRate);
 		_firing = false;
 	}
+
+	public void BeenHit(int damage){
+		_CombatManager._currentHealth -= damage;
+	}
 }

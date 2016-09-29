@@ -101,7 +101,6 @@ public class SaveGame : MonoBehaviour {
 	}
 
 	void SaveCombatStats(){
-		PlayerPrefs.SetInt("STR", _CombatManager._str);
 		PlayerPrefs.SetInt("DEX", _CombatManager._dex);
 		PlayerPrefs.SetInt("VIT", _CombatManager._vit);
 		PlayerPrefs.SetInt("Init", _CombatManager._init);
@@ -115,7 +114,6 @@ public class SaveGame : MonoBehaviour {
 	}
 
 	void LoadCombatStats(){
-		_CombatManager._str = PlayerPrefs.GetInt("STR");
 		_CombatManager._dex = PlayerPrefs.GetInt("DEX");
 		_CombatManager._vit = PlayerPrefs.GetInt("VIT");
 		_CombatManager._init = PlayerPrefs.GetInt("Init");

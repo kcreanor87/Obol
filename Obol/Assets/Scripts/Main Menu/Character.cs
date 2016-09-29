@@ -1,7 +1,6 @@
 ﻿[System.Serializable]
 public class Character {
 
-	public int _str;
 	public int _dex;
 	public int _vit;
 	public int _melee;
@@ -11,8 +10,7 @@ public class Character {
 	public int _legs;
 	public string _name;
 
-	public Character(int str, int dex, int vit, string name, int melee, int ranged, int chest, int head, int legs){
-		_str = str;
+	public Character(int dex, int vit, string name, int melee, int ranged, int chest, int head, int legs){
 		_dex = dex;
 		_vit = vit;
 		_name = name;

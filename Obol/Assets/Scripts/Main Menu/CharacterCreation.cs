@@ -43,7 +43,6 @@ public class CharacterCreation : MonoBehaviour {
 	}
 
 	public void SetStats(int index){
-		_CombatManager._str = _database._chars[index]._str;
 		_CombatManager._dex = _database._chars[index]._dex;
 		_CombatManager._vit = _database._chars[index]._vit;
 		_CombatManager._equipRanged = _weaponDb._rangedDatabase[_database._chars[index]._ranged];
@@ -52,7 +51,6 @@ public class CharacterCreation : MonoBehaviour {
 		_CombatManager._legSlot = _armourDb._legDatabase[_database._chars[index]._legs];
 
 		_name.text = _database._chars[index]._name;
-		_str.text = "Str: " + _database._chars[index]._str;
 		_dex.text = "Dex: " + _database._chars[index]._dex;
 		_vit.text = "Vit: " + _database._chars[index]._vit;
 	}
