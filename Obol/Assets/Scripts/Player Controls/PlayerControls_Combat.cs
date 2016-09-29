@@ -120,7 +120,11 @@ public class PlayerControls_Combat : MonoBehaviour {
 
 	public void BeenHit(int damage){
 		_CombatManager._currentHealth -= damage;
-		_ui.DamageText(_textSpawn, damage);
+		_ui.DamageText(_textSpawn, damage, true);
 		_ui.UpdateUI();
+		if (_CombatManager._currentHealth <= 0){
+			_agent.Stop();
+			_ui.GameOver(false);
+		}
 	}
 }

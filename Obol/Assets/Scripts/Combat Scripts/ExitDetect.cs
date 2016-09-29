@@ -16,7 +16,7 @@ public class ExitDetect : MonoBehaviour {
 
 	void OnTriggerEnter(Collider col){
 		if (col.tag == "Player"){
-			_exitPrompt.SetActive(true);
+			ExitPrompt();
 		}
 	}
 
@@ -32,6 +32,11 @@ public class ExitDetect : MonoBehaviour {
 		}
 		_saveGame.CombatOverSave();
 		SaveGame._combat = false;
+		Time.timeScale = 1.0f;
 		SceneManager.LoadScene("TownCentre");
+	}
+
+	public void ExitPrompt(){
+		_exitPrompt.SetActive(true);
 	}
 }

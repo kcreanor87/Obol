@@ -75,9 +75,7 @@ public class EnemyWM : MonoBehaviour {
 		} 
 		else{
 			if (!_ranged){
-				_CombatManager._currentHealth -= _damage;
-				print(_CombatManager._currentHealth);
-				_ui.UpdateUI();		
+				_player.BeenHit(_damage);	
 			}
 			AttackStart();
 		}
@@ -85,7 +83,7 @@ public class EnemyWM : MonoBehaviour {
 
 	public void BeenHit(int damage){	
 		_health -= damage;
-		_ui.DamageText(_textSpawn, damage);
+		_ui.DamageText(_textSpawn, damage, false);
 		_attacking = false;	
 		_anim.SetBool("Hit", true);
 		if (_health <= 0){

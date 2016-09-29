@@ -9,8 +9,11 @@ public class SpawnPoint : MonoBehaviour {
 	public bool _spawnOnScreen;
 	public EnemyWM _spawnScript;
 	public CombatCounters _counterScript;
+	public int _spawned;
+	public float _timer;
 
 	void Start(){
+		_timer = 5.0f;
 		_counterScript = GameObject.Find("Counters").GetComponent<CombatCounters>();
 		transform.FindChild("Indicator").gameObject.SetActive(false);
 		CheckCurrentSpawn();
@@ -38,20 +41,20 @@ public class SpawnPoint : MonoBehaviour {
 			SpawnEnemy();
 		}
 		else{
-			var timer = Random.Range(4.0f, 5.0f);
-			StartCoroutine(Timer(timer));
+			StartCoroutine(Timer(_timer));
 		}
 	}
 	//Spawn a random prefab from the editor-populated list
 	void SpawnEnemy(){		
 		var enemyType = Random.Range(0, _enemyDatabase.Count);
-		Instantiate(_enemyDatabase[enemyType], transform.position, Quaternion.identity);			
-		var timer = Random.Range(4.0f, 5.0f);
-		StartCoroutine(Timer(timer));		
+		Instantiate(_enemyDatabase[enemyType], transform.position, Quaternion.identity);
+		_spawned++;
+		if (_spawned > (_counterScript._totalEnemies /( _counterScript._spawnPoints*2))) _timer = 2.5f;
+		StartCoroutine(Timer(_timer));		
 	}
 
 	public IEnumerator Timer(float timer){
-		yield return new WaitForSeconds(timer);
+		yield return new WaitForSeconds(_timer);
 		CheckCurrentSpawn();
 	}
 }
