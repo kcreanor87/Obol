@@ -3,48 +3,27 @@ using UnityEngine.UI;
 
 public class DamageText : MonoBehaviour {
 
-	public Transform _target;
-	public Text _text;
-	public int _damage;
 	public float _timer = 1.5f;
+	public Transform _target;
+	public RectTransform _rect;
+	public float _riseAmount;
+	public Text _text;
+	public float _alpha = 0.5f;
+	public Color _color;
 
-	public bool _active;
-
-	// Use this for initialization
-	void Awake() {
+	void Start(){
+		_rect = gameObject.GetComponent<RectTransform>();
 		_text = gameObject.GetComponent<Text>();
-		_text.enabled = false;
 	}
 
-	// Update is called once per frame
-	void Update () {
-		IsActive();
-	}
-
-	public void EnableOnScreen(){
-		_active = true;
-		var _pos = new Vector3(_target.position.x, 4.5f, _target.position.z);
-		transform.position = (Camera.main.WorldToScreenPoint(_pos));
-		if (_damage > 0){
-			_text.text = "" + _damage;
-		}
-		else if (_damage < 0){
-			_text.text = "Miss";
-		}
-		else{
-			_text.text = "0";
-		}
-		_timer = 1.5f;
-	}
-
-	void IsActive(){
-		if (_active){
-			_text.enabled = true;
-			_timer -= Time.deltaTime;
-			if (_timer <= 0){
-				_active = false;
-				_text.enabled = false;
-			}
-		}
+	void Update(){
+		var pos = Camera.main.WorldToScreenPoint(_target.position);
+		var y = pos.y + _riseAmount;
+		_rect.anchoredPosition = new Vector3(pos.x, y);
+		_timer -= Time.deltaTime;
+		_riseAmount += 1.0f;
+		if (_timer <= 0.0f) Destroy(gameObject);
+		_color.a -= 0.02f;
+		_text.color = _color;
 	}
 }

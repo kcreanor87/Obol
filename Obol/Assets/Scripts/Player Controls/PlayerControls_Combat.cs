@@ -12,6 +12,8 @@ public class PlayerControls_Combat : MonoBehaviour {
 	public bool _moving;
 	public bool _firing;
 	public string _target;
+	public Combat_UI _ui;
+	public Transform _textSpawn;
 
 	// Use this for initialization
 	void Start () {		
@@ -24,6 +26,8 @@ public class PlayerControls_Combat : MonoBehaviour {
 	}
 
 	void Spawn(){
+		_textSpawn = transform.Find("TextSpawn");
+		_ui = GameObject.Find("UI").GetComponent<Combat_UI>();
 		_anim = gameObject.GetComponentInChildren<Animator>();
 		_shooting = transform.FindChild("Launcher").GetComponent<Shooting>();
 		_agent = gameObject.GetComponent<NavMeshAgent>();
@@ -68,7 +72,7 @@ public class PlayerControls_Combat : MonoBehaviour {
 			RaycastHit hit;
 			Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
 			if (Physics.Raycast(ray, out hit, 100f, _layerMask) && !UnityEngine.EventSystems.EventSystem.current.IsPointerOverGameObject()){
-				if (hit.collider.tag == "Ground" || hit.collider.tag == "Resource" || hit.collider.tag == "Enemy"){
+				if (hit.collider.tag == "Ground" || hit.collider.tag == "Resource" || hit.collider.tag == "Enemy"){					
 					_agent.SetDestination(transform.position);
 					_anim.SetBool("Running", false);
 					_anim.SetBool("Aim", true);
@@ -93,11 +97,8 @@ public class PlayerControls_Combat : MonoBehaviour {
 
 	void Shoot(GameObject go, Vector3 target){
 		if (go.tag == "Ground"){
-        	var dist = Vector3.Distance(target, transform.position);
-        	if (dist > 2.2f){
-        		_shooting.CalcVelocity(target);
-        		StartCoroutine(FireRate());
-        	}        					
+        	_shooting.CalcVelocity(target);
+        	StartCoroutine(FireRate());       					
         }
         else if (go.tag == "Resource"){
        		var h = 5 + go.transform.position.y;
@@ -105,8 +106,8 @@ public class PlayerControls_Combat : MonoBehaviour {
        		_shooting.CalcVelocity(_aimTarget);
        		StartCoroutine(FireRate());
        	}
-        else if (tag == "Enemy"){
-        	_shooting.CalcVelocity(go.transform.position);
+        else if (go.tag == "Enemy"){
+        	_shooting.CalcVelocity(go.transform.parent.position);
         	StartCoroutine(FireRate());
         }		
 	}
@@ -119,5 +120,7 @@ public class PlayerControls_Combat : MonoBehaviour {
 
 	public void BeenHit(int damage){
 		_CombatManager._currentHealth -= damage;
+		_ui.DamageText(_textSpawn, damage);
+		_ui.UpdateUI();
 	}
 }

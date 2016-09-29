@@ -13,11 +13,16 @@ public class EnemyWM : MonoBehaviour {
 	public Animator _anim;
 	public bool _ranged;
 	public bool _attacking;
+	public int _damage = 10;
+	public Shooting _shooting;
+	public Transform _textSpawn;
 
 	void Start(){
-		_anim = transform.GetChild(0).GetComponentInChildren<Animator>();		
+		_anim = transform.GetChild(0).GetComponentInChildren<Animator>();
+		_textSpawn = transform.FindChild("TextSpawn");		
 		_agent = gameObject.GetComponent<NavMeshAgent>();
 		_player = GameObject.Find("Player").GetComponent<PlayerControls_Combat>();
+		if (_ranged) _shooting = GetComponentInChildren<Shooting>();
 		_counter = GameObject.Find("Counters").GetComponent<CombatCounters>();
 		_ui = GameObject.Find("UI").GetComponent<Combat_UI>();
 		_agent.enabled = true;		
@@ -30,6 +35,7 @@ public class EnemyWM : MonoBehaviour {
 
 	void ChasePlayer(){
 		_anim.SetBool("WeaponB", (!_ranged));
+		_anim.SetBool("Hit", false);
 		_anim.SetBool("Running", true);		
 		StartCoroutine(ChaseLoop(0.25f));
 	}
@@ -54,16 +60,12 @@ public class EnemyWM : MonoBehaviour {
 		_attacking = true;
 		_agent.SetDestination(transform.position);
 		_anim.SetBool("Running", false);
-		/*if (_ranged){
-			//***Launch projectile	
+		if (_ranged){
+			_shooting.CalcVelocity(_player.transform.position);
 		}
-		else{
-			//***Do damage			
-		}*/
 		_anim.SetBool("Aim", true);
 		_anim.SetBool("Attack", true);
-		yield return new WaitForSeconds(0.2f);		
-		print ("Called");
+		yield return new WaitForSeconds(0.9f);
 		var dist = Vector3.Distance(transform.position, _player.transform.position);
 		if (dist > _range){
 			_attacking = false;
@@ -72,21 +74,30 @@ public class EnemyWM : MonoBehaviour {
 			ChasePlayer();
 		} 
 		else{
+			if (!_ranged){
+				_CombatManager._currentHealth -= _damage;
+				print(_CombatManager._currentHealth);
+				_ui.UpdateUI();		
+			}
 			AttackStart();
 		}
 	}
 
 	public void BeenHit(int damage){	
 		_health -= damage;
+		_ui.DamageText(_textSpawn, damage);
 		_attacking = false;	
 		_anim.SetBool("Hit", true);
 		if (_health <= 0){
+			StopAllCoroutines();
 			_anim.SetBool("Dead", true);
 			_agent.Stop();
 			_counter._enemiesKilled++;
-			_ui.UpdateUI();
-			
+			_ui.UpdateUI();			
 			StartCoroutine(Die());
+		}
+		else{
+			ChasePlayer();
 		}
 	}
 

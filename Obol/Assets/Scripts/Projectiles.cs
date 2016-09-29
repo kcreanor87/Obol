@@ -7,16 +7,21 @@ public class Projectiles : MonoBehaviour {
 	public ParticleSystem _trail;
 	public SphereCollider _col;
 	public MeshRenderer _projectile;
-	public int _damage = 100;
+	public PlayerControls_Combat _player;
+	public int _minDam;
+	public int _maxDam;
+	public int _damage = 10;
 	public float _radius = 6.5f;
 	public bool _hit;
 	public bool _enemyShot;
 	
 	void Start(){
+		_damage = Random.Range(_minDam, _maxDam);
 		_explosion = transform.FindChild("Explosion").GetComponent<ParticleSystem>();
 		_trail = transform.FindChild("Trail").GetComponent<ParticleSystem>();
 		_projectile = gameObject.GetComponent<MeshRenderer>();
 		_col = gameObject.GetComponentInParent<SphereCollider>();
+		if (_enemyShot) _player = GameObject.FindWithTag("Player").GetComponent<PlayerControls_Combat>();
 	}
 	void OnTriggerEnter(Collider col){
 		if (!_enemyShot){
@@ -45,8 +50,7 @@ public class Projectiles : MonoBehaviour {
 				break;
 				case "Player":
 				Explode();
-				var player = col.GetComponentInParent<PlayerControls_Combat>();
-				player.BeenHit(_damage);		
+				_player.BeenHit(_damage);		
 				break;
 			}
 		}
