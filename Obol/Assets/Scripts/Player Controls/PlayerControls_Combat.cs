@@ -14,6 +14,7 @@ public class PlayerControls_Combat : MonoBehaviour {
 	public string _target;
 	public Combat_UI _ui;
 	public Transform _textSpawn;
+	public GameObject _indicator;
 
 	// Use this for initialization
 	void Start () {		
@@ -26,6 +27,7 @@ public class PlayerControls_Combat : MonoBehaviour {
 	}
 
 	void Spawn(){
+		_indicator = GameObject.Find("Indicator");
 		_textSpawn = transform.Find("TextSpawn");
 		_ui = GameObject.Find("UI").GetComponent<Combat_UI>();
 		_anim = gameObject.GetComponentInChildren<Animator>();
@@ -71,8 +73,12 @@ public class PlayerControls_Combat : MonoBehaviour {
 		if (Input.GetMouseButton(1)){
 			RaycastHit hit;
 			Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-			if (Physics.Raycast(ray, out hit, 100f, _layerMask) && !UnityEngine.EventSystems.EventSystem.current.IsPointerOverGameObject()){
-				if (hit.collider.tag == "Ground" || hit.collider.tag == "Resource" || hit.collider.tag == "Enemy"){					
+			if (Physics.Raycast(ray, out hit, 100f, _layerMask)){
+				if (hit.collider.tag == "Ground" || hit.collider.tag == "Resource" || hit.collider.tag == "Enemy"){
+					if (hit.collider.tag != "Resource"){
+						_indicator.SetActive(true);
+						_indicator.transform.position = hit.point;	
+					}									
 					_agent.SetDestination(transform.position);
 					_anim.SetBool("Running", false);
 					_anim.SetBool("Aim", true);
@@ -92,6 +98,7 @@ public class PlayerControls_Combat : MonoBehaviour {
 		}		
 		if (Input.GetMouseButtonUp(1)){
 			_anim.SetBool("Aim", false);
+			_indicator.SetActive(false);
 		}	
 	}
 
@@ -101,7 +108,7 @@ public class PlayerControls_Combat : MonoBehaviour {
         	StartCoroutine(FireRate());       					
         }
         else if (go.tag == "Resource"){
-       		var h = 5 + go.transform.position.y;
+       		var h = 3 + go.transform.position.y;
        		var _aimTarget = new Vector3(go.transform.position.x, h, go.transform.position.z);
        		_shooting.CalcVelocity(_aimTarget);
        		StartCoroutine(FireRate());
@@ -124,6 +131,7 @@ public class PlayerControls_Combat : MonoBehaviour {
 		_ui.UpdateUI();
 		if (_CombatManager._currentHealth <= 0){
 			_agent.Stop();
+			_anim.SetBool("Dead", true);
 			_ui.GameOver(false);
 		}
 	}

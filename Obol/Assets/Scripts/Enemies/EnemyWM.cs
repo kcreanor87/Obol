@@ -61,6 +61,7 @@ public class EnemyWM : MonoBehaviour {
 		_agent.SetDestination(transform.position);
 		_anim.SetBool("Running", false);
 		if (_ranged){
+			print("Shoot!");
 			_shooting.CalcVelocity(_player.transform.position);
 		}
 		_anim.SetBool("Aim", true);

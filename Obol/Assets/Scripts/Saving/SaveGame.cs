@@ -69,7 +69,6 @@ public class SaveGame : MonoBehaviour {
 			PlayerPrefs.SetInt("Resource" + i, _manager._resources[i]);
 		}
 		PlayerPrefs.SetInt("Obols", _manager._obols);
-		PlayerPrefs.SetInt("Repute", _manager._repute);
 		for (int i = 0; i < _manager._factoryOuput.Count; i++){
 			PlayerPrefs.SetInt("Output" + i, _manager._factoryOuput[i]);
 		}
@@ -80,7 +79,6 @@ public class SaveGame : MonoBehaviour {
 			_manager._resources[i] = PlayerPrefs.GetInt("Resource" + i);
 		}
 		_manager._obols = PlayerPrefs.GetInt("Obols");
-		_manager._repute = PlayerPrefs.GetInt("Repute");
 		for (int i = 0; i < _manager._factoryOuput.Count; i++){
 			_manager._factoryOuput[i] = PlayerPrefs.GetInt("Output" + i);
 		}

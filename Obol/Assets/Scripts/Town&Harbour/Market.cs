@@ -49,38 +49,13 @@ public class Market : MonoBehaviour {
 		}		
 	}
 
-	public void SellResource(int resource){
-		if (_manager._resources[resource] >= _multiple){
-			_manager._resources[resource] -= _multiple;
-			_manager._obols += (_marketSpawn._sellPrices[resource] * _multiple);
-			UpdatePrices();
-			WM_UI.UpdateUI();
-		}		
-	}
-
 	public void UpdatePrices(){
 		_buy0.text = (_multiple * _marketSpawn._buyPrices[0]).ToString();
 		_buy1.text =( _multiple * _marketSpawn._buyPrices[1]).ToString();
 		_buy2.text = (_multiple * _marketSpawn._buyPrices[2]).ToString();
 		_buy3.text = (_multiple * _marketSpawn._buyPrices[3]).ToString();
-		_buy4.text = (_multiple * _marketSpawn._buyPrices[4]).ToString();
-		_buy5.text = (_multiple * _marketSpawn._buyPrices[5]).ToString();
-
-		_sell0.text = (_multiple * _marketSpawn._sellPrices[0]).ToString();
-		_sell1.text = (_multiple * _marketSpawn._sellPrices[1]).ToString();
-		_sell2.text = (_multiple * _marketSpawn._sellPrices[2]).ToString();
-		_sell3.text = (_multiple * _marketSpawn._sellPrices[3]).ToString();
-		_sell4.text = (_multiple * _marketSpawn._sellPrices[4]).ToString();
-		_sell5.text = (_multiple * _marketSpawn._sellPrices[5]).ToString();
 
 		_obols.text = _manager._obols.ToString();
-
-		_stock0.text = _manager._resources[0].ToString();
-		_stock1.text = _manager._resources[1].ToString();
-		_stock2.text = _manager._resources[2].ToString();
-		_stock3.text = _manager._resources[3].ToString();
-		_stock4.text = _manager._resources[4].ToString();
-		_stock5.text = _manager._resources[5].ToString();
 	}	
 
 	public void SwitchMultiple(){

@@ -31,6 +31,5 @@ public class DamageText : MonoBehaviour {
 		_color.a -= 0.02f;
 		_enemyHit.a -= 0.02f;
 		_text.color = (!_playerHit) ? _color : _enemyHit;
-
 	}
 }

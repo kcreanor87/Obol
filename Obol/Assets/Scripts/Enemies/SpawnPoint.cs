@@ -13,7 +13,7 @@ public class SpawnPoint : MonoBehaviour {
 	public float _timer;
 
 	void Start(){
-		_timer = 5.0f;
+		_timer = 10.0f;
 		_counterScript = GameObject.Find("Counters").GetComponent<CombatCounters>();
 		transform.FindChild("Indicator").gameObject.SetActive(false);
 		CheckCurrentSpawn();
@@ -28,8 +28,7 @@ public class SpawnPoint : MonoBehaviour {
 				CheckRNG();
 			}
 			else{
-				var timer = Random.Range(4.0f, 5.0f);
-				StartCoroutine(Timer(timer));
+				StartCoroutine(Timer(_timer));
 			}	
 		}
 	}
@@ -49,7 +48,7 @@ public class SpawnPoint : MonoBehaviour {
 		var enemyType = Random.Range(0, _enemyDatabase.Count);
 		Instantiate(_enemyDatabase[enemyType], transform.position, Quaternion.identity);
 		_spawned++;
-		if (_spawned > (_counterScript._totalEnemies /( _counterScript._spawnPoints*2))) _timer = 2.5f;
+		if (_spawned > (_counterScript._totalEnemies /( _counterScript._spawnPoints*2))) _timer = 5.0f;
 		StartCoroutine(Timer(_timer));		
 	}
 

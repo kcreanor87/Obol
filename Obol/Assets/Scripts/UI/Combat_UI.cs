@@ -4,6 +4,8 @@ using UnityEngine.UI;
 public class Combat_UI : MonoBehaviour {
 
 	public Text _boneTxt, _ironTxt, _sulphurTxt, _crystalTxt, _enemiesTxt, _resTxt;
+	public Text _boneEndTxt, _ironEndTxt, _sulphurEndTxt, _crystalEndTxt;
+	public Text _bonePrice, _ironPrice, _sulphurPrice, _crystalPrice, _obols;
 	public RectTransform _hpBar;
 	public int _hpMax = 560; 
 	public CombatCounters _counter;
@@ -16,15 +18,35 @@ public class Combat_UI : MonoBehaviour {
 	public bool _victory;
 	public Sprite _winSprite;
 	public Sprite _lossSprite;
-	public float _size = 10.0f;
+	public float _size = 50.0f;
 	public float _timer = 2.0f;
 	public bool _switch;
 	public bool _imageActive = true;
 	public GameObject _startText;
-	public ExitDetect _exitDetect;
+	public ExitDetect _exitDetect;	
+	public GameObject _blackout;
+	public bool _addResources;
+	public int _resIndex;
+	public bool _ticker;
 
 	// Use this for initialization
-	void Start () {
+	void Start () {	
+		_boneEndTxt = GameObject.Find("BoneCollected").GetComponent<Text>();
+		_ironEndTxt = GameObject.Find("IronCollected").GetComponent<Text>();
+		_sulphurEndTxt = GameObject.Find("SulphurCollected").GetComponent<Text>();
+		_crystalEndTxt = GameObject.Find("CrystalCollected").GetComponent<Text>();
+		_bonePrice = GameObject.Find("BonePrice").GetComponent<Text>();
+		_bonePrice.text = "X " + _manager._prices[0];	
+		_ironPrice = GameObject.Find("IronPrice").GetComponent<Text>();
+		_ironPrice.text = "X " + _manager._prices[1];	
+		_sulphurPrice = GameObject.Find("SulphurPrice").GetComponent<Text>();
+		_sulphurPrice.text = "X " + _manager._prices[2];	
+		_crystalPrice = GameObject.Find("CrystalPrice").GetComponent<Text>();
+		_crystalPrice.text = "X " + _manager._prices[3];
+		_obols = GameObject.Find("CurrentObols").GetComponent<Text>();
+		_obols.text = _manager._obols.ToString();
+		_blackout = GameObject.Find("Blackout");
+		_blackout.SetActive(false);
 		_activeGO = _startGO;
 		_gameOverImage = _endGO.GetComponent<Image>();
 		_endGO.SetActive(false);
@@ -45,6 +67,9 @@ public class Combat_UI : MonoBehaviour {
 	void Update (){
 		if (_imageActive){
 			EnlargeSprite();
+		}
+		if (_addResources){
+			CollectWinnings();
 		}
 	}
 	
@@ -77,14 +102,15 @@ public class Combat_UI : MonoBehaviour {
 		_victory = win;
 		_gameOver = true;
 		_imageActive = true;
-		_gameOverImage.sprite = (_victory) ? _winSprite : _lossSprite;
+		_gameOverImage.sprite = (_victory) ? _winSprite : _lossSprite;		
 		_activeGO.SetActive(true);
+		AddResources();
 	}
 
 	void EnlargeSprite(){
 		if (!_switch){
 			if (_size <= 150.0f){
-				_size += 5.0f;
+				_size += 10.0f;
 				_activeGO.GetComponent<RectTransform>().sizeDelta = new Vector2(900, _size);
 			}
 			else{
@@ -93,10 +119,13 @@ public class Combat_UI : MonoBehaviour {
 			}
 		}
 		_timer -= Time.deltaTime;
+		if (_gameOver){
+			_blackout.SetActive(true);
+		}
 		if (_timer <= 0){
 			if (!_gameOver){			
 				_startText.SetActive(false);
-				if (_size >= 10.0f){
+				if (_size >= 50.0f){
 					_size -= 5.0f;
 					_activeGO.GetComponent<RectTransform>().sizeDelta = new Vector2(900, _size);
 				}
@@ -108,11 +137,47 @@ public class Combat_UI : MonoBehaviour {
 					_imageActive = false;
 				}				
 			}
+			else{				
+				_imageActive = false;
+				Time.timeScale = 0.0f;		
+			}
+		}			
+	}
+
+	void AddResources(){
+		_addResources = true;
+		_boneEndTxt.text = (_victory) ? _counter._resources[0].ToString() : "0";
+		_ironEndTxt.text = (_victory) ? _counter._resources[1].ToString() : "0";
+		_sulphurEndTxt.text = (_victory) ? _counter._resources[2].ToString() : "0";
+		_crystalEndTxt.text = (_victory) ? _counter._resources[3].ToString() : "0";
+		_obols.text = _manager._obols.ToString();
+	}
+
+	void CollectWinnings(){
+		if (!_victory){
+			_resIndex = _manager._prices.Count;
+			_addResources = false;
+			_exitDetect.ExitPrompt();
+		}
+		if (_ticker){
+			if (_counter._resources[_resIndex] > 0){
+				if (_victory){
+					_counter._resources[_resIndex]--;
+					_manager._obols += _manager._prices[_resIndex];
+					AddResources();
+				}				
+			}
 			else{
-				Time.timeScale = 0.0f;
+				_resIndex++;
+			}
+			if(_resIndex >= _manager._prices.Count){
+				_addResources = false;
 				_exitDetect.ExitPrompt();
 			}
-		}	
-			
+			_ticker = false;
+		}
+		else{
+			_ticker = true;
+		}		
 	}
 }

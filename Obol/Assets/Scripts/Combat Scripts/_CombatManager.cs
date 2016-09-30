@@ -54,7 +54,7 @@ public class _CombatManager : MonoBehaviour {
 	public static void CalculateStats(){
 		_rangedDam = _equipRanged._dam;
 		_armourRating = _headSlot._armourBonus + _chestSlot._armourBonus + _legSlot._armourBonus;
-		_maxHealth = 300 + 50*_vit;
+		_maxHealth = 700 + 50*_vit;
 		_maxAP = 40 + 5*_dex;	
 		_currentHealth = _maxHealth;	
 	}

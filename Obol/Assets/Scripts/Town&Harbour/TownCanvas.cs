@@ -12,7 +12,7 @@ public class TownCanvas : MonoBehaviour {
 	public List <GameObject> _buildings = new List<GameObject>();
 	public List <Button> _workshopButtons = new List <Button>();
 	public Text _townName;
-	public Text _woodCost, _stoneCost, _ironCost, _coalCost, _preReqs, _buildName, _buildDesc;
+	public Text _cost, _preReqs, _buildName, _buildDesc;
 	public AdditionalResources _additionalResources;
 	public List <BuildingCost> _buildingCosts = new List <BuildingCost>();
 	public bool _affordable;
@@ -43,10 +43,7 @@ public class TownCanvas : MonoBehaviour {
 	}
 
 	void CollectTextElements(){
-		_woodCost = GameObject.Find("WoodBuild").GetComponent<Text>();
-		_stoneCost = GameObject.Find("StoneCost").GetComponent<Text>();
-		_ironCost = GameObject.Find("IronCost").GetComponent<Text>();
-		_coalCost = GameObject.Find("CoalCost").GetComponent<Text>();
+		_cost = GameObject.Find("Cost").GetComponent<Text>();
 		_preReqs = GameObject.Find("PreReqs").GetComponent<Text>();
 		_buildName = GameObject.Find("BuildingName").GetComponent<Text>();
 		_buildDesc = GameObject.Find("BuildingDescription").GetComponent<Text>();
@@ -125,10 +122,7 @@ public class TownCanvas : MonoBehaviour {
 	public void OpenBuildCanvas(int index){
 		_activeBuilding = index;
 		if (!_activeBuildings[index]){
-			_woodCost.text = _buildingCosts[index]._woodCost.ToString();
-			_stoneCost.text = _buildingCosts[index]._stoneCost.ToString();
-			_ironCost.text = _buildingCosts[index]._ironCost.ToString();
-			_coalCost.text = _buildingCosts[index]._coalCost.ToString();
+			_cost.text = _buildingCosts[index]._cost.ToString();
 			_buildName.text = _buildingCosts[index]._name;
 			_buildDesc.text = _buildingCosts[index]._desc;
 			_preReqs.text = (_buildingCosts[index]._preReq > 0) ? _preReqs.text = _buildingCosts[_buildingCosts[index]._preReq]._name : null;
@@ -136,10 +130,7 @@ public class TownCanvas : MonoBehaviour {
 			_buildButton.interactable = _affordable;
 		}
 		else{
-			_woodCost.text = null;
-			_stoneCost.text = null;
-			_ironCost.text = null;
-			_coalCost.text = null;
+			_cost.text = null;
 			_buildName.text = _buildingCosts[index]._name;
 			_buildDesc.text = _buildDesc.text = _buildingCosts[index]._desc;
 			_preReqs.text = null;	
@@ -149,10 +140,7 @@ public class TownCanvas : MonoBehaviour {
 	}
 
 	public void PurchaseBuilding(){
-		_manager._resources[0] -= _buildingCosts[_activeBuilding]._woodCost;
-		_manager._resources[1] -= _buildingCosts[_activeBuilding]._stoneCost;
-		_manager._resources[2] -= _buildingCosts[_activeBuilding]._ironCost;
-		_manager._resources[3] -= _buildingCosts[_activeBuilding]._coalCost;
+		_manager._obols -= _buildingCosts[_activeBuilding]._cost;
 		WM_UI.UpdateUI();
 		_activeBuildings[_activeBuilding] = true;
 		_buildingGOs[_activeBuilding].SetActive(true);
@@ -163,12 +151,9 @@ public class TownCanvas : MonoBehaviour {
 
 	void CheckAffordability(int buildingType){
 		var increment = 0;
-		if (_manager._resources[0] >= _buildingCosts[buildingType]._woodCost) increment++;
-		if (_manager._resources[1] >= _buildingCosts[buildingType]._stoneCost) increment++;
-		if (_manager._resources[2] >= _buildingCosts[buildingType]._ironCost) increment++;
-		if (_manager._resources[3] >= _buildingCosts[buildingType]._coalCost) increment++;
+		if (_manager._obols >= _buildingCosts[buildingType]._cost) increment++;
 		if (_activeBuildings[_buildingCosts[buildingType]._preReq]) increment++;
-		_affordable = (increment == 5);
+		_affordable = (increment == 2);
 	}
 
 	void PopulateBuildings(){
