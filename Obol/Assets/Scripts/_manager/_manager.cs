@@ -31,8 +31,6 @@ public class _manager : MonoBehaviour {
 		_prices.Add(0);
 		_prices.Add(0);
 
-		_obols = 1000;
-
 		DontDestroyOnLoad(gameObject);
 	}
 }

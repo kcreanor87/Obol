@@ -19,7 +19,7 @@ public class Combat_UI : MonoBehaviour {
 	public Sprite _winSprite;
 	public Sprite _lossSprite;
 	public float _size = 50.0f;
-	public float _timer = 2.0f;
+	public float _timer = 3.0f;
 	public bool _switch;
 	public bool _imageActive = true;
 	public GameObject _startText;
@@ -109,7 +109,7 @@ public class Combat_UI : MonoBehaviour {
 
 	void EnlargeSprite(){
 		if (!_switch){
-			if (_size <= 150.0f){
+			if (_size <= 260.0f){
 				_size += 10.0f;
 				_activeGO.GetComponent<RectTransform>().sizeDelta = new Vector2(900, _size);
 			}

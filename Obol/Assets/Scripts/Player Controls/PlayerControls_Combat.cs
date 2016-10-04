@@ -78,7 +78,10 @@ public class PlayerControls_Combat : MonoBehaviour {
 					if (hit.collider.tag != "Resource"){
 						_indicator.SetActive(true);
 						_indicator.transform.position = hit.point;	
-					}									
+					}
+					else{
+						_indicator.SetActive(false);
+					}						
 					_agent.SetDestination(transform.position);
 					_anim.SetBool("Running", false);
 					_anim.SetBool("Aim", true);
