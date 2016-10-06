@@ -7,7 +7,7 @@ public class Combat_UI : MonoBehaviour {
 	public Text _boneEndTxt, _ironEndTxt, _sulphurEndTxt, _crystalEndTxt;
 	public Text _bonePrice, _ironPrice, _sulphurPrice, _crystalPrice, _obols;
 	public RectTransform _hpBar;
-	public int _hpMax = 560; 
+	public int _hpMax = 580; 
 	public CombatCounters _counter;
 	public GameObject _damageText;
 	public bool _gameOver;
@@ -28,6 +28,8 @@ public class Combat_UI : MonoBehaviour {
 	public bool _addResources;
 	public int _resIndex;
 	public bool _ticker;
+	public Text _currentHP;
+	public Text _maxHP;
 
 	// Use this for initialization
 	void Start () {	
@@ -47,6 +49,8 @@ public class Combat_UI : MonoBehaviour {
 		_obols.text = _manager._obols.ToString();
 		_blackout = GameObject.Find("Blackout");
 		_blackout.SetActive(false);
+		_currentHP = GameObject.Find("CurrentHP").GetComponent<Text>();
+		_maxHP = GameObject.Find("MaxHP").GetComponent<Text>();
 		_activeGO = _startGO;
 		_gameOverImage = _endGO.GetComponent<Image>();
 		_endGO.SetActive(false);
@@ -78,10 +82,17 @@ public class Combat_UI : MonoBehaviour {
 		_ironTxt.text = "" + _counter._resources[1];
 		_sulphurTxt.text = "" + _counter._resources[2];
 		_crystalTxt.text = "" + _counter._resources[3];
+		if (_CombatManager._currentHealth > 0){
+			_currentHP.text = _CombatManager._currentHealth.ToString();
+			_maxHP.text = _CombatManager._maxHealth.ToString();
+		}
+		else{
+			_currentHP.text = "0";
+		}		
 		_enemiesTxt.text = (_counter._totalEnemies - _counter._enemiesKilled).ToString();
 		_resTxt.text = (_counter._resourcesAvailable - _counter._resourcesCollected).ToString();
 		var HPwidth = (float) ((float)_CombatManager._currentHealth / _CombatManager._maxHealth) * _hpMax;
-		_hpBar.sizeDelta = new Vector2(HPwidth, 23);
+		_hpBar.sizeDelta = new Vector2(HPwidth, 130);
 		if (_counter._resourcesCollected >= _counter._resourcesAvailable && _counter._enemiesKilled >= _counter._totalEnemies){
 			GameOver(true);
 		}

@@ -36,7 +36,7 @@ public class Projectiles : MonoBehaviour {
 				break;
 				case "Enemy":
 				Explode();
-				var enemyScript = col.GetComponentInParent<EnemyWM>();
+				var enemyScript = col.GetComponentInParent<EnemyAI>();
 				if (enemyScript._health > 0){
 					enemyScript.BeenHit(_damage);
 				}			
