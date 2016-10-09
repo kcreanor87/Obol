@@ -89,13 +89,10 @@ public class Combat_UI : MonoBehaviour {
 		else{
 			_currentHP.text = "0";
 		}		
-		_enemiesTxt.text = (_counter._totalEnemies - _counter._enemiesKilled).ToString();
+		_enemiesTxt.text = _counter._totalEnemies.ToString();
 		_resTxt.text = (_counter._resourcesAvailable - _counter._resourcesCollected).ToString();
 		var HPwidth = (float) ((float)_CombatManager._currentHealth / _CombatManager._maxHealth) * _hpMax;
 		_hpBar.sizeDelta = new Vector2(HPwidth, 130);
-		if (_counter._resourcesCollected >= _counter._resourcesAvailable && _counter._enemiesKilled >= _counter._totalEnemies){
-			GameOver(true);
-		}
 	}
 
 	public void DamageText(Transform target, int damage, bool playerHit){

@@ -7,7 +7,7 @@ public class CombatCounters : MonoBehaviour {
 	public int _resourcesCollected;
 	public int _enemiesSpawned;
 	public int _enemiesKilled;
-	public int _totalEnemies = 100;
+	public int _totalEnemies;
 	public int _spawnPoints;
 
 	public List <int> _resources = new List <int>();

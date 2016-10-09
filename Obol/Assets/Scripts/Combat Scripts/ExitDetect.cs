@@ -32,7 +32,7 @@ public class ExitDetect : MonoBehaviour {
 	}
 
 	public void Escape(){
-		_ui.GameOver(true);
+		_ui.GameOver(_counters._resourcesCollected >= _counters._resourcesAvailable);
 		_escapePrompt.SetActive(false);
 	}
 

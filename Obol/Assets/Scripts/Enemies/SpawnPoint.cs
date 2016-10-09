@@ -23,7 +23,7 @@ public class SpawnPoint : MonoBehaviour {
 		var ScreenPos = Camera.main.WorldToScreenPoint(transform.position);
 		_spawnOnScreen = ((ScreenPos.x <= Screen.width && ScreenPos.x >= 0) && (ScreenPos.y <= Screen.height && ScreenPos.y >= 0));
 		//Has the spawn limit been reached?
-		if (!(_counterScript._enemiesSpawned >= _counterScript._totalEnemies)){
+		if (!(_counterScript._resourcesCollected >= _counterScript._resourcesAvailable)){
 			if (!_spawnOnScreen){			
 				CheckRNG();
 			}
@@ -48,7 +48,7 @@ public class SpawnPoint : MonoBehaviour {
 		var enemyType = Random.Range(0, _enemyDatabase.Count);
 		Instantiate(_enemyDatabase[enemyType], transform.position, Quaternion.identity);
 		_spawned++;
-		if (_spawned > (_counterScript._totalEnemies /( _counterScript._spawnPoints*2))) _timer = 5.0f;
+		if (_counterScript._resourcesCollected >= ( _counterScript._resourcesAvailable/2)) _timer = 5.0f;
 		StartCoroutine(Timer(_timer));		
 	}
 

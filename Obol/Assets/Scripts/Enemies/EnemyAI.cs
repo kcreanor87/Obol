@@ -33,8 +33,10 @@ public class EnemyAI : MonoBehaviour {
 		_counter = GameObject.Find("Counters").GetComponent<CombatCounters>();
 		_ui = GameObject.Find("UI").GetComponent<Combat_UI>();
 		_agent.enabled = true;	
-		_attackGO.SetActive(false);
-		_deathGO.SetActive(false);
+		if (_exploder){
+			_attackGO.SetActive(false);
+			_deathGO.SetActive(false);
+		}		
 		ChasePlayer();		
 	}
 
@@ -77,7 +79,6 @@ public class EnemyAI : MonoBehaviour {
 			var dist = Vector3.Distance(transform.position, _player.transform.position);
 			if (dist > _range){
 				_attacking = false;
-				_anim.SetBool("Aim", false);
 				_anim.SetBool("Attack", false);		
 				ChasePlayer();
 			} 
@@ -85,17 +86,18 @@ public class EnemyAI : MonoBehaviour {
 				if (!_ranged){
 					_player.BeenHit(_damage);	
 				}
+				yield return new WaitForSeconds(0.25f);
 				AttackStart();
 			}
 		}
 		else{
-			_agent.Stop();
+			_agent.enabled = false;
 			_attackGO.SetActive(true);
 			_mainGO.SetActive(false);
 			_col.enabled = false;
 			Instantiate(_exploderProjectile, transform.position, Quaternion.identity);
 			_attacking = false;	
-			_counter._enemiesKilled++;
+			_counter._totalEnemies++;
 			_ui.UpdateUI();	
 			StartCoroutine(Die());
 		}	
@@ -107,8 +109,8 @@ public class EnemyAI : MonoBehaviour {
 		_attacking = false;
 		if (_health <= 0){
 			StopAllCoroutines();			
-			_agent.Stop();
-			_counter._enemiesKilled++;
+			_agent.enabled = false;
+			_counter._totalEnemies++;
 			_ui.UpdateUI();	
 			_col.enabled = false;			
 			if (_exploder){				
@@ -120,9 +122,6 @@ public class EnemyAI : MonoBehaviour {
 				_anim.SetBool("Dead", true);
 			}
 			StartCoroutine(Die());
-		}
-		else{
-			ChasePlayer();
 		}
 	}
 
