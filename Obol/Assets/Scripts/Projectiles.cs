@@ -14,6 +14,8 @@ public class Projectiles : MonoBehaviour {
 	public float _radius = 6.5f;
 	public bool _hit;
 	public bool _enemyShot;
+	public bool _exploder;
+	public float _timer = 5.0f;
 	
 	void Start(){
 		_damage = Random.Range(_minDam, _maxDam);
@@ -50,7 +52,16 @@ public class Projectiles : MonoBehaviour {
 				break;
 				case "Player":
 				Explode();
-				_player.BeenHit(_damage);		
+				_player.BeenHit(_damage);
+				break;
+				case "Enemy":
+				if (_exploder){
+					Explode();
+					var enemyScript = col.GetComponentInParent<EnemyAI>();
+					if (enemyScript._health > 0){
+						enemyScript.BeenHit(_damage);
+					}
+				}
 				break;
 			}
 		}
@@ -71,5 +82,9 @@ public class Projectiles : MonoBehaviour {
 				Destroy(gameObject);
 			}			
 		}
+		else{
+			_timer -= Time.deltaTime;
+			if (_timer <= 0.0f) Explode();
+		}		
 	}
 }
