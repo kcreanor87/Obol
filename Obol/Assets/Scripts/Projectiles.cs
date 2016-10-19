@@ -27,6 +27,7 @@ public class Projectiles : MonoBehaviour {
 	}
 	void OnTriggerEnter(Collider col){
 		if (!_enemyShot){
+			print (col.name);
 			switch(col.tag){
 				case "Ground":
 				if (!_hit) Explode();
@@ -38,10 +39,23 @@ public class Projectiles : MonoBehaviour {
 				break;
 				case "Enemy":
 				Explode();
-				var enemyScript = col.GetComponentInParent<EnemyAI>();
-				if (enemyScript._health > 0){
-					enemyScript.BeenHit(_damage);
-				}			
+				if (col.gameObject.name == "Warden_Parent"){
+					var wardenScript = col.GetComponentInParent<WardenAI>();
+					if (wardenScript._health > 0){
+						wardenScript.BeenHit(_damage);
+					}
+				}
+				else{
+					var enemyScript = col.GetComponentInParent<EnemyAI>();
+					if (enemyScript._health > 0){
+						enemyScript.BeenHit(_damage);
+					}
+				}				
+				break;
+				case "Destructible":
+				if (!_hit) Explode();
+				var destScript = col.GetComponent<Destructibles>();
+				destScript.BeenHit(_damage);	
 				break;
 			}
 		}

@@ -15,6 +15,7 @@ public class PlayerControls_Combat : MonoBehaviour {
 	public Combat_UI _ui;
 	public Transform _textSpawn;
 	public GameObject _indicator;
+	public float _healTimer = 0.1f;
 
 	// Use this for initialization
 	void Start () {		
@@ -34,12 +35,12 @@ public class PlayerControls_Combat : MonoBehaviour {
 		_shooting = transform.FindChild("Launcher").GetComponent<Shooting>();
 		_agent = gameObject.GetComponent<NavMeshAgent>();
 		_agent.enabled = true;
-		_agent.Stop();	
 	}
 
 	void DetectInput(){
 		DetectMove();
-		DetectAim();		
+		DetectAim();
+		Heal();		
 	}
 
 	void DetectMove(){
@@ -50,7 +51,6 @@ public class PlayerControls_Combat : MonoBehaviour {
 				if (hit.collider.tag == "Ground"){
 					float dist = Vector3.Distance(hit.point, transform.position);
 					if (dist > 1.0f){
-						_agent.Resume();
 						_agent.SetDestination(hit.point);
 						_anim.SetBool("Aim", false);
 						_anim.SetBool("Running", true);
@@ -74,8 +74,8 @@ public class PlayerControls_Combat : MonoBehaviour {
 			RaycastHit hit;
 			Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
 			if (Physics.Raycast(ray, out hit, 100f, _layerMask)){
-				if (hit.collider.tag == "Ground" || hit.collider.tag == "Resource" || hit.collider.tag == "Enemy"){
-					if (hit.collider.tag != "Resource"){
+				if (hit.collider.tag == "Ground" || hit.collider.tag == "Resource" || hit.collider.tag == "Enemy" || hit.collider.tag == "Destructible"){
+					if (hit.collider.tag != "Resource" && hit.collider.tag != "Destructible"){
 						_indicator.SetActive(true);
 						_indicator.transform.position = hit.point;	
 					}
@@ -110,14 +110,19 @@ public class PlayerControls_Combat : MonoBehaviour {
         	_shooting.CalcVelocity(target);
         	StartCoroutine(FireRate());       					
         }
-        else if (go.tag == "Resource"){
+        else if (go.tag == "Resource" || go.tag == "Destructible"){
        		var h = 3 + go.transform.position.y;
        		var _aimTarget = new Vector3(go.transform.position.x, h, go.transform.position.z);
        		_shooting.CalcVelocity(_aimTarget);
        		StartCoroutine(FireRate());
        	}
         else if (go.tag == "Enemy"){
-        	_shooting.CalcVelocity(go.transform.parent.position);
+        	if (go.name == "Warden_Parent"){
+        		_shooting.CalcVelocity(go.transform.GetChild(1).position);
+        	}
+        	else{
+        		_shooting.CalcVelocity(go.transform.parent.position);
+        	}        	
         	StartCoroutine(FireRate());
         }		
 	}
@@ -137,5 +142,18 @@ public class PlayerControls_Combat : MonoBehaviour {
 			_anim.SetBool("Dead", true);
 			_ui.GameOver(false);
 		}
+	}
+
+	void Heal(){
+		if (!_moving && !_firing){
+			if (_CombatManager._currentHealth < _CombatManager._maxHealth){
+				_healTimer -= Time.deltaTime;
+				if (_healTimer <= 0){
+					_CombatManager._currentHealth ++;
+					_healTimer = 0.1f;
+					_ui.UpdateUI();
+				}
+			}			
+		}		
 	}
 }

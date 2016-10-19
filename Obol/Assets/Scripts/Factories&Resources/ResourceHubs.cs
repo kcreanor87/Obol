@@ -4,8 +4,6 @@ using System.Collections.Generic;
 public class ResourceHubs : MonoBehaviour {
 
 	public int _health = 100;
-	public int _type;
-	public int _resContained = 10;
 
 	public MeshRenderer _renderer;
 	public Collider _col;
