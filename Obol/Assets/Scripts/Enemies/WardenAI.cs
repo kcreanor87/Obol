@@ -17,19 +17,24 @@ public class WardenAI : MonoBehaviour {
 	public Transform _textSpawn;
 	public Collider _col;
 	public Collider _scytheCol;
+	public Collider _burstCol;
 	public ParticleSystem _bladePart;
+	public ParticleSystem _burstPart;
 	public bool _spawned;
 	public GameObject _wardenTxt;
 	public Text _currentHPText;
 	public Text _maxHPText;
+	public Animator _doorAnim;
 
 	void Start(){
+		_doorAnim = GameObject.Find("MerchantsCrypt").GetComponent<Animator>();
 		_wardenTxt.SetActive(true);
 		_maxHPText.text = _health.ToString();
 		_currentHPText.text = _health.ToString();
 		_anim = transform.GetChild(0).GetComponentInChildren<Animator>();
 		_col = transform.GetChild(0).GetComponentInChildren<Collider>();
 		_scytheCol.enabled = false;
+		_burstCol.enabled = false;
 		_textSpawn = transform.FindChild("TextSpawn");		
 		_agent = gameObject.GetComponent<NavMeshAgent>();
 		_player = GameObject.Find("Player").GetComponent<PlayerControls_Combat>();
@@ -55,6 +60,9 @@ public class WardenAI : MonoBehaviour {
 	void AttackStart(){
 		StartCoroutine(Attack());
 	}
+	void Attack2Start(){
+		StartCoroutine(Attack2());
+	}
 
 	public IEnumerator ChaseLoop(float looptime){		
 		yield return new WaitForSeconds(looptime);
@@ -73,14 +81,13 @@ public class WardenAI : MonoBehaviour {
 		print("Wind Up");
 		_agent.SetDestination(transform.position);
 		_anim.SetBool("Attack", true);
-		yield return new WaitForSeconds(2.0f);			
+		yield return new WaitForSeconds(1.3f);			
 		_agent.SetDestination(_player.transform.position);
-		print ("Attack");		
-		yield return new WaitForSeconds(0.20f);
-		_agent.speed = 250.0f;				
-		_scytheCol.enabled = true;
-		_agent.speed = 12.0f;
-		yield return new WaitForSeconds(0.5f);		
+		yield return new WaitForSeconds(0.9f);
+		_agent.speed = 500.0f;				
+		_scytheCol.enabled = true;		
+		yield return new WaitForSeconds(0.5f);
+		_agent.speed = 12.0f;		
 		_agent.SetDestination(transform.position);		
 		yield return new WaitForSeconds(0.4f);
 		_scytheCol.enabled = false;
@@ -88,9 +95,40 @@ public class WardenAI : MonoBehaviour {
 		_anim.SetBool("Attack", false);
 		_attacking = true;
 		_agent.SetDestination(_player.transform.position);
-		yield return new WaitForSeconds(2.0f);			
+		yield return new WaitForSeconds(1.0f);			
 		var dist = Vector3.Distance(transform.position, _player.transform.position);
-		if (dist <= _range){
+		if (dist <= 5.0f){
+			Attack2Start();
+		}
+		else if (dist <= _range){
+			AttackStart();
+		}
+		else{
+			ChasePlayer();
+		}
+	}
+
+	public IEnumerator Attack2(){
+		_attacking = false;
+		print ("Attack2");
+		_agent.SetDestination(transform.position);
+		_anim.SetBool("Attack2", true);
+		yield return new WaitForSeconds(1.5f);
+		_burstCol.enabled = true;
+		_burstPart.Play();
+		_bladePart.Stop();
+		yield return new WaitForSeconds(1.16f);
+		_burstCol.enabled = false;
+		yield return new WaitForSeconds(1.16f);		
+		_bladePart.Play();
+		_anim.SetBool("Attack2", false);
+		_attacking = true;
+		yield return new WaitForSeconds(1.0f);
+		var dist = Vector3.Distance(transform.position, _player.transform.position);
+		if (dist <= 5.0f){
+			Attack2Start();
+		}
+		else if (dist <= _range){
 			AttackStart();
 		}
 		else{
@@ -112,6 +150,7 @@ public class WardenAI : MonoBehaviour {
 			_anim.SetBool("Dead", true);
 			_bladePart.Stop();
 			Destroy(_wardenTxt);
+			_doorAnim.SetBool("Open", true);
 		}
 	}
 

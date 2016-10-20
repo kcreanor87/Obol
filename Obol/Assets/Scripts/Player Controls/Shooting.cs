@@ -22,8 +22,13 @@ public class Shooting : MonoBehaviour {
 		dist += h/Mathf.Tan(a);
 		var vel = Mathf.Sqrt(dist * Physics.gravity.magnitude / Mathf.Sin(2*a));
 		_velocity = vel * dir.normalized;
+		SpawnProjectile();		
+	}
+
+	public void ShootStraight(Vector3 target){
+		var dir = target - transform.position;
+		_velocity = dir * 5;
 		SpawnProjectile();
-		
 	}
 
 	void SpawnProjectile(){

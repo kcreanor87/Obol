@@ -106,8 +106,14 @@ public class PlayerControls_Combat : MonoBehaviour {
 	}
 
 	void Shoot(GameObject go, Vector3 target){
+		var dist = Vector3.Distance(transform.position, target);	
 		if (go.tag == "Ground"){
-        	_shooting.CalcVelocity(target);
+			if (dist <= 4.0f){
+				_shooting.ShootStraight(target);
+			}
+			else{
+        		_shooting.CalcVelocity(target);
+        	}
         	StartCoroutine(FireRate());       					
         }
         else if (go.tag == "Resource" || go.tag == "Destructible"){
@@ -118,7 +124,16 @@ public class PlayerControls_Combat : MonoBehaviour {
        	}
         else if (go.tag == "Enemy"){
         	if (go.name == "Warden_Parent"){
-        		_shooting.CalcVelocity(go.transform.GetChild(1).position);
+        		if (dist <= 10.0f){
+        			_shooting.ShootStraight(go.transform.GetChild(1).position);
+        		}
+        		else{
+        			_shooting.CalcVelocity(go.transform.GetChild(1).position);
+        		}
+        		
+        	}
+        	else if (dist <= 5.0f){
+        		_shooting.ShootStraight(go.transform.parent.position);
         	}
         	else{
         		_shooting.CalcVelocity(go.transform.parent.position);
@@ -145,14 +160,13 @@ public class PlayerControls_Combat : MonoBehaviour {
 	}
 
 	void Heal(){
-		if (!_moving && !_firing){
-			if (_CombatManager._currentHealth < _CombatManager._maxHealth){
-				_healTimer -= Time.deltaTime;
-				if (_healTimer <= 0){
-					_CombatManager._currentHealth ++;
-					_healTimer = 0.1f;
-					_ui.UpdateUI();
-				}
+		if (_CombatManager._currentHealth < _CombatManager._maxHealth){
+			_healTimer -= Time.deltaTime;
+			if (_healTimer <= 0){
+				_CombatManager._currentHealth += (!_moving && !_firing) ? 2 : 1;
+				if (_CombatManager._currentHealth > _CombatManager._maxHealth) _CombatManager._currentHealth = _CombatManager._maxHealth;
+				_healTimer = 0.1f;
+				_ui.UpdateUI();
 			}			
 		}		
 	}
