@@ -27,7 +27,6 @@ public class Projectiles : MonoBehaviour {
 	}
 	void OnTriggerEnter(Collider col){
 		if (!_enemyShot){
-			print (col.name);
 			switch(col.tag){
 				case "Ground":
 				if (!_hit) Explode();
