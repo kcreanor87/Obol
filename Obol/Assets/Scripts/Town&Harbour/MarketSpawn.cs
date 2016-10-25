@@ -5,7 +5,7 @@ public class MarketSpawn : MonoBehaviour {
 
 	public List <float> _basePrice = new List <float>();
 	public List <int> _buyPrices = new List <int>();
- 	public Transform _player;
+	public List <int> _sellPrices = new List<int>();
 	public float _rumourMod = 1.0f;
 	public int _rumourType;
 
@@ -24,6 +24,7 @@ public class MarketSpawn : MonoBehaviour {
 		}
 		for (int i = 0; i < _basePrice.Count; i++){
 			_buyPrices.Add(Mathf.FloorToInt(_basePrice[i]));
+			_sellPrices.Add(Mathf.FloorToInt(_basePrice[i]));
 		}
 	}
 	
@@ -40,11 +41,6 @@ public class MarketSpawn : MonoBehaviour {
 		for (int i = 0; i < _basePrice.Count; i++){
 			_buyPrices[i] = Mathf.FloorToInt(_basePrice[i]);
 		}
-
-		_manager._prices[0] = _buyPrices[0];
-		_manager._prices[1] = _buyPrices[1];
-		_manager._prices[2] = _buyPrices[2];
-		_manager._prices[3] = _buyPrices[3];
 
 		for (int i = 0; i < _manager._prices.Count; i++){
 			print(_manager._prices[i]);

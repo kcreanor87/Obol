@@ -25,7 +25,6 @@ public class Combat_UI : MonoBehaviour {
 	public GameObject _startText;
 	public ExitDetect _exitDetect;	
 	public GameObject _blackout;
-	public bool _addResources;
 	public int _resIndex;
 	public bool _ticker;
 	public Text _currentHP;
@@ -37,14 +36,6 @@ public class Combat_UI : MonoBehaviour {
 		_ironEndTxt = GameObject.Find("IronCollected").GetComponent<Text>();
 		_sulphurEndTxt = GameObject.Find("SulphurCollected").GetComponent<Text>();
 		_crystalEndTxt = GameObject.Find("CrystalCollected").GetComponent<Text>();
-		_bonePrice = GameObject.Find("BonePrice").GetComponent<Text>();
-		_bonePrice.text = "X " + _manager._prices[0];	
-		_ironPrice = GameObject.Find("IronPrice").GetComponent<Text>();
-		_ironPrice.text = "X " + _manager._prices[1];	
-		_sulphurPrice = GameObject.Find("SulphurPrice").GetComponent<Text>();
-		_sulphurPrice.text = "X " + _manager._prices[2];	
-		_crystalPrice = GameObject.Find("CrystalPrice").GetComponent<Text>();
-		_crystalPrice.text = "X " + _manager._prices[3];
 		_obols = GameObject.Find("CurrentObols").GetComponent<Text>();
 		_obols.text = _manager._obols.ToString();
 		_blackout = GameObject.Find("Blackout");
@@ -71,9 +62,6 @@ public class Combat_UI : MonoBehaviour {
 	void Update (){
 		if (_imageActive){
 			EnlargeSprite();
-		}
-		if (_addResources){
-			CollectWinnings();
 		}
 	}
 	
@@ -112,7 +100,6 @@ public class Combat_UI : MonoBehaviour {
 		_imageActive = true;
 		_gameOverImage.sprite = (_victory) ? _winSprite : _lossSprite;		
 		_activeGO.SetActive(true);
-		AddResources();
 	}
 
 	void EnlargeSprite(){
@@ -150,42 +137,5 @@ public class Combat_UI : MonoBehaviour {
 				Time.timeScale = 0.0f;		
 			}
 		}			
-	}
-
-	void AddResources(){
-		_addResources = true;
-		_boneEndTxt.text = (_victory) ? _counter._resources[0].ToString() : "0";
-		_ironEndTxt.text = (_victory) ? _counter._resources[1].ToString() : "0";
-		_sulphurEndTxt.text = (_victory) ? _counter._resources[2].ToString() : "0";
-		_crystalEndTxt.text = (_victory) ? _counter._resources[3].ToString() : "0";
-		_obols.text = _manager._obols.ToString();
-	}
-
-	void CollectWinnings(){
-		if (!_victory){
-			_resIndex = _manager._prices.Count;
-			_addResources = false;
-			_exitDetect.ExitPrompt();
-		}
-		if (_ticker){
-			if (_counter._resources[_resIndex] > 0){
-				if (_victory){
-					_counter._resources[_resIndex]--;
-					_manager._obols += _manager._prices[_resIndex];
-					AddResources();
-				}				
-			}
-			else{
-				_resIndex++;
-			}
-			if(_resIndex >= _manager._prices.Count){
-				_addResources = false;
-				_exitDetect.ExitPrompt();
-			}
-			_ticker = false;
-		}
-		else{
-			_ticker = true;
-		}		
 	}
 }

@@ -12,10 +12,14 @@ public class PlayerControls_NonCombat : MonoBehaviour {
 	public bool _moving;
 	public bool _firing;
 	public string _target;
-	public Combat_UI _ui;
+	public NonCombat_UI _ui;
 	public Transform _textSpawn;
 	public GameObject _indicator;
 	public float _healTimer = 0.1f;
+	public Transform _posA, _posB;
+
+	public bool _moveToNPC;
+	public int _npcIndex;
 
 	// Use this for initialization
 	void Start () {		
@@ -28,9 +32,10 @@ public class PlayerControls_NonCombat : MonoBehaviour {
 	}
 
 	void Spawn(){
+		transform.position = NewGame._newGame ? _posA.position : _posB.position;
 		_indicator = GameObject.Find("Indicator");
 		_textSpawn = transform.Find("TextSpawn");
-		_ui = GameObject.Find("UI").GetComponent<Combat_UI>();
+		_ui = GameObject.Find("Non-Combat UI").GetComponent<NonCombat_UI>();
 		_anim = gameObject.GetComponentInChildren<Animator>();
 		_shooting = transform.FindChild("Launcher").GetComponent<Shooting>();
 		_agent = gameObject.GetComponent<NavMeshAgent>();
@@ -52,9 +57,20 @@ public class PlayerControls_NonCombat : MonoBehaviour {
 					float dist = Vector3.Distance(hit.point, transform.position);
 					if (dist > 1.0f){
 						_agent.SetDestination(hit.point);
-						_anim.SetBool("Aim", false);
 						_anim.SetBool("Running", true);
 						_moving = true;
+						_moveToNPC = false;
+					}
+				}
+				else if (hit.collider.tag == "NPC"){
+					_agent.SetDestination(hit.transform.FindChild("PlayerPos").position);
+					_moveToNPC = true;
+					_anim.SetBool("Running", true);
+					_moving = true;
+					switch (hit.collider.name){
+						case "Merchant":
+						_npcIndex = 1;
+						break;
 					}
 				}		
 			}
@@ -65,6 +81,10 @@ public class PlayerControls_NonCombat : MonoBehaviour {
 				_agent.SetDestination(transform.position);
 				_anim.SetBool("Running", false);
 				_moving = false;
+				if (_moveToNPC){
+					_ui.OpenCanvas(_npcIndex);
+					_moveToNPC = false;
+				}
 			}
 		}
 	}
@@ -146,17 +166,6 @@ public class PlayerControls_NonCombat : MonoBehaviour {
 		_firing = true;
 		yield return new WaitForSeconds(_CombatManager._equipRanged._fireRate);
 		_firing = false;
-	}
-
-	public void BeenHit(int damage){
-		_CombatManager._currentHealth -= damage;
-		_ui.DamageText(_textSpawn, damage, true);
-		_ui.UpdateUI();
-		if (_CombatManager._currentHealth <= 0){
-			_agent.Stop();
-			_anim.SetBool("Dead", true);
-			_ui.GameOver(false);
-		}
 	}
 
 	void Heal(){

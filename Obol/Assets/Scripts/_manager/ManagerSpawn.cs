@@ -11,6 +11,7 @@ public class ManagerSpawn : MonoBehaviour {
 		if (GameObject.Find("_manager") == null){
 			var _mPrefab =  (GameObject) Instantiate(_managerPrefab, transform.position, Quaternion.identity);
 			_mPrefab.name = "_manager";
-		}	
+		}
+		NewGame._newGame = true;
 	}
 }

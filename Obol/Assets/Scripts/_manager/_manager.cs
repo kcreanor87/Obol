@@ -23,13 +23,6 @@ public class _manager : MonoBehaviour {
 		_resources.Add(1000);
 		_resources.Add(1000);
 		_resources.Add(1000);
-		_resources.Add(0);
-		_resources.Add(0);
-
-		_prices.Add(0);
-		_prices.Add(0);
-		_prices.Add(0);
-		_prices.Add(0);
 
 		DontDestroyOnLoad(gameObject);
 	}
