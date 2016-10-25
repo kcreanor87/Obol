@@ -52,7 +52,6 @@ public class PlayerControls_Combat : MonoBehaviour {
 					float dist = Vector3.Distance(hit.point, transform.position);
 					if (dist > 1.0f){
 						_agent.SetDestination(hit.point);
-						_anim.SetBool("Aim", false);
 						_anim.SetBool("Running", true);
 						_moving = true;
 					}
@@ -84,7 +83,6 @@ public class PlayerControls_Combat : MonoBehaviour {
 					}						
 					_agent.SetDestination(transform.position);
 					_anim.SetBool("Running", false);
-					_anim.SetBool("Aim", true);
 					_moving = false;
 					Quaternion newRotation = Quaternion.LookRotation(hit.point - transform.position);
 					newRotation.x = 0f;
@@ -93,14 +91,14 @@ public class PlayerControls_Combat : MonoBehaviour {
         			if (Input.GetMouseButton(0) && !_firing){
         				Shoot(hit.collider.gameObject, hit.point);
         			}
-        			if (Input.GetMouseButtonDown(0) && !_firing){
+        			if (Input.GetMouseButtonDown(0) && !_firing){        				
         				Shoot(hit.collider.gameObject, hit.point);
         			}
 				}					
 			}			
 		}		
 		if (Input.GetMouseButtonUp(1)){
-			_anim.SetBool("Aim", false);
+			_anim.SetBool("Attack", false);
 			_indicator.SetActive(false);
 		}	
 	}
@@ -139,13 +137,15 @@ public class PlayerControls_Combat : MonoBehaviour {
         		_shooting.CalcVelocity(go.transform.parent.position);
         	}        	
         	StartCoroutine(FireRate());
-        }		
+        }	
+        _anim.SetBool("Attack", true);	
 	}
 
 	public IEnumerator FireRate(){
 		_firing = true;
 		yield return new WaitForSeconds(_CombatManager._equipRanged._fireRate);
 		_firing = false;
+		_anim.SetBool("Attack", false);
 	}
 
 	public void BeenHit(int damage){

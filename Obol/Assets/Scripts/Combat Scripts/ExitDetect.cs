@@ -37,7 +37,6 @@ public class ExitDetect : MonoBehaviour {
 	}
 
 	public void Exit(){
-		_saveGame.CombatOverSave();
 		SaveGame._combat = false;
 		Time.timeScale = 1.0f;
 		_manager._combatOver = true;

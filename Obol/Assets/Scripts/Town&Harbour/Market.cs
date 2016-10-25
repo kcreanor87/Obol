@@ -45,7 +45,6 @@ public class Market : MonoBehaviour {
 			_manager._resources[resource] += _multiple;
 			_manager._obols -= (_marketSpawn._buyPrices[resource] * _multiple);
 			UpdatePrices();
-			WM_UI.UpdateUI();
 		}		
 	}
 

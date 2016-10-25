@@ -1,9 +1,7 @@
 ﻿using UnityEngine;
 
 public class SaveGame : MonoBehaviour {
-
-	public RumourGenerator _rumourScript;
-	public TownCanvas _townCanvas;
+	
 	public MarketSpawn _marketSpawn;
 	public static bool _combat;
 
@@ -16,14 +14,10 @@ public class SaveGame : MonoBehaviour {
 	}
 
 	void PopulateLists(){
-		_rumourScript = GameObject.Find("TownCanvas").GetComponent<RumourGenerator>();
-		_townCanvas = GameObject.Find("TownCanvas").GetComponent<TownCanvas>();
 		_marketSpawn = GameObject.Find("TownCanvas").GetComponent<MarketSpawn>();
 	}
 
 	public void Save(){
-		SaveTownStatus();
-		SavePlayerResources();
 		SaveCombatStats();
 		SavePrices();
 		NewGame._newGame = false;
@@ -31,10 +25,7 @@ public class SaveGame : MonoBehaviour {
 
 	public void Load(){
 		LoadPrices();
-		LoadTownStatus();
 		LoadCombatStats();
-		LoadPlayerResources();
-		LoadRumour();	
 	}
 
 	void SavePrices(){
@@ -48,54 +39,6 @@ public class SaveGame : MonoBehaviour {
 		for (int i = 0; i < PlayerPrefs.GetInt("Resource Count"); i++){
 			_marketSpawn._basePrice.Add(PlayerPrefs.GetFloat("Price" + i));
 		}	
-	}
-
-	void SaveTownStatus(){
-		PlayerPrefs.SetInt("Total Buildings", 0);
-		for (int i = 0; i < _townCanvas._activeBuildings.Count; i++){
-			PlayerPrefs.SetInt("Active Buildings" + i, (_townCanvas._activeBuildings[i] ? 1 : 0));
-			PlayerPrefs.SetInt("Total Buildings", PlayerPrefs.GetInt("Total Buildings") + 1);
-		}				
-	}
-
-	void LoadTownStatus(){
-		for (int i = 0; i < PlayerPrefs.GetInt("Total Buildings"); i++){
-			_townCanvas._activeBuildings.Add(PlayerPrefs.GetInt("Active Buildings" + i) > 0);
-		}
-	}
-
-	void SavePlayerResources(){
-		for (int i = 0; i < _manager._resources.Count; i++){
-			PlayerPrefs.SetInt("Resource" + i, _manager._resources[i]);
-		}
-		PlayerPrefs.SetInt("Obols", _manager._obols);
-		for (int i = 0; i < _manager._factoryOuput.Count; i++){
-			PlayerPrefs.SetInt("Output" + i, _manager._factoryOuput[i]);
-		}
-	}
-
-	void LoadPlayerResources(){
-		for (int i = 0; i < _manager._resources.Count; i++){
-			_manager._resources[i] = PlayerPrefs.GetInt("Resource" + i);
-		}
-		_manager._obols = PlayerPrefs.GetInt("Obols");
-		for (int i = 0; i < _manager._factoryOuput.Count; i++){
-			_manager._factoryOuput[i] = PlayerPrefs.GetInt("Output" + i);
-		}
-	}
-
-	void SaveRumour(){
-		PlayerPrefs.SetFloat("Value", _rumourScript._value);
-		PlayerPrefs.SetInt("RumourActive", (_rumourScript._rumourActive ?1: 0));
-		PlayerPrefs.SetInt("RumourType", _rumourScript._loadedRumourType);
-		PlayerPrefs.SetInt("Increase", (_rumourScript._increase ? 1 : 0));
-	}
-
-	void LoadRumour(){
-		_rumourScript._rumourActive = (PlayerPrefs.GetInt("RumourActive") > 0);
-		_rumourScript._loadedRumourType = PlayerPrefs.GetInt("RumourType");
-		_rumourScript._increase = (PlayerPrefs.GetInt("Increase") > 0);
-		_rumourScript._value = PlayerPrefs.GetFloat("Value");
 	}
 
 	void SaveCombatStats(){
@@ -127,9 +70,5 @@ public class SaveGame : MonoBehaviour {
 			}
 		}
 		_CombatManager.CalculateStats();
-	}
-
-	public void CombatOverSave(){
-		SavePlayerResources();
 	}
 }
