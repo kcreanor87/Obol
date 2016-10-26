@@ -17,7 +17,7 @@ public class PlayerControls_NonCombat : MonoBehaviour {
 	public GameObject _indicator;
 	public float _healTimer = 0.1f;
 	public Transform _posA, _posB;
-
+	public SaveGame _saveGame;
 	public bool _moveToNPC;
 	public int _npcIndex;
 
@@ -40,6 +40,7 @@ public class PlayerControls_NonCombat : MonoBehaviour {
 		_shooting = transform.FindChild("Launcher").GetComponent<Shooting>();
 		_agent = gameObject.GetComponent<NavMeshAgent>();
 		_agent.enabled = true;
+		_saveGame = GameObject.Find("Loader").GetComponent<SaveGame>();
 	}
 
 	void DetectInput(){
@@ -60,6 +61,7 @@ public class PlayerControls_NonCombat : MonoBehaviour {
 						_anim.SetBool("Running", true);
 						_moving = true;
 						_moveToNPC = false;
+						_ui.CloseCanvas(_npcIndex);
 					}
 				}
 				else if (hit.collider.tag == "NPC"){
@@ -67,9 +69,25 @@ public class PlayerControls_NonCombat : MonoBehaviour {
 					_moveToNPC = true;
 					_anim.SetBool("Running", true);
 					_moving = true;
+					_ui.CloseCanvas(_npcIndex);
 					switch (hit.collider.name){
 						case "Merchant":
 						_npcIndex = 1;
+						break;
+						case "Smith":
+						_npcIndex = 2;
+						break;
+						case "Priest":
+						_npcIndex = 3;
+						break;
+						case "Librarian":
+						_npcIndex = 4;
+						break;
+						case "Thief":
+						_npcIndex = 5;
+						break;
+						case "Portal":
+						_npcIndex = 6;
 						break;
 					}
 				}		

@@ -10,6 +10,7 @@ public class NonCombat_UI : MonoBehaviour {
 	public GameObject _damageText;
 	public Text _currentHP;
 	public Text _maxHP;
+	public SaveGame _saveGame;
 
 	public List <GameObject> _canvases = new List <GameObject>();
 
@@ -23,6 +24,7 @@ public class NonCombat_UI : MonoBehaviour {
 		_ironTxt = GameObject.Find("IronTxt").GetComponent<Text>();
 		_silverTxt = GameObject.Find("SilverTxt").GetComponent<Text>();
 		_crystalTxt = GameObject.Find("CrystalTxt").GetComponent<Text>();
+		_saveGame = GameObject.Find("Loader").GetComponent<SaveGame>();
 		UpdateUI();
 		for (int i = 0; i < _canvases.Count; i++){
 			_canvases[i].SetActive(false);
@@ -45,6 +47,7 @@ public class NonCombat_UI : MonoBehaviour {
 
 	public void CloseCanvas(int index){
 		_canvases[index].SetActive(false);
-		_canvases[0].SetActive(true);		
+		_canvases[0].SetActive(true);
+		_saveGame.Save();	
 	}
 }

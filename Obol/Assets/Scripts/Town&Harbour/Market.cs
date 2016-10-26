@@ -30,7 +30,7 @@ public class Market : MonoBehaviour {
 		_stock2 = GameObject.Find("SilverVolume").GetComponent<Text>();
 		_stock3 = GameObject.Find("CrystalVolume").GetComponent<Text>();
 
-		_obols = GameObject.Find("ObolStock").GetComponent<Text>();
+		_obols = GameObject.Find("MerchObols").GetComponent<Text>();
 
 		_multipleText = GameObject.Find("Multiply").GetComponent<Text>();
 

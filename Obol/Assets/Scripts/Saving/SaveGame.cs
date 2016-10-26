@@ -6,26 +6,42 @@ public class SaveGame : MonoBehaviour {
 	public static bool _combat;
 
 	void Awake(){
-		if (!_combat){
-			PopulateLists();
-			if (!NewGame._newGame) Load();
-			else PlayerPrefs.DeleteAll();
-		}		
+		PopulateLists();
+		if (!NewGame._newGame) Load();
+		else {
+			PlayerPrefs.DeleteAll();
+		}
 	}
 
 	void PopulateLists(){
-		_marketSpawn = GameObject.Find("TownCanvas").GetComponent<MarketSpawn>();
+		_marketSpawn = GameObject.Find("MerchantScreen").GetComponent<MarketSpawn>();
 	}
 
 	public void Save(){
 		SaveCombatStats();
 		SavePrices();
+		SaveResources();
 		NewGame._newGame = false;
 	}
 
 	public void Load(){
 		LoadPrices();
+		LoadResources();
 		LoadCombatStats();
+	}
+
+	void SaveResources(){
+		for (int i = 0; i < _manager._resources.Count; i++){
+			PlayerPrefs.SetInt("Resources" + i, _manager._resources[i]);
+		}
+		PlayerPrefs.SetInt("Obols", _manager._obols);
+	}
+
+	void LoadResources(){
+		for (int i = 0; i < _manager._resources.Count; i++){
+			_manager._resources[i] = PlayerPrefs.GetInt("Resources" + i);
+		}
+		_manager._obols = PlayerPrefs.GetInt("Obols");
 	}
 
 	void SavePrices(){

@@ -9,6 +9,13 @@ public class _manager : MonoBehaviour {
 	public static List <int> _prices = new List <int>();
 	public static bool _combatOver;
 
+	public static int _portal;
+	public static int _level;
+
+	public static List <bool> _activeLevels = new List <bool>();
+	public static List <int> _activePortals = new List <int>();
+
+
 	public static List <int> _factoryOuput = new List<int>();
 
 	void Awake(){
@@ -23,6 +30,12 @@ public class _manager : MonoBehaviour {
 		_resources.Add(1000);
 		_resources.Add(1000);
 		_resources.Add(1000);
+
+		_manager._activeLevels.Add(true);
+		_manager._activeLevels.Add(true);
+
+		_manager._activePortals.Add(0);
+		_manager._activePortals.Add(0);
 
 		DontDestroyOnLoad(gameObject);
 	}

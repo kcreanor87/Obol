@@ -23,6 +23,8 @@ public class Combat_UI : MonoBehaviour {
 	public bool _switch;
 	public bool _imageActive = true;
 	public GameObject _startText;
+	public GameObject _portalCanvas;
+	public GameObject _mainUI;
 	public ExitDetect _exitDetect;	
 	public GameObject _blackout;
 	public int _resIndex;
@@ -40,6 +42,9 @@ public class Combat_UI : MonoBehaviour {
 		_obols.text = _manager._obols.ToString();
 		_blackout = GameObject.Find("Blackout");
 		_blackout.SetActive(false);
+		_portalCanvas = GameObject.Find("PortalScreen");
+		_portalCanvas.SetActive(false);
+		_mainUI = GameObject.Find("MainUI");
 		_currentHP = GameObject.Find("CurrentHP").GetComponent<Text>();
 		_maxHP = GameObject.Find("MaxHP").GetComponent<Text>();
 		_activeGO = _startGO;
@@ -66,10 +71,10 @@ public class Combat_UI : MonoBehaviour {
 	}
 	
 	public void UpdateUI(){
-		_boneTxt.text = "" + _counter._resources[0];
-		_ironTxt.text = "" + _counter._resources[1];
-		_sulphurTxt.text = "" + _counter._resources[2];
-		_crystalTxt.text = "" + _counter._resources[3];
+		_boneTxt.text = "" + _manager._resources[0];
+		_ironTxt.text = "" + _manager._resources[1];
+		_sulphurTxt.text = "" + _manager._resources[2];
+		_crystalTxt.text = "" + _manager._resources[3];
 		if (_CombatManager._currentHealth > 0){
 			_currentHP.text = _CombatManager._currentHealth.ToString();
 			_maxHP.text = _CombatManager._maxHealth.ToString();
@@ -137,5 +142,17 @@ public class Combat_UI : MonoBehaviour {
 				Time.timeScale = 0.0f;		
 			}
 		}			
+	}
+	public void OpenCanvas(int index){
+		switch (index){
+			case 0:
+			_portalCanvas.SetActive(true);
+			_mainUI.SetActive(false);
+			break;
+			case 1:
+			_portalCanvas.SetActive(false);
+			_mainUI.SetActive(true);
+			break;
+		}
 	}
 }

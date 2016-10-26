@@ -41,9 +41,5 @@ public class MarketSpawn : MonoBehaviour {
 		for (int i = 0; i < _basePrice.Count; i++){
 			_buyPrices[i] = Mathf.FloorToInt(_basePrice[i]);
 		}
-
-		for (int i = 0; i < _manager._prices.Count; i++){
-			print(_manager._prices[i]);
-		}
 	}
 }

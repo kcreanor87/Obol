@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 
 public class PlayerControls_Combat : MonoBehaviour {
 
@@ -16,6 +17,8 @@ public class PlayerControls_Combat : MonoBehaviour {
 	public Transform _textSpawn;
 	public GameObject _indicator;
 	public float _healTimer = 0.1f;
+	public bool _moveToNPC;
+	public List <Transform> _startPos = new List <Transform>();
 
 	// Use this for initialization
 	void Start () {		
@@ -28,6 +31,7 @@ public class PlayerControls_Combat : MonoBehaviour {
 	}
 
 	void Spawn(){
+		transform.position = _startPos[_manager._portal].position;
 		_indicator = GameObject.Find("Indicator");
 		_textSpawn = transform.Find("TextSpawn");
 		_ui = GameObject.Find("UI").GetComponent<Combat_UI>();
@@ -54,8 +58,15 @@ public class PlayerControls_Combat : MonoBehaviour {
 						_agent.SetDestination(hit.point);
 						_anim.SetBool("Running", true);
 						_moving = true;
+						_moveToNPC = false;
 					}
-				}		
+				}
+				else if (hit.collider.tag == "NPC"){
+					_agent.SetDestination(hit.transform.FindChild("PlayerPos").position);
+					_moveToNPC = true;
+					_anim.SetBool("Running", true);
+					_moving = true;
+				}	
 			}
 		}
 		if (_moving){
@@ -64,12 +75,17 @@ public class PlayerControls_Combat : MonoBehaviour {
 				_agent.SetDestination(transform.position);
 				_anim.SetBool("Running", false);
 				_moving = false;
+				if (_moveToNPC){
+					_ui.OpenCanvas(0);
+					_moveToNPC = false;
+				}
 			}
 		}
 	}
 
 	void DetectAim(){
 		if (Input.GetMouseButton(1)){
+			_moveToNPC = false;
 			RaycastHit hit;
 			Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
 			if (Physics.Raycast(ray, out hit, 100f, _layerMask)){
