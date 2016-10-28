@@ -1,0 +1,222 @@
+﻿using UnityEngine;
+using System.Collections;
+using UnityEngine.UI;
+
+public class Smith : MonoBehaviour {
+
+	public GameObject _weaponScreen, _armourScreen, _headSlots, _chestSlots, _legSlots;
+	//Armour text
+	public Text _currentName, _currentDef, _currentWgt, _upgradeName, _upgradeDef, _upgradeWgt;
+	//Weapon Text
+	public Text _currentDam, _currentFR, _currentRad, _weapName, _upWeapName, _upDam, _upFR, _upRad;
+	//Plyare stat Text
+	public Text _totalDef, _totalHP, _equipDam, _equipFR, _equipRad;
+	public Text _armourCost, _weaponCost;
+	public int _activeItem;
+	public int _activeSlot;
+	public int _cost;
+	public Button _upgradeButton;
+
+	void Awake(){
+		_upgradeButton = GameObject.Find("Upgrade").GetComponent<Button>();	
+
+		_currentDef = GameObject.Find("CurrentDef").GetComponent<Text>();
+		_currentWgt = GameObject.Find("CurrentWgt").GetComponent<Text>();
+		_currentName = GameObject.Find("CurrentName").GetComponent<Text>();
+		_upgradeDef = GameObject.Find("UpgradedDef").GetComponent<Text>();
+		_upgradeWgt = GameObject.Find("UpgradedWgt").GetComponent<Text>();
+		_upgradeName = GameObject.Find("UpgradedName").GetComponent<Text>();
+
+		_currentDam = GameObject.Find("CurrentDam").GetComponent<Text>();
+		_currentFR = GameObject.Find("CurrentFR").GetComponent<Text>();
+		_currentRad = GameObject.Find("CurrentRad").GetComponent<Text>();
+		_weapName = GameObject.Find("WeaponName").GetComponent<Text>();
+		_upWeapName = GameObject.Find("UpgWeaponName").GetComponent<Text>();
+		_upDam = GameObject.Find("UpgradedDam").GetComponent<Text>();
+		_upFR = GameObject.Find("UpgradedFR").GetComponent<Text>();
+		_upRad = GameObject.Find("UpgradedRad").GetComponent<Text>();
+
+		_totalDef = GameObject.Find("TotalDef").GetComponent<Text>();
+		_totalHP = GameObject.Find("TotalHP").GetComponent<Text>();
+		_equipDam = GameObject.Find("EquipDam").GetComponent<Text>();
+		_equipFR = GameObject.Find("EquipFR").GetComponent<Text>();
+		_equipRad = GameObject.Find("EquipRad").GetComponent<Text>();
+
+		_armourScreen.SetActive(false);
+		_headSlots.SetActive(false);
+		_chestSlots.SetActive(false);
+		_legSlots.SetActive(false);
+	}
+	void Start(){
+		UpdateStats();
+		UpgradeInfo();
+	}
+
+	void UpdateStats(){
+		_totalDef.text = _CombatManager._armourRating.ToString();
+		_totalHP.text = _CombatManager._maxHealth.ToString();
+		_equipDam.text = _CombatManager._rangedDam.ToString();
+		_equipFR.text = _CombatManager._fireRate.ToString();
+		_equipRad.text = _CombatManager._radius.ToString();
+
+		UpgradeInfo();
+	}
+
+	public void EquipWeapon(int i){
+		_CombatManager._equipRanged = _CombatManager._weaponDb._rangedDatabase[i];
+		_activeSlot = 1;
+		_activeItem = i;
+		_CombatManager._itemsEquipped[0] = _CombatManager._itemLevels[_activeItem];
+		_CombatManager.CalculateStats();
+		UpdateStats();
+	}
+
+	public void EquipHeadSlot(int i){
+		_CombatManager._headSlot = _CombatManager._armourDb._headDatabase[i + 1];
+		_activeSlot = 2;
+		_activeItem = 4 + i;
+		_CombatManager._itemsEquipped[1] = _CombatManager._itemLevels[_activeItem];
+		_CombatManager.CalculateStats();
+		UpdateStats();
+	}
+
+	public void EquipChestSlot(int i){
+		_CombatManager._chestSlot = _CombatManager._armourDb._chestDatabase[i + 1];
+		_activeSlot = 3;
+		_activeItem = 8 + i;
+		_CombatManager._itemsEquipped[2] = _CombatManager._itemLevels[_activeItem];
+		_CombatManager.CalculateStats();
+		UpdateStats();
+	}
+
+	public void EquipLegSlot(int i){
+		_CombatManager._legSlot = _CombatManager._armourDb._legDatabase[i + 1];
+		_activeSlot = 4;
+		_activeItem = 12 + i;
+		_CombatManager._itemsEquipped[3] = _CombatManager._itemLevels[_activeItem];
+		_CombatManager.CalculateStats();
+		UpdateStats();
+	}
+
+	public void ToggleScreens(int i){
+		UpdateStats();
+		_armourScreen.SetActive(i > 0);
+		_weaponScreen.SetActive(i == 0);
+		_headSlots.SetActive(i == 1);
+		_chestSlots.SetActive(i == 2);
+		_legSlots.SetActive(i == 3);
+		_activeSlot = 0;
+	}
+
+	public void UpgradeItem(){
+		_CombatManager._itemLevels[_activeItem]++;
+		_CombatManager._itemsEquipped[_activeSlot - 1] = _activeItem;
+		print(_CombatManager._itemLevels[_activeItem]);
+		print(_CombatManager._itemsEquipped[_activeSlot - 1]);
+		_CombatManager.CalculateStats();
+		UpdateStats();
+	}
+
+	void UpgradeInfo(){
+		if (_activeSlot > 0) _upgradeButton.interactable = (_CombatManager._itemLevels[_activeItem] <= 10);
+		switch (_activeSlot){
+			//Default
+			case 0:
+			_currentName.text = "-";
+			_currentDef.text = "-";
+			_currentWgt.text = "-";
+			_upgradeDef.text = "-";
+			_upgradeName.text = "-";
+			_upgradeWgt.text = "-";
+			break;
+			//Weapon slot
+			case 1:
+			if (_CombatManager._itemLevels[_activeItem] <= 10){
+				_upWeapName.text = _CombatManager._equipRanged._name + " +" + (_CombatManager._itemLevels[_CombatManager._itemsEquipped[_activeSlot - 1]]);
+				_upDam.text = (_CombatManager._equipRanged._dam * (0.9f + (_CombatManager._itemLevels[_CombatManager._itemsEquipped[0]] + 1) * 0.1f)).ToString();
+				_upFR.text = _CombatManager._fireRate.ToString();
+				_upRad.text = _CombatManager._radius.ToString();
+			}
+			else{
+				_upWeapName.text = "-";
+				_upDam.text = "-";
+				_upFR.text = "-";
+				_upRad.text ="-";
+			}
+			if (_CombatManager._itemLevels[_activeItem] > 1){
+				_weapName.text = _CombatManager._equipRanged._name + " +" + (_CombatManager._itemLevels[_CombatManager._itemsEquipped[_activeSlot - 1]] - 1);
+			}
+			else{
+				_weapName.text = _CombatManager._equipRanged._name;
+			} 
+			_currentDam.text = _CombatManager._rangedDam.ToString();
+			_currentFR.text = _CombatManager._fireRate.ToString();
+			_currentRad.text = _CombatManager._radius.ToString();
+			break;
+			//Head slot
+			case 2:
+			if (_CombatManager._itemLevels[_activeItem] <= 10){				
+				_upgradeName.text = _CombatManager._headSlot._name + " +" + (_CombatManager._itemLevels[_CombatManager._itemsEquipped[_activeSlot - 1]]);
+				_upgradeDef.text = Mathf.FloorToInt(_CombatManager._headSlot._armourBonus * (0.9f + (_CombatManager._itemLevels[_activeItem] + 1) * 0.1f)).ToString();
+				_upgradeWgt.text = _CombatManager._headSlot._weight.ToString();
+			}
+			else{
+				_upgradeDef.text = "-";
+				_upgradeName.text = "-";
+				_upgradeWgt.text = "-";
+			}
+			if (_CombatManager._itemLevels[_activeItem] > 1){
+				_currentName.text = _CombatManager._headSlot._name + " +" + (_CombatManager._itemLevels[_CombatManager._itemsEquipped[_activeSlot - 1]] -1);
+				}
+			else{
+				_currentName.text = _CombatManager._headSlot._name;
+			}			
+			_currentDef.text = _CombatManager._headBonus.ToString();
+			_currentWgt.text = _CombatManager._headSlot._weight.ToString();
+			break;
+			//Chest slot
+			case 3:
+			if (_CombatManager._itemLevels[_activeItem] <= 10){				
+				_upgradeName.text = _CombatManager._chestSlot._name + " +" + (_CombatManager._itemLevels[_CombatManager._itemsEquipped[_activeSlot - 1]]);
+				_upgradeDef.text = Mathf.FloorToInt(_CombatManager._chestSlot._armourBonus * (0.9f + (_CombatManager._itemLevels[_activeItem] + 1) * 0.1f)).ToString();
+				_upgradeWgt.text = _CombatManager._chestSlot._weight.ToString();
+			}
+			else{
+				_upgradeDef.text = "-";
+				_upgradeName.text = "-";
+				_upgradeWgt.text = "-";
+			}
+			if (_CombatManager._itemLevels[_activeItem] > 1){
+				_currentName.text = _CombatManager._chestSlot._name + " +" + (_CombatManager._itemLevels[_CombatManager._itemsEquipped[_activeSlot - 1]] -1);
+				}
+			else{
+				_currentName.text = _CombatManager._chestSlot._name;
+			}			
+			_currentDef.text = _CombatManager._chestBonus.ToString();
+			_currentWgt.text = _CombatManager._chestSlot._weight.ToString();
+			break;
+			//Leg Slot
+			case 4:
+			if (_CombatManager._itemLevels[_activeItem] <= 10){				
+				_upgradeName.text = _CombatManager._legSlot._name + " +" + (_CombatManager._itemLevels[_CombatManager._itemsEquipped[_activeSlot - 1]]);
+				_upgradeDef.text = Mathf.FloorToInt(_CombatManager._legSlot._armourBonus * (0.9f + (_CombatManager._itemLevels[_activeItem] + 1) * 0.1f)).ToString();
+				_upgradeWgt.text = _CombatManager._legSlot._weight.ToString();
+			}
+			else{
+				_upgradeDef.text = "-";
+				_upgradeName.text = "-";
+				_upgradeWgt.text = "-";
+			}
+			if (_CombatManager._itemLevels[_activeItem] > 1){
+				_currentName.text = _CombatManager._legSlot._name + " +" + (_CombatManager._itemLevels[_CombatManager._itemsEquipped[_activeSlot - 1]] -1);
+				}
+			else{
+				_currentName.text = _CombatManager._legSlot._name;
+			}			
+			_currentDef.text = _CombatManager._legBonus.ToString();
+			_currentWgt.text = _CombatManager._legSlot._weight.ToString();
+			break;
+
+		}
+	}
+}

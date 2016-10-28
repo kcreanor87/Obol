@@ -14,8 +14,12 @@ public class NonCombat_UI : MonoBehaviour {
 
 	public List <GameObject> _canvases = new List <GameObject>();
 
+	public Camera _smithCamera;
+
 	// Use this for initialization
 	void Start () {	
+		_smithCamera = GameObject.Find("SmithCamera").GetComponent<Camera>();
+		_smithCamera.enabled = false;
 		_obols = GameObject.Find("CurrentObols").GetComponent<Text>();		
 		_currentHP = GameObject.Find("CurrentHP").GetComponent<Text>();
 		_maxHP = GameObject.Find("MaxHP").GetComponent<Text>();
@@ -43,9 +47,11 @@ public class NonCombat_UI : MonoBehaviour {
 	public void OpenCanvas(int index){
 		_canvases[0].SetActive(false);
 		_canvases[index].SetActive(true);
+		_smithCamera.enabled = (index == 2);
 	}
 
 	public void CloseCanvas(int index){
+		_smithCamera.enabled = false;
 		_canvases[index].SetActive(false);
 		_canvases[0].SetActive(true);
 		_saveGame.Save();	

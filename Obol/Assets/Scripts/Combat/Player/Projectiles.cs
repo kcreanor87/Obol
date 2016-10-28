@@ -24,6 +24,7 @@ public class Projectiles : MonoBehaviour {
 		_projectile = gameObject.GetComponent<MeshRenderer>();
 		_col = gameObject.GetComponentInParent<SphereCollider>();
 		if (_enemyShot) _player = GameObject.FindWithTag("Player").GetComponent<PlayerControls_Combat>();
+		_damage = _CombatManager._rangedDam;
 	}
 	void OnTriggerEnter(Collider col){
 		if (!_enemyShot){
@@ -37,18 +38,22 @@ public class Projectiles : MonoBehaviour {
 				resScript.BeenHit(_damage);
 				break;
 				case "Enemy":
-				Explode();
-				if (col.gameObject.name == "Warden_Parent"){
-					var wardenScript = col.GetComponentInParent<WardenAI>();
-					if (wardenScript._health > 0){
-						wardenScript.BeenHit(_damage);
-					}
-				}
+				if (!_hit){
+					Explode();					
+				}				
 				else{
-					var enemyScript = col.GetComponentInParent<EnemyAI>();
-					if (enemyScript._health > 0){
-						enemyScript.BeenHit(_damage);
+					if (col.gameObject.name == "Warden_Parent"){
+						var wardenScript = col.GetComponentInParent<WardenAI>();
+						if (wardenScript._health > 0){
+						wardenScript.BeenHit(_damage);
+						}
 					}
+					else{
+						var enemyScript = col.GetComponentInParent<EnemyAI>();
+						if (enemyScript._health > 0){
+							enemyScript.BeenHit(_damage);
+						}
+					}					
 				}				
 				break;
 				case "Destructible":
@@ -86,7 +91,7 @@ public class Projectiles : MonoBehaviour {
 		_trail.Stop();
 		_projectile.enabled = false;
 		_hit = true;
-		_col.radius = _radius;
+		_col.radius = _CombatManager._equipRanged._radius;
 	}
 
 	void Update(){

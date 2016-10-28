@@ -187,7 +187,7 @@ public class PlayerControls_NonCombat : MonoBehaviour {
 	}
 
 	public IEnumerator FireRate(){
-		_firing = true;
+		_firing = true;		
 		yield return new WaitForSeconds(_CombatManager._equipRanged._fireRate);
 		_firing = false;
 		_anim.SetBool("Attack", false);

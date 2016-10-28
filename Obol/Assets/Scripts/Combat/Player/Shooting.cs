@@ -4,12 +4,27 @@ public class Shooting : MonoBehaviour {
 
 	public Transform _spawn;
 	public Vector3 _velocity;
-	public GameObject _projectile;
+	public GameObject _projectileA, _projectileB, _projectileC, _projectileD;
+	public GameObject _activeProjectile;
 	public ParticleSystem _launchParticle;
 
 	void Start(){
 		_spawn = transform.FindChild("LauncherSpawn").GetComponentInChildren<Transform>();
 		_launchParticle = _spawn.GetComponentInChildren<ParticleSystem>();
+		switch (_CombatManager._equipRanged._id){
+			case 200:
+			_activeProjectile = _projectileA;
+			break;
+			case 201:
+			_activeProjectile = _projectileB;
+			break;
+			case 202:
+			_activeProjectile = _projectileC;
+			break;
+			case 203:
+			_activeProjectile = _projectileD;
+			break;
+		}
 	}
 
 	public void CalcVelocity(Vector3 target){
@@ -33,7 +48,7 @@ public class Shooting : MonoBehaviour {
 
 	void SpawnProjectile(){
 		_launchParticle.Play();
-		var projectile = (GameObject) Instantiate(_projectile, _spawn.position, transform.rotation);
+		var projectile = (GameObject) Instantiate(_activeProjectile, _spawn.position, transform.rotation);
 		var rb = projectile.GetComponent<Rigidbody>();
 		rb.velocity = _velocity;
 	}
