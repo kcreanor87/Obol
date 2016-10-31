@@ -15,10 +15,25 @@ public class Smith : MonoBehaviour {
 	public int _activeItem;
 	public int _activeSlot;
 	public int _cost;
-	public Button _upgradeButton;
+	public bool _affordable;
+	public Shooting _shooting;
+	public Button _weapUpgradeButton;
+	public Button _armUpgradeButton;
+
+	public NonCombat_UI _ui;
 
 	void Awake(){
-		_upgradeButton = GameObject.Find("Upgrade").GetComponent<Button>();	
+		_weapUpgradeButton = GameObject.Find("WeaponUpgrade").GetComponent<Button>();	
+		_armUpgradeButton = GameObject.Find("ArmourUpgrade").GetComponent<Button>();
+		_weapUpgradeButton.interactable = false;
+		_armUpgradeButton.interactable = false;
+
+		_ui = GameObject.Find("Non-Combat UI").GetComponent<NonCombat_UI>();
+
+		_shooting = GameObject.Find("Launcher").GetComponent<Shooting>();	
+
+		_armourCost = GameObject.Find("ArmourCost").GetComponent<Text>();
+		_weaponCost = GameObject.Find("WeaponCost").GetComponent<Text>();
 
 		_currentDef = GameObject.Find("CurrentDef").GetComponent<Text>();
 		_currentWgt = GameObject.Find("CurrentWgt").GetComponent<Text>();
@@ -49,7 +64,6 @@ public class Smith : MonoBehaviour {
 	}
 	void Start(){
 		UpdateStats();
-		UpgradeInfo();
 	}
 
 	void UpdateStats(){
@@ -58,15 +72,30 @@ public class Smith : MonoBehaviour {
 		_equipDam.text = _CombatManager._rangedDam.ToString();
 		_equipFR.text = _CombatManager._fireRate.ToString();
 		_equipRad.text = _CombatManager._radius.ToString();
-
+		CalculateCost();
 		UpgradeInfo();
+		_shooting.SwitchProjectile();
+	}
+
+	void CalculateCost(){
+		if (_activeSlot > 0 && _CombatManager._itemLevels[_activeItem] <= 10){
+			_cost = (_CombatManager._itemLevels[_activeItem] * 1000);
+			_weaponCost.text = _cost.ToString();
+			_armourCost.text = _cost.ToString();
+		}
+		else{
+			_weaponCost.text = "-";
+			_armourCost.text = "-";
+		}
+		_affordable = (_manager._obols >= _cost);
+		
 	}
 
 	public void EquipWeapon(int i){
 		_CombatManager._equipRanged = _CombatManager._weaponDb._rangedDatabase[i];
 		_activeSlot = 1;
 		_activeItem = i;
-		_CombatManager._itemsEquipped[0] = _CombatManager._itemLevels[_activeItem];
+		_CombatManager._itemsEquipped[0] = _activeItem;
 		_CombatManager.CalculateStats();
 		UpdateStats();
 	}
@@ -75,7 +104,7 @@ public class Smith : MonoBehaviour {
 		_CombatManager._headSlot = _CombatManager._armourDb._headDatabase[i + 1];
 		_activeSlot = 2;
 		_activeItem = 4 + i;
-		_CombatManager._itemsEquipped[1] = _CombatManager._itemLevels[_activeItem];
+		_CombatManager._itemsEquipped[1] = _activeItem;
 		_CombatManager.CalculateStats();
 		UpdateStats();
 	}
@@ -84,7 +113,7 @@ public class Smith : MonoBehaviour {
 		_CombatManager._chestSlot = _CombatManager._armourDb._chestDatabase[i + 1];
 		_activeSlot = 3;
 		_activeItem = 8 + i;
-		_CombatManager._itemsEquipped[2] = _CombatManager._itemLevels[_activeItem];
+		_CombatManager._itemsEquipped[2] = _activeItem;
 		_CombatManager.CalculateStats();
 		UpdateStats();
 	}
@@ -93,32 +122,37 @@ public class Smith : MonoBehaviour {
 		_CombatManager._legSlot = _CombatManager._armourDb._legDatabase[i + 1];
 		_activeSlot = 4;
 		_activeItem = 12 + i;
-		_CombatManager._itemsEquipped[3] = _CombatManager._itemLevels[_activeItem];
+		_CombatManager._itemsEquipped[3] = _activeItem;
 		_CombatManager.CalculateStats();
 		UpdateStats();
 	}
 
-	public void ToggleScreens(int i){
-		UpdateStats();
+	public void ToggleScreens(int i){	
+		_activeSlot = 0;
+		_weapUpgradeButton.interactable = false;
+		_armUpgradeButton.interactable = false;		
+		UpdateStats();	
 		_armourScreen.SetActive(i > 0);
 		_weaponScreen.SetActive(i == 0);
 		_headSlots.SetActive(i == 1);
 		_chestSlots.SetActive(i == 2);
 		_legSlots.SetActive(i == 3);
-		_activeSlot = 0;
 	}
 
 	public void UpgradeItem(){
+		_manager._obols -= _cost;
+		_ui.UpdateUI();
 		_CombatManager._itemLevels[_activeItem]++;
 		_CombatManager._itemsEquipped[_activeSlot - 1] = _activeItem;
-		print(_CombatManager._itemLevels[_activeItem]);
-		print(_CombatManager._itemsEquipped[_activeSlot - 1]);
 		_CombatManager.CalculateStats();
 		UpdateStats();
 	}
 
 	void UpgradeInfo(){
-		if (_activeSlot > 0) _upgradeButton.interactable = (_CombatManager._itemLevels[_activeItem] <= 10);
+		if (_activeSlot > 0){
+			_weapUpgradeButton.interactable = ((_CombatManager._itemLevels[_activeItem] <= 10) && _affordable);
+			_armUpgradeButton.interactable = ((_CombatManager._itemLevels[_activeItem] <= 10) && _affordable);
+		} 
 		switch (_activeSlot){
 			//Default
 			case 0:
@@ -144,7 +178,7 @@ public class Smith : MonoBehaviour {
 				_upRad.text ="-";
 			}
 			if (_CombatManager._itemLevels[_activeItem] > 1){
-				_weapName.text = _CombatManager._equipRanged._name + " +" + (_CombatManager._itemLevels[_CombatManager._itemsEquipped[_activeSlot - 1]] - 1);
+				_weapName.text = _CombatManager._equipRanged._name + " +" + (_CombatManager._itemLevels[_activeItem] - 1);
 			}
 			else{
 				_weapName.text = _CombatManager._equipRanged._name;
@@ -156,7 +190,7 @@ public class Smith : MonoBehaviour {
 			//Head slot
 			case 2:
 			if (_CombatManager._itemLevels[_activeItem] <= 10){				
-				_upgradeName.text = _CombatManager._headSlot._name + " +" + (_CombatManager._itemLevels[_CombatManager._itemsEquipped[_activeSlot - 1]]);
+				_upgradeName.text = _CombatManager._headSlot._name + " +" + (_CombatManager._itemLevels[_activeItem] + 1);
 				_upgradeDef.text = Mathf.FloorToInt(_CombatManager._headSlot._armourBonus * (0.9f + (_CombatManager._itemLevels[_activeItem] + 1) * 0.1f)).ToString();
 				_upgradeWgt.text = _CombatManager._headSlot._weight.ToString();
 			}
@@ -166,7 +200,7 @@ public class Smith : MonoBehaviour {
 				_upgradeWgt.text = "-";
 			}
 			if (_CombatManager._itemLevels[_activeItem] > 1){
-				_currentName.text = _CombatManager._headSlot._name + " +" + (_CombatManager._itemLevels[_CombatManager._itemsEquipped[_activeSlot - 1]] -1);
+				_currentName.text = _CombatManager._headSlot._name + " +" + (_CombatManager._itemLevels[_activeItem] -1);
 				}
 			else{
 				_currentName.text = _CombatManager._headSlot._name;

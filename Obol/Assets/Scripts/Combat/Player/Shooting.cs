@@ -7,10 +7,15 @@ public class Shooting : MonoBehaviour {
 	public GameObject _projectileA, _projectileB, _projectileC, _projectileD;
 	public GameObject _activeProjectile;
 	public ParticleSystem _launchParticle;
+	public bool _enemy;
 
 	void Start(){
 		_spawn = transform.FindChild("LauncherSpawn").GetComponentInChildren<Transform>();
 		_launchParticle = _spawn.GetComponentInChildren<ParticleSystem>();
+		if (!_enemy) SwitchProjectile();		
+	}
+
+	public void SwitchProjectile(){
 		switch (_CombatManager._equipRanged._id){
 			case 200:
 			_activeProjectile = _projectileA;

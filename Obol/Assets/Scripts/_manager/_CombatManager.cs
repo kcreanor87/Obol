@@ -22,6 +22,8 @@ public class _CombatManager : MonoBehaviour {
 	//ITEM LEVELS
 	public static List<int> _itemLevels = new List <int>();
 	public static List<int> _itemsEquipped = new List<int>();
+	//ITEM UNLOCKS
+	public static List<bool> _itemsUnlocked = new List <bool>();
 
 	public static int _headBonus;
 	public static int  _chestBonus;
@@ -49,6 +51,10 @@ public class _CombatManager : MonoBehaviour {
 		for (int i = 0; i < 4; i++){
 			_itemsEquipped.Add(0);
 		}
+		for (int i = 0; i < 16; i++){
+			_itemsUnlocked.Add(false);
+		}
+		_itemsUnlocked[0] = true;
 		CalculateStats();		
 	}
 
@@ -63,5 +69,6 @@ public class _CombatManager : MonoBehaviour {
 		_armourRating = _headBonus + _chestBonus + _legBonus;
 		_maxHealth = 700 + 30 *_vit;
 		_currentHealth = _maxHealth;
+		print (_headBonus);
 	}
 }
