@@ -1,5 +1,5 @@
 ﻿using UnityEngine;
-using System.Collections;
+using System.Collections.Generic;
 using UnityEngine.UI;
 
 public class Smith : MonoBehaviour {
@@ -21,6 +21,8 @@ public class Smith : MonoBehaviour {
 	public Button _armUpgradeButton;
 
 	public NonCombat_UI _ui;
+
+	public List <Button> _buttons = new List <Button>();
 
 	void Awake(){
 		_weapUpgradeButton = GameObject.Find("WeaponUpgrade").GetComponent<Button>();	
@@ -64,6 +66,13 @@ public class Smith : MonoBehaviour {
 	}
 	void Start(){
 		UpdateStats();
+		CheckUnlocked();
+	}
+
+	void CheckUnlocked(){
+		for (int i = 0; i < _CombatManager._itemsUnlocked.Count; i++){
+			_buttons[i].interactable = _CombatManager._itemsUnlocked[i];
+		}
 	}
 
 	void UpdateStats(){
@@ -128,6 +137,7 @@ public class Smith : MonoBehaviour {
 	}
 
 	public void ToggleScreens(int i){	
+		CheckUnlocked();
 		_activeSlot = 0;
 		_weapUpgradeButton.interactable = false;
 		_armUpgradeButton.interactable = false;		
