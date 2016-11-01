@@ -43,7 +43,7 @@ public class CharacterCreation : MonoBehaviour {
 	}
 
 	public void SetStats(int index){
-		_CombatManager._vit = _database._chars[index]._vit;
+		_CombatManager._vitBonus = _database._chars[index]._vit;
 		_CombatManager._equipRanged = _weaponDb._rangedDatabase[_database._chars[index]._ranged];
 		_CombatManager._headSlot = _armourDb._headDatabase[_database._chars[index]._head];
 		_CombatManager._chestSlot = _armourDb._chestDatabase[_database._chars[index]._chest];

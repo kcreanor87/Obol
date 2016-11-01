@@ -44,6 +44,8 @@ public class NonCombat_UI : MonoBehaviour {
 		_ironTxt.text = _manager._resources[1].ToString();
 		_silverTxt.text = _manager._resources[2].ToString();
 		_crystalTxt.text = _manager._resources[3].ToString();
+		_currentHP.text = _CombatManager._currentHealth.ToString();
+		_maxHP.text = _CombatManager._maxHealth.ToString();
 	}
 
 	public void OpenCanvas(int index){
@@ -57,6 +59,7 @@ public class NonCombat_UI : MonoBehaviour {
 		_smithCamera.enabled = false;
 		_canvases[index].SetActive(false);
 		_canvases[0].SetActive(true);
-		_saveGame.Save();	
+		_saveGame.Save();
+		UpdateUI();
 	}
 }

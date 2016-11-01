@@ -93,7 +93,7 @@ public class Inventor : MonoBehaviour {
 				_costText.text = "Unlocked!";
 			}
 			else{
-				_unlockButton.interactable = (_manager._resources[_itemType] >= _cost);
+				_unlockButton.interactable = (_manager._resources[i] >= _cost);
 				_costText.text = _cost.ToString();
 				_unlockButton.image.sprite = _buttonSprites[i];
 			}

@@ -116,6 +116,7 @@ public class Smith : MonoBehaviour {
 		_CombatManager._itemsEquipped[1] = _activeItem;
 		_CombatManager.CalculateStats();
 		UpdateStats();
+		if (i < 0) ToggleScreens(1);
 	}
 
 	public void EquipChestSlot(int i){
@@ -125,6 +126,7 @@ public class Smith : MonoBehaviour {
 		_CombatManager._itemsEquipped[2] = _activeItem;
 		_CombatManager.CalculateStats();
 		UpdateStats();
+		if (i < 0) ToggleScreens(2);
 	}
 
 	public void EquipLegSlot(int i){
@@ -132,8 +134,9 @@ public class Smith : MonoBehaviour {
 		_activeSlot = 4;
 		_activeItem = 12 + i;
 		_CombatManager._itemsEquipped[3] = _activeItem;
-		_CombatManager.CalculateStats();
+		_CombatManager.CalculateStats();		
 		UpdateStats();
+		if (i < 0) ToggleScreens(3);
 	}
 
 	public void ToggleScreens(int i){	
@@ -177,7 +180,7 @@ public class Smith : MonoBehaviour {
 			case 1:
 			if (_CombatManager._itemLevels[_activeItem] <= 10){
 				_upWeapName.text = _CombatManager._equipRanged._name + " +" + (_CombatManager._itemLevels[_CombatManager._itemsEquipped[_activeSlot - 1]]);
-				_upDam.text = (_CombatManager._equipRanged._dam * (0.9f + (_CombatManager._itemLevels[_CombatManager._itemsEquipped[0]] + 1) * 0.1f)).ToString();
+				_upDam.text = ((_CombatManager._equipRanged._dam * (0.9f + (_CombatManager._itemLevels[_CombatManager._itemsEquipped[0]] + 1) * 0.1f)) * _CombatManager._attBonus).ToString();
 				_upFR.text = _CombatManager._fireRate.ToString();
 				_upRad.text = _CombatManager._radius.ToString();
 			}
@@ -201,7 +204,7 @@ public class Smith : MonoBehaviour {
 			case 2:
 			if (_CombatManager._itemLevels[_activeItem] <= 10){				
 				_upgradeName.text = _CombatManager._headSlot._name + " +" + (_CombatManager._itemLevels[_activeItem] + 1);
-				_upgradeDef.text = Mathf.FloorToInt(_CombatManager._headSlot._armourBonus * (0.9f + (_CombatManager._itemLevels[_activeItem] + 1) * 0.1f)).ToString();
+				_upgradeDef.text = Mathf.FloorToInt(_CombatManager._headSlot._armourBonus * (0.9f + (_CombatManager._itemLevels[_activeItem] + 1) * 0.1f) * _CombatManager._defBonus).ToString();
 				_upgradeWgt.text = _CombatManager._headSlot._weight.ToString();
 			}
 			else{
@@ -222,7 +225,7 @@ public class Smith : MonoBehaviour {
 			case 3:
 			if (_CombatManager._itemLevels[_activeItem] <= 10){				
 				_upgradeName.text = _CombatManager._chestSlot._name + " +" + (_CombatManager._itemLevels[_CombatManager._itemsEquipped[_activeSlot - 1]]);
-				_upgradeDef.text = Mathf.FloorToInt(_CombatManager._chestSlot._armourBonus * (0.9f + (_CombatManager._itemLevels[_activeItem] + 1) * 0.1f)).ToString();
+				_upgradeDef.text = Mathf.FloorToInt(_CombatManager._chestSlot._armourBonus * (0.9f + (_CombatManager._itemLevels[_activeItem] + 1) * 0.1f) * _CombatManager._defBonus).ToString();
 				_upgradeWgt.text = _CombatManager._chestSlot._weight.ToString();
 			}
 			else{
@@ -243,7 +246,7 @@ public class Smith : MonoBehaviour {
 			case 4:
 			if (_CombatManager._itemLevels[_activeItem] <= 10){				
 				_upgradeName.text = _CombatManager._legSlot._name + " +" + (_CombatManager._itemLevels[_CombatManager._itemsEquipped[_activeSlot - 1]]);
-				_upgradeDef.text = Mathf.FloorToInt(_CombatManager._legSlot._armourBonus * (0.9f + (_CombatManager._itemLevels[_activeItem] + 1) * 0.1f)).ToString();
+				_upgradeDef.text = Mathf.FloorToInt(_CombatManager._legSlot._armourBonus * (0.9f + (_CombatManager._itemLevels[_activeItem] + 1) * 0.1f) * _CombatManager._defBonus).ToString();
 				_upgradeWgt.text = _CombatManager._legSlot._weight.ToString();
 			}
 			else{

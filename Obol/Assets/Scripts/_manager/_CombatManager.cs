@@ -11,7 +11,12 @@ public class _CombatManager : MonoBehaviour {
 	public static int _currentHealth;
 	public static int _rangedDam;
 	public static int _armourRating;
-	public static int _vit;
+
+	//UPGRADABLE STATS
+	public static int _vitBonus;
+	public static int _attBlessings;
+	public static int _defBlessings;
+	public static int _spdBonus;
 
 	//ITEM SLOTS
 	public static Weapon _equipRanged;
@@ -25,12 +30,21 @@ public class _CombatManager : MonoBehaviour {
 	//ITEM UNLOCKS
 	public static List<bool> _itemsUnlocked = new List <bool>();
 
+	public static int _blessings;
+	public static int _availBlessings;
+
 	public static int _headBonus;
 	public static int  _chestBonus;
 	public static int _legBonus;
 
 	public static float _fireRate;
 	public static float _radius;
+
+	public static float _speed;
+	public static float _speedPenalty;
+
+	public static float _attBonus;
+	public static float _defBonus;
 
 	//Scripts accessed
 	public static WeaponDatabase _weaponDb;
@@ -60,15 +74,22 @@ public class _CombatManager : MonoBehaviour {
 
 	//Calculate derivative stats
 	public static void CalculateStats(){
-		_rangedDam = Mathf.FloorToInt(_equipRanged._dam * (0.9f + _itemLevels[_itemsEquipped[0]] * 0.1f));
+		_speedPenalty = _headSlot._weight + _chestSlot._weight + _legSlot._weight;
+		_attBonus = 1.0f + (float) 0.1f * _attBlessings;
+		_defBonus = 1.0f + (float) 0.1f * _defBlessings;
+		_speed = 8.0f + (0.25f * _spdBonus) - _speedPenalty;
+		_rangedDam = Mathf.FloorToInt((_equipRanged._dam * (0.9f + _itemLevels[_itemsEquipped[0]] * 0.1f)) * _attBonus);
 		_fireRate = _equipRanged._fireRate;
 		_radius = _equipRanged._radius;
-		_headBonus = Mathf.FloorToInt(_headSlot._armourBonus * (0.9f + _itemLevels[_itemsEquipped[1]] * 0.1f));
-		_chestBonus = Mathf.FloorToInt(_chestSlot._armourBonus * (0.9f + _itemLevels[_itemsEquipped[2]] * 0.1f));
-		_legBonus = Mathf.FloorToInt(_legSlot._armourBonus * (0.9f + _itemLevels[_itemsEquipped[3]] * 0.1f));
+		_headBonus = Mathf.FloorToInt(_headSlot._armourBonus * (0.9f + _itemLevels[_itemsEquipped[1]] * 0.1f) * _defBonus);
+		_chestBonus = Mathf.FloorToInt(_chestSlot._armourBonus * (0.9f + _itemLevels[_itemsEquipped[2]] * 0.1f) * _defBonus);
+		_legBonus = Mathf.FloorToInt(_legSlot._armourBonus * (0.9f + _itemLevels[_itemsEquipped[3]] * 0.1f) * _defBonus);
 		_armourRating = _headBonus + _chestBonus + _legBonus;
-		_maxHealth = 700 + 30 *_vit;
+		_maxHealth = 700 + 50 *_vitBonus;
 		_currentHealth = _maxHealth;
-		print (_headBonus);
+		print("Head: " + _headSlot._name + " + " + _itemLevels[_itemsEquipped[1]]);
+		print("Chest: " + _chestSlot._name + " + " + _itemLevels[_itemsEquipped[2]]);
+		print("Legs: " + _legSlot._name + " + " + _itemLevels[_itemsEquipped[3]]);
+		print("Weapon: " + _equipRanged._name + " + " + _itemLevels[_itemsEquipped[0]]);
 	}
 }
