@@ -20,9 +20,10 @@ public class PlayerControls_NonCombat : MonoBehaviour {
 	public SaveGame _saveGame;
 	public bool _moveToNPC;
 	public int _npcIndex;
+	public Smith _smith;
 
 	// Use this for initialization
-	void Start () {		
+	void Awake () {		
 		Spawn();
 	}
 	
@@ -32,6 +33,7 @@ public class PlayerControls_NonCombat : MonoBehaviour {
 	}
 
 	void Spawn(){
+		_smith = GameObject.Find("SmithScreen").GetComponent<Smith>();
 		transform.position = NewGame._newGame ? _posA.position : _posB.position;
 		_indicator = GameObject.Find("Indicator");
 		_textSpawn = transform.Find("TextSpawn");

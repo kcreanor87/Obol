@@ -16,6 +16,8 @@ public class Inventor : MonoBehaviour {
 	public Text _costText;
 	public Text _itemName;
 	public Text _itemDesc;
+	
+	public Text _bone, _iron, _silver, _crystal; 
 
 	public int _cost;
 	public int _itemType;
@@ -25,9 +27,21 @@ public class Inventor : MonoBehaviour {
 		_itemName = GameObject.Find("ItemName").GetComponent<Text>();
 		_itemDesc = GameObject.Find("ItemDescription").GetComponent<Text>();
 		_costText = GameObject.Find("UnlockCost").GetComponent<Text>();
+		_bone = GameObject.Find("InventorBone").GetComponent<Text>();
+		_iron = GameObject.Find("InventorIron").GetComponent<Text>();
+		_silver = GameObject.Find("InventorSilver").GetComponent<Text>();
+		_crystal = GameObject.Find("InventorCrystal").GetComponent<Text>();
 		_unlockButton = GameObject.Find("UnlockButton").GetComponent<Button>();
 		_unlockButton.interactable = false;
+		UpdateUI();
 		OpenCanas(0);
+	}
+
+	void UpdateUI(){
+		_bone.text = _manager._resources[0].ToString();
+		_iron.text = _manager._resources[1].ToString();
+		_silver.text = _manager._resources[2].ToString();
+		_crystal.text = _manager._resources[3].ToString();
 	}
 
 	public void OpenCanas(int i){
@@ -93,8 +107,9 @@ public class Inventor : MonoBehaviour {
 
 	public void UnlockItem(){
 		_CombatManager._itemsUnlocked[_activeItem] = true;
-		UpdateInfo(_activeItem - (4 *_itemType));
-		_manager._resources[_itemType] -= _cost;
-
+		var item = _activeItem - (4 *_itemType);
+		UpdateInfo(item);
+		_manager._resources[item] -= _cost;
+		UpdateUI();
 	}
 }
