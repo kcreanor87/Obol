@@ -39,7 +39,7 @@ public class PortalControls : MonoBehaviour {
 		}
 		_levels.SetActive(false);
 		_portals.SetActive(true);
-		_level = level + 3;
+		_level = level + 2;
 	}
 
 	public void Back(){
@@ -55,6 +55,7 @@ public class PortalControls : MonoBehaviour {
 	}
 
 	public void Travel(){
+		Time.timeScale = 1.0f;
 		SaveResources();
 		SaveLocations();
 		SceneManager.LoadScene(_level);

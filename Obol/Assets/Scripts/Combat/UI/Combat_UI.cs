@@ -1,5 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
+using System.Collections;
+using UnityEngine.SceneManagement;
 
 public class Combat_UI : MonoBehaviour {
 
@@ -31,9 +33,16 @@ public class Combat_UI : MonoBehaviour {
 	public Text _currentHP;
 	public Text _maxHP;
 	public bool _tutorial;
+	public GameObject _fadeOut;
+	public GameObject _pauseMenu;
+	public bool _paused;
 
 	// Use this for initialization
 	void Start () {	
+		_fadeOut = GameObject.Find("FadeOut");
+		_fadeOut.SetActive(false);
+		_pauseMenu = GameObject.Find("PauseMenu");
+		_pauseMenu.SetActive(false);
 		_boneEndTxt = GameObject.Find("BoneCollected").GetComponent<Text>();
 		_ironEndTxt = GameObject.Find("IronCollected").GetComponent<Text>();
 		_sulphurEndTxt = GameObject.Find("SulphurCollected").GetComponent<Text>();
@@ -68,6 +77,33 @@ public class Combat_UI : MonoBehaviour {
 		if (_tutorial && _imageActive){
 			EnlargeSprite();
 		}
+		if (!_imageActive){
+			PauseDetect();
+		}
+	}
+
+	void PauseDetect(){
+		if (Input.GetKeyDown(KeyCode.Escape)){
+			if (!_paused){
+				PauseMenu(true);
+			}
+			else{
+				PauseMenu(false);
+			}			
+		}
+	}
+
+	public void PauseMenu(bool paused){
+		if (paused){
+			_pauseMenu.SetActive(true);
+			Time.timeScale = 0.0f;
+			_paused = true;
+		}
+		else{
+			_pauseMenu.SetActive(false);
+			Time.timeScale = 1.0f;
+			_paused = false;
+		}
 	}
 	
 	public void UpdateUI(){
@@ -99,20 +135,27 @@ public class Combat_UI : MonoBehaviour {
 		textGO.GetComponent<RectTransform>().anchoredPosition = pos;
 	}
 
-	public void GameOver(bool win){
-		_victory = win;
-		_gameOver = true;
-		_imageActive = true;
-		_gameOverImage.sprite = (_victory) ? _winSprite : _lossSprite;		
-		_activeGO.SetActive(true);
+	public void GameOver(){
+		_fadeOut.SetActive(true);		
+		StartCoroutine(Restart());
+	}
+
+	public IEnumerator Restart(){
+		yield return new WaitForSeconds(2.0f);
+		_CombatManager.CalculateStats();
+		for (int i = 0; i < _manager._resources.Count; i++){
+			_manager._resources[i] = 0;
+			PlayerPrefs.SetInt("Resources" + i, 0);
+		}
+		SceneManager.LoadScene(_tutorial ? "Level0" : "Crypt");
 	}
 
 	void EnlargeSprite(){
 		if (!_switch){
 			_activeGO.SetActive(true);
-			if (_size <= 260.0f){
+			if (_size <= 150.0f){
 				_size += 10.0f;
-				_activeGO.GetComponent<RectTransform>().sizeDelta = new Vector2(900, _size);
+				_activeGO.GetComponent<RectTransform>().sizeDelta = new Vector2(350, _size);
 			}
 			else{
 				_switch = true;
@@ -128,7 +171,7 @@ public class Combat_UI : MonoBehaviour {
 				_startText.SetActive(false);
 				if (_size >= 50.0f){
 					_size -= 5.0f;
-					_activeGO.GetComponent<RectTransform>().sizeDelta = new Vector2(900, _size);
+					_activeGO.GetComponent<RectTransform>().sizeDelta = new Vector2(350, _size);
 				}
 				else{
 					_timer = 4.0f;
@@ -145,7 +188,8 @@ public class Combat_UI : MonoBehaviour {
 		}			
 	}
 	public void OpenCanvas(int index){
-		switch (index){
+		if (!_paused){
+			switch (index){
 			case 0:
 			_portalCanvas.SetActive(true);
 			_mainUI.SetActive(false);
@@ -153,7 +197,13 @@ public class Combat_UI : MonoBehaviour {
 			case 1:
 			_portalCanvas.SetActive(false);
 			_mainUI.SetActive(true);
+			Time.timeScale = 1.0f;
 			break;
-		}
+			}
+		}		
+	}
+
+	public void ExitGame(){
+		Application.Quit();
 	}
 }

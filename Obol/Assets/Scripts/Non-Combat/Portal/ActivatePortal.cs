@@ -7,7 +7,7 @@ public class ActivatePortal : MonoBehaviour {
 	public int _index;
 
 	void Start(){
-		_active = _manager._activePortals[SceneManager.GetActiveScene().buildIndex - 3] >= _index;
+		_active = _manager._activePortals[SceneManager.GetActiveScene().buildIndex - 2] >= _index;
 	}
 
 	void OnTriggerEnter(Collider col){		

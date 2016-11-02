@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 
 public class PlayerControls_NonCombat : MonoBehaviour {
 
@@ -22,6 +23,12 @@ public class PlayerControls_NonCombat : MonoBehaviour {
 	public int _npcIndex;
 	public Smith _smith;
 
+
+	public List <GameObject> _weaponGOs = new List <GameObject>();
+	public List <GameObject> _helmGOs = new List <GameObject>();
+	public List <GameObject> _chestGOs = new List <GameObject>();
+	public List <GameObject> _legGOs = new List <GameObject>();
+
 	// Use this for initialization
 	void Awake () {		
 		Spawn();
@@ -30,6 +37,21 @@ public class PlayerControls_NonCombat : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
 		DetectInput();
+	}
+
+	public void UpdateMesh(){
+		for (int i = 0; i < _weaponGOs.Count; i++){
+			_weaponGOs[i].SetActive(_CombatManager._itemsEquipped[0] == i);
+		}
+		for (int i = 0; i < _helmGOs.Count; i++){
+			_helmGOs[i].SetActive(_CombatManager._itemsEquipped[1] == i);
+		}
+		for (int i = 0; i < _chestGOs.Count; i++){
+			_chestGOs[i].SetActive(_CombatManager._itemsEquipped[2] == i);
+		}
+		for (int i = 0; i < _legGOs.Count; i++){
+			_legGOs[i].SetActive(_CombatManager._itemsEquipped[3] == i);
+		}
 	}
 
 	void Spawn(){

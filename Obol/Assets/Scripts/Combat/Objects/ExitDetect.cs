@@ -12,6 +12,8 @@ public class ExitDetect : MonoBehaviour {
 		_counters = GameObject.Find("Counters").GetComponent<CombatCounters>();
 		_ui = GameObject.Find("UI").GetComponent<Combat_UI>();
 		_saveGame = GameObject.Find("Loader").GetComponent<SaveGame>();
+		_exitPrompt = GameObject.Find("ExitPrompt");
+		_exitPrompt.SetActive(false);
 	}
 
 	void OnTriggerEnter(Collider col){
@@ -27,6 +29,7 @@ public class ExitDetect : MonoBehaviour {
 	}
 
 	public void Exit(){
+		NewGame._newGame = true;
 		SceneManager.LoadScene("Crypt");
 	}
 

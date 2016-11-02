@@ -52,6 +52,7 @@ public class PlayerControls_Combat : MonoBehaviour {
 			RaycastHit hit;
 			Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
 			if (Physics.Raycast(ray, out hit, 100f, _layerMask) && !UnityEngine.EventSystems.EventSystem.current.IsPointerOverGameObject()){
+				_ui.OpenCanvas(1);
 				_agent.speed = (_CombatManager._speed / 10.0f);
 				if (hit.collider.tag == "Ground"){
 					float dist = Vector3.Distance(hit.point, transform.position);
@@ -78,6 +79,7 @@ public class PlayerControls_Combat : MonoBehaviour {
 				_moving = false;
 				if (_moveToNPC){
 					_ui.OpenCanvas(0);
+					Time.timeScale = 0.0f;
 					_moveToNPC = false;
 				}
 			}
@@ -91,12 +93,12 @@ public class PlayerControls_Combat : MonoBehaviour {
 			Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
 			if (Physics.Raycast(ray, out hit, 100f, _layerMask)){
 				if (hit.collider.tag == "Ground" || hit.collider.tag == "Resource" || hit.collider.tag == "Enemy" || hit.collider.tag == "Destructible"){
-					if (hit.collider.tag != "Resource" && hit.collider.tag != "Destructible"){
-						_indicator.SetActive(true);
-						_indicator.transform.position = hit.point;	
+					if (hit.collider.tag == "Ground" || hit.collider.tag == "Enemy"){
+						_indicator.SetActive(hit.collider.name != "Warden_Parent");	
+						_indicator.transform.position = hit.point;					
 					}
 					else{
-						_indicator.SetActive(false);
+						_indicator.SetActive(false);							
 					}						
 					_agent.SetDestination(transform.position);
 					_anim.SetBool("Running", false);
@@ -172,7 +174,7 @@ public class PlayerControls_Combat : MonoBehaviour {
 		if (_CombatManager._currentHealth <= 0){
 			_agent.Stop();
 			_anim.SetBool("Dead", true);
-			_ui.GameOver(false);
+			_ui.GameOver();
 		}
 	}
 

@@ -17,8 +17,13 @@ public class NonCombat_UI : MonoBehaviour {
 	public Camera _smithCamera;
 	public Smith _smithScript;
 
+	public GameObject _pauseMenu;
+	public bool _paused;
+
 	// Use this for initialization
 	void Start () {	
+		_pauseMenu = GameObject.Find("PauseMenu");
+		_pauseMenu.SetActive(false);
 		_smithCamera = GameObject.Find("SmithCamera").GetComponent<Camera>();
 		_smithCamera.enabled = false;
 		_smithScript = GameObject.Find("SmithScreen").GetComponent<Smith>();
@@ -36,6 +41,34 @@ public class NonCombat_UI : MonoBehaviour {
 			_canvases[i].SetActive(false);
 		}
 		_canvases[0].SetActive(true);
+	}
+
+	void Update(){
+		PauseDetect();
+	}
+
+	void PauseDetect(){
+		if (Input.GetKeyDown(KeyCode.Escape)){
+			if (!_paused){
+				PauseMenu(true);
+			}
+			else{
+				PauseMenu(false);
+			}			
+		}
+	}
+
+	public void PauseMenu(bool paused){
+		if (paused){
+			_pauseMenu.SetActive(true);
+			Time.timeScale = 0.0f;
+			_paused = true;
+		}
+		else{
+			_pauseMenu.SetActive(false);
+			Time.timeScale = 1.0f;
+			_paused = false;
+		}
 	}
 
 	public void UpdateUI(){
@@ -61,5 +94,9 @@ public class NonCombat_UI : MonoBehaviour {
 		_canvases[0].SetActive(true);
 		_saveGame.Save();
 		UpdateUI();
+	}
+
+	public void ExitGame(){
+		Application.Quit();
 	}
 }
