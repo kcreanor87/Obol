@@ -87,9 +87,5 @@ public class _CombatManager : MonoBehaviour {
 		_armourRating = _headBonus + _chestBonus + _legBonus;
 		_maxHealth = 700 + 50 *_vitBonus;
 		_currentHealth = _maxHealth;
-		print("Head: " + _headSlot._name + " + " + _itemLevels[_itemsEquipped[1]]);
-		print("Chest: " + _chestSlot._name + " + " + _itemLevels[_itemsEquipped[2]]);
-		print("Legs: " + _legSlot._name + " + " + _itemLevels[_itemsEquipped[3]]);
-		print("Weapon: " + _equipRanged._name + " + " + _itemLevels[_itemsEquipped[0]]);
 	}
 }

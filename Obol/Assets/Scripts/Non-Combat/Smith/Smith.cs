@@ -24,11 +24,15 @@ public class Smith : MonoBehaviour {
 
 	public List <Button> _buttons = new List <Button>();
 
+	public PlayerControls_NonCombat _playerControls;
+
 	void Awake(){
 		_weapUpgradeButton = GameObject.Find("WeaponUpgrade").GetComponent<Button>();	
 		_armUpgradeButton = GameObject.Find("ArmourUpgrade").GetComponent<Button>();
 		_weapUpgradeButton.interactable = false;
 		_armUpgradeButton.interactable = false;
+
+		_playerControls = GameObject.Find("Player").GetComponent<PlayerControls_NonCombat>();
 
 		_ui = GameObject.Find("Non-Combat UI").GetComponent<NonCombat_UI>();
 
@@ -86,6 +90,7 @@ public class Smith : MonoBehaviour {
 		CalculateCost();
 		UpgradeInfo();
 		_shooting.SwitchProjectile();
+		_playerControls.UpdateMesh();
 	}
 
 	void CalculateCost(){

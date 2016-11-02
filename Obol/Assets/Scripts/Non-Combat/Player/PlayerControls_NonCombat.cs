@@ -44,17 +44,18 @@ public class PlayerControls_NonCombat : MonoBehaviour {
 			_weaponGOs[i].SetActive(_CombatManager._itemsEquipped[0] == i);
 		}
 		for (int i = 0; i < _helmGOs.Count; i++){
-			_helmGOs[i].SetActive(_CombatManager._itemsEquipped[1] == i);
+			_helmGOs[i].SetActive(_CombatManager._itemsEquipped[1] == (i + 3));
 		}
 		for (int i = 0; i < _chestGOs.Count; i++){
-			_chestGOs[i].SetActive(_CombatManager._itemsEquipped[2] == i);
+			_chestGOs[i].SetActive(_CombatManager._itemsEquipped[2] == (i + 7));
 		}
 		for (int i = 0; i < _legGOs.Count; i++){
-			_legGOs[i].SetActive(_CombatManager._itemsEquipped[3] == i);
+			_legGOs[i].SetActive(_CombatManager._itemsEquipped[3] == (i + 11));
 		}
 	}
 
 	void Spawn(){
+		UpdateMesh();
 		_smith = GameObject.Find("SmithScreen").GetComponent<Smith>();
 		transform.position = NewGame._newGame ? _posA.position : _posB.position;
 		_indicator = GameObject.Find("Indicator");
@@ -80,6 +81,7 @@ public class PlayerControls_NonCombat : MonoBehaviour {
 			Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
 			if (Physics.Raycast(ray, out hit, 100f, _layerMask) && !UnityEngine.EventSystems.EventSystem.current.IsPointerOverGameObject()){
 				_agent.speed = (_CombatManager._speed / 10.0f);
+				_anim.SetFloat("Speed", (_CombatManager._speed / 10.0f));
 				if (hit.collider.tag == "Ground"){
 					float dist = Vector3.Distance(hit.point, transform.position);
 					if (dist > 1.0f){

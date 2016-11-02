@@ -20,6 +20,11 @@ public class PlayerControls_Combat : MonoBehaviour {
 	public bool _moveToNPC;
 	public List <Transform> _startPos = new List <Transform>();
 
+	public List <GameObject> _weaponGOs = new List <GameObject>();
+	public List <GameObject> _helmGOs = new List <GameObject>();
+	public List <GameObject> _chestGOs = new List <GameObject>();
+	public List <GameObject> _legGOs = new List <GameObject>();
+
 	// Use this for initialization
 	void Start () {		
 		Spawn();
@@ -31,6 +36,7 @@ public class PlayerControls_Combat : MonoBehaviour {
 	}
 
 	void Spawn(){
+		UpdateMesh();
 		transform.position = _startPos[_manager._portal].position;
 		_indicator = GameObject.Find("AimIndicator");
 		_textSpawn = transform.Find("TextSpawn");
@@ -39,6 +45,23 @@ public class PlayerControls_Combat : MonoBehaviour {
 		_shooting = transform.FindChild("Launcher").GetComponent<Shooting>();
 		_agent = gameObject.GetComponent<NavMeshAgent>();
 		_agent.enabled = true;
+		_agent.speed = (_CombatManager._speed / 10.0f);
+		_anim.SetFloat("Speed", (_CombatManager._speed / 10.0f));
+	}
+
+	public void UpdateMesh(){
+		for (int i = 0; i < _weaponGOs.Count; i++){
+			_weaponGOs[i].SetActive(_CombatManager._itemsEquipped[0] == i);
+		}
+		for (int i = 0; i < _helmGOs.Count; i++){
+			_helmGOs[i].SetActive(_CombatManager._itemsEquipped[1] == (i + 3));
+		}
+		for (int i = 0; i < _chestGOs.Count; i++){
+			_chestGOs[i].SetActive(_CombatManager._itemsEquipped[2] == (i + 7));
+		}
+		for (int i = 0; i < _legGOs.Count; i++){
+			_legGOs[i].SetActive(_CombatManager._itemsEquipped[3] == (i + 11));
+		}
 	}
 
 	void DetectInput(){
@@ -53,7 +76,6 @@ public class PlayerControls_Combat : MonoBehaviour {
 			Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
 			if (Physics.Raycast(ray, out hit, 100f, _layerMask) && !UnityEngine.EventSystems.EventSystem.current.IsPointerOverGameObject()){
 				_ui.OpenCanvas(1);
-				_agent.speed = (_CombatManager._speed / 10.0f);
 				if (hit.collider.tag == "Ground"){
 					float dist = Vector3.Distance(hit.point, transform.position);
 					if (dist > 1.0f){
