@@ -32,7 +32,7 @@ public class PlayerControls_Combat : MonoBehaviour {
 
 	void Spawn(){
 		transform.position = _startPos[_manager._portal].position;
-		_indicator = GameObject.Find("Indicator");
+		_indicator = GameObject.Find("AimIndicator");
 		_textSpawn = transform.Find("TextSpawn");
 		_ui = GameObject.Find("UI").GetComponent<Combat_UI>();
 		_anim = gameObject.GetComponentInChildren<Animator>();
@@ -52,6 +52,7 @@ public class PlayerControls_Combat : MonoBehaviour {
 			RaycastHit hit;
 			Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
 			if (Physics.Raycast(ray, out hit, 100f, _layerMask) && !UnityEngine.EventSystems.EventSystem.current.IsPointerOverGameObject()){
+				_agent.speed = (_CombatManager._speed / 10.0f);
 				if (hit.collider.tag == "Ground"){
 					float dist = Vector3.Distance(hit.point, transform.position);
 					if (dist > 1.0f){

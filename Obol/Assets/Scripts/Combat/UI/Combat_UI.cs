@@ -25,7 +25,6 @@ public class Combat_UI : MonoBehaviour {
 	public GameObject _startText;
 	public GameObject _portalCanvas;
 	public GameObject _mainUI;
-	public ExitDetect _exitDetect;	
 	public GameObject _blackout;
 	public int _resIndex;
 	public bool _ticker;
@@ -52,7 +51,6 @@ public class Combat_UI : MonoBehaviour {
 		_endGO.SetActive(false);
 		_startText = GameObject.Find("Start Text");
 		_startText.SetActive(false);
-		_exitDetect = GameObject.Find("Exit").GetComponent<ExitDetect>();
 		_counter = GameObject.Find("Counters").GetComponent<CombatCounters>();
 		_boneTxt = GameObject.Find("BoneTxt").GetComponent<Text>();
 		_ironTxt = GameObject.Find("Iron").GetComponent<Text>();

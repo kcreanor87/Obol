@@ -77,7 +77,7 @@ public class _CombatManager : MonoBehaviour {
 		_speedPenalty = _headSlot._weight + _chestSlot._weight + _legSlot._weight;
 		_attBonus = 1.0f + (float) 0.1f * _attBlessings;
 		_defBonus = 1.0f + (float) 0.1f * _defBlessings;
-		_speed = 8.0f + (0.25f * _spdBonus) - _speedPenalty;
+		_speed = 80.0f + (3.0f * _spdBonus) - _speedPenalty;
 		_rangedDam = Mathf.FloorToInt((_equipRanged._dam * (0.9f + _itemLevels[_itemsEquipped[0]] * 0.1f)) * _attBonus);
 		_fireRate = _equipRanged._fireRate;
 		_radius = _equipRanged._radius;

@@ -10,10 +10,8 @@ public class ExitDetect : MonoBehaviour {
 
 	void Start(){
 		_counters = GameObject.Find("Counters").GetComponent<CombatCounters>();
-		_exitPrompt = GameObject.Find("ExitButton");
 		_ui = GameObject.Find("UI").GetComponent<Combat_UI>();
 		_saveGame = GameObject.Find("Loader").GetComponent<SaveGame>();
-		_exitPrompt.SetActive(false);
 	}
 
 	void OnTriggerEnter(Collider col){

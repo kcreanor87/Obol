@@ -15,7 +15,6 @@ public class _manager : MonoBehaviour {
 	public static List <bool> _activeLevels = new List <bool>();
 	public static List <int> _activePortals = new List <int>();
 
-
 	public static List <int> _factoryOuput = new List<int>();
 
 	void Awake(){
