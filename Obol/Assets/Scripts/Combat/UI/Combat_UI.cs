@@ -30,6 +30,7 @@ public class Combat_UI : MonoBehaviour {
 	public bool _ticker;
 	public Text _currentHP;
 	public Text _maxHP;
+	public bool _tutorial;
 
 	// Use this for initialization
 	void Start () {	
@@ -46,7 +47,7 @@ public class Combat_UI : MonoBehaviour {
 		_mainUI = GameObject.Find("MainUI");
 		_currentHP = GameObject.Find("CurrentHP").GetComponent<Text>();
 		_maxHP = GameObject.Find("MaxHP").GetComponent<Text>();
-		_activeGO = _startGO;
+		_activeGO = _startGO;		
 		_gameOverImage = _endGO.GetComponent<Image>();
 		_endGO.SetActive(false);
 		_startText = GameObject.Find("Start Text");
@@ -59,11 +60,12 @@ public class Combat_UI : MonoBehaviour {
 		_enemiesTxt = GameObject.Find("EnemiesKilled").GetComponent<Text>();
 		_resTxt = GameObject.Find("ResCollected").GetComponent<Text>();
 		_hpBar = GameObject.Find("HP").GetComponent<RectTransform>();
+		_activeGO.SetActive(false);
 		UpdateUI();
 	}
 
 	void Update (){
-		if (_imageActive){
+		if (_tutorial && _imageActive){
 			EnlargeSprite();
 		}
 	}
@@ -107,6 +109,7 @@ public class Combat_UI : MonoBehaviour {
 
 	void EnlargeSprite(){
 		if (!_switch){
+			_activeGO.SetActive(true);
 			if (_size <= 260.0f){
 				_size += 10.0f;
 				_activeGO.GetComponent<RectTransform>().sizeDelta = new Vector2(900, _size);

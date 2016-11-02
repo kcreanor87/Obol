@@ -38,22 +38,18 @@ public class Projectiles : MonoBehaviour {
 				resScript.BeenHit(_damage);
 				break;
 				case "Enemy":
-				if (!_hit){
-					Explode();					
-				}				
-				else{
-					if (col.gameObject.name == "Warden_Parent"){
+				if (!_hit) Explode();
+				if (col.gameObject.name == "Warden_Parent"){
 						var wardenScript = col.GetComponentInParent<WardenAI>();
 						if (wardenScript._health > 0){
 						wardenScript.BeenHit(_damage);
 						}
+				}
+				else{
+					var enemyScript = col.GetComponentInParent<EnemyAI>();
+					if (enemyScript._health > 0){
+						enemyScript.BeenHit(_damage);
 					}
-					else{
-						var enemyScript = col.GetComponentInParent<EnemyAI>();
-						if (enemyScript._health > 0){
-							enemyScript.BeenHit(_damage);
-						}
-					}					
 				}				
 				break;
 				case "Destructible":
