@@ -20,6 +20,8 @@ public class PlayerControls_Combat : MonoBehaviour {
 	public bool _moveToNPC;
 	public List <Transform> _startPos = new List <Transform>();
 
+	public float _armour;
+
 	public List <GameObject> _weaponGOs = new List <GameObject>();
 	public List <GameObject> _helmGOs = new List <GameObject>();
 	public List <GameObject> _chestGOs = new List <GameObject>();
@@ -47,6 +49,8 @@ public class PlayerControls_Combat : MonoBehaviour {
 		_agent.enabled = true;
 		_agent.speed = (_CombatManager._speed / 10.0f);
 		_anim.SetFloat("Speed", (_CombatManager._speed / 10.0f));
+		_armour = ((1000 - _CombatManager._armourRating) / 1000.0f);
+		print (_armour);
 	}
 
 	public void UpdateMesh(){
@@ -76,6 +80,7 @@ public class PlayerControls_Combat : MonoBehaviour {
 			Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
 			if (Physics.Raycast(ray, out hit, 100f, _layerMask) && !UnityEngine.EventSystems.EventSystem.current.IsPointerOverGameObject()){
 				_ui.OpenCanvas(1);
+				_anim.speed = 1.0f;
 				if (hit.collider.tag == "Ground"){
 					float dist = Vector3.Distance(hit.point, transform.position);
 					if (dist > 1.0f){
@@ -147,7 +152,7 @@ public class PlayerControls_Combat : MonoBehaviour {
 	void Shoot(GameObject go, Vector3 target){
 		var dist = Vector3.Distance(transform.position, target);	
 		if (go.tag == "Ground"){
-			if (dist <= 4.0f){
+			if (dist <= 6.0f){
 				_shooting.ShootStraight(target);
 			}
 			else{
@@ -171,7 +176,7 @@ public class PlayerControls_Combat : MonoBehaviour {
         		}
         		
         	}
-        	else if (dist <= 5.0f){
+        	else if (dist <= 7.0f){
         		_shooting.ShootStraight(go.transform.parent.position);
         	}
         	else{
@@ -184,14 +189,30 @@ public class PlayerControls_Combat : MonoBehaviour {
 
 	public IEnumerator FireRate(){
 		_firing = true;
+		switch(_CombatManager._equipRanged._id){
+			case 200:
+			_anim.speed = 1.0f;
+			break;
+			case 201:
+			_anim.speed = 0.17f;
+			break;
+			case 202:
+			_anim.speed = 2.5f;
+			break;
+			case 203:
+			_anim.speed = .71f;
+			break;
+		}
 		yield return new WaitForSeconds(_CombatManager._equipRanged._fireRate);
+		_anim.speed = 1.0f;
 		_firing = false;
 		_anim.SetBool("Attack", false);
 	}
 
 	public void BeenHit(int damage){
-		_CombatManager._currentHealth -= damage;
-		_ui.DamageText(_textSpawn, damage, true);
+		var dam = Mathf.FloorToInt((float) damage * _armour);
+		_CombatManager._currentHealth -= dam;
+		_ui.DamageText(_textSpawn, dam, true);
 		_ui.UpdateUI();
 		if (_CombatManager._currentHealth <= 0){
 			_agent.Stop();

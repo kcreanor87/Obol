@@ -5,9 +5,7 @@ using UnityEngine.SceneManagement;
 
 public class Combat_UI : MonoBehaviour {
 
-	public Text _boneTxt, _ironTxt, _sulphurTxt, _crystalTxt, _enemiesTxt, _resTxt;
-	public Text _boneEndTxt, _ironEndTxt, _sulphurEndTxt, _crystalEndTxt;
-	public Text _bonePrice, _ironPrice, _sulphurPrice, _crystalPrice, _obols;
+	public Text _boneTxt, _ironTxt, _sulphurTxt, _crystalTxt, _enemiesTxt;
 	public RectTransform _hpBar;
 	public int _hpMax = 580; 
 	public CombatCounters _counter;
@@ -43,12 +41,6 @@ public class Combat_UI : MonoBehaviour {
 		_fadeOut.SetActive(false);
 		_pauseMenu = GameObject.Find("PauseMenu");
 		_pauseMenu.SetActive(false);
-		_boneEndTxt = GameObject.Find("BoneCollected").GetComponent<Text>();
-		_ironEndTxt = GameObject.Find("IronCollected").GetComponent<Text>();
-		_sulphurEndTxt = GameObject.Find("SulphurCollected").GetComponent<Text>();
-		_crystalEndTxt = GameObject.Find("CrystalCollected").GetComponent<Text>();
-		_obols = GameObject.Find("CurrentObols").GetComponent<Text>();
-		_obols.text = _manager._obols.ToString();
 		_blackout = GameObject.Find("Blackout");
 		_blackout.SetActive(false);
 		_portalCanvas = GameObject.Find("PortalScreen");
@@ -67,7 +59,6 @@ public class Combat_UI : MonoBehaviour {
 		_sulphurTxt = GameObject.Find("Sulphur").GetComponent<Text>();
 		_crystalTxt = GameObject.Find("Crystal").GetComponent<Text>();
 		_enemiesTxt = GameObject.Find("EnemiesKilled").GetComponent<Text>();
-		_resTxt = GameObject.Find("ResCollected").GetComponent<Text>();
 		_hpBar = GameObject.Find("HP").GetComponent<RectTransform>();
 		_activeGO.SetActive(false);
 		UpdateUI();
@@ -119,7 +110,6 @@ public class Combat_UI : MonoBehaviour {
 			_currentHP.text = "0";
 		}		
 		_enemiesTxt.text = _counter._totalEnemies.ToString();
-		_resTxt.text = (_counter._resourcesAvailable - _counter._resourcesCollected).ToString();
 		var HPwidth = (float) ((float)_CombatManager._currentHealth / _CombatManager._maxHealth) * _hpMax;
 		_hpBar.sizeDelta = new Vector2(HPwidth, 130);
 	}

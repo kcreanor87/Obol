@@ -23,7 +23,6 @@ public class PlayerControls_NonCombat : MonoBehaviour {
 	public int _npcIndex;
 	public Smith _smith;
 
-
 	public List <GameObject> _weaponGOs = new List <GameObject>();
 	public List <GameObject> _helmGOs = new List <GameObject>();
 	public List <GameObject> _chestGOs = new List <GameObject>();
@@ -70,7 +69,7 @@ public class PlayerControls_NonCombat : MonoBehaviour {
 	}
 
 	void DetectInput(){
-		DetectMove();
+		if (!Input.GetMouseButton(1)) DetectMove();
 		DetectAim();
 		Heal();		
 	}
@@ -80,7 +79,8 @@ public class PlayerControls_NonCombat : MonoBehaviour {
 			RaycastHit hit;
 			Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
 			if (Physics.Raycast(ray, out hit, 100f, _layerMask) && !UnityEngine.EventSystems.EventSystem.current.IsPointerOverGameObject()){
-				_agent.speed = (_CombatManager._speed / 10.0f);
+				_agent.speed = (_CombatManager._speed / 10.0f);		
+				_anim.speed = 1.0f;		
 				_anim.SetFloat("Speed", (_CombatManager._speed / 10.0f));
 				if (hit.collider.tag == "Ground"){
 					float dist = Vector3.Distance(hit.point, transform.position);
@@ -214,7 +214,21 @@ public class PlayerControls_NonCombat : MonoBehaviour {
 	}
 
 	public IEnumerator FireRate(){
-		_firing = true;		
+		_firing = true;	
+		switch(_CombatManager._equipRanged._id){
+			case 200:
+			_anim.speed = 1.0f;
+			break;
+			case 201:
+			_anim.speed = 0.17f;
+			break;
+			case 202:
+			_anim.speed = 2.5f;
+			break;
+			case 203:
+			_anim.speed = .71f;
+			break;
+		}	
 		yield return new WaitForSeconds(_CombatManager._equipRanged._fireRate);
 		_firing = false;
 		_anim.SetBool("Attack", false);

@@ -8,8 +8,6 @@ public class Projectiles : MonoBehaviour {
 	public SphereCollider _col;
 	public MeshRenderer _projectile;
 	public PlayerControls_Combat _player;
-	public int _minDam;
-	public int _maxDam;
 	public int _damage = 10;
 	public float _radius = 6.5f;
 	public bool _hit;
@@ -18,13 +16,16 @@ public class Projectiles : MonoBehaviour {
 	public float _timer = 5.0f;
 	
 	void Start(){
-		_damage = Random.Range(_minDam, _maxDam);
 		_explosion = transform.FindChild("Explosion").GetComponent<ParticleSystem>();
 		_trail = transform.FindChild("Trail").GetComponent<ParticleSystem>();
 		_projectile = gameObject.GetComponent<MeshRenderer>();
-		_col = gameObject.GetComponentInParent<SphereCollider>();
-		if (_enemyShot) _player = GameObject.FindWithTag("Player").GetComponent<PlayerControls_Combat>();
-		_damage = _CombatManager._rangedDam;
+		if (_enemyShot){
+			_player = GameObject.FindWithTag("Player").GetComponent<PlayerControls_Combat>();
+			if (!_exploder) gameObject.layer = 13;
+		}
+		else{
+			_damage = _CombatManager._rangedDam;
+		}		
 	}
 	void OnTriggerEnter(Collider col){
 		if (!_enemyShot){
@@ -83,11 +84,12 @@ public class Projectiles : MonoBehaviour {
 	}
 
 	void Explode(){
+		gameObject.layer = 2;
 		_explosion.Play();
 		_trail.Stop();
 		_projectile.enabled = false;
 		_hit = true;
-		_col.radius = _CombatManager._equipRanged._radius;
+		_col.radius = _CombatManager._equipRanged._radius;		
 	}
 
 	void Update(){

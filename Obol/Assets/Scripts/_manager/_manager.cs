@@ -4,7 +4,7 @@ using System.Collections.Generic;
 public class _manager : MonoBehaviour {
 
 	public static List <int> _resources = new List <int>();
-	public static int _obols = 20000;
+	public static int _obols = 2000000;
 	public static List <string> _resourceNames = new List<string>();
 	public static List <int> _prices = new List <int>();
 	public static bool _combatOver;

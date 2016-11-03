@@ -7,7 +7,6 @@ public class SpawnPoint : MonoBehaviour {
 	public List <GameObject> _enemyDatabase = new List <GameObject>();
 	public int _spawnChance = 100;
 	public bool _spawnOnScreen;
-	public EnemyWM _spawnScript;
 	public CombatCounters _counterScript;
 	public int _spawned;
 	public float _timer;

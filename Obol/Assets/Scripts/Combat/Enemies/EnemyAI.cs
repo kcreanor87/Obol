@@ -14,6 +14,7 @@ public class EnemyAI : MonoBehaviour {
 	public bool _ranged;
 	public bool _attacking;
 	public int _damage = 10;
+	public float _armour = 1.0f;
 	public Shooting _shooting;
 	public Transform _textSpawn;
 	public bool _exploder;
@@ -70,7 +71,6 @@ public class EnemyAI : MonoBehaviour {
 		if (!_exploder) _agent.SetDestination(transform.position);
 		_anim.SetBool("Running", false);
 		if (_ranged){
-			print("Shoot!");
 			_shooting.CalcVelocity(_player.transform.position);
 		}
 		_anim.SetBool("Attack", true);
@@ -103,9 +103,10 @@ public class EnemyAI : MonoBehaviour {
 		}	
 	}
 
-	public void BeenHit(int damage){	
-		_health -= damage;
-		_ui.DamageText(_textSpawn, damage, false);
+	public void BeenHit(int damage){
+		var dam = Mathf.FloorToInt((float) damage * _armour);	
+		_health -= dam;
+		_ui.DamageText(_textSpawn, dam, false);
 		_attacking = false;
 		if (_health <= 0){
 			StopAllCoroutines();			

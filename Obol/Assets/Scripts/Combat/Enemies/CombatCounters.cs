@@ -9,17 +9,4 @@ public class CombatCounters : MonoBehaviour {
 	public int _enemiesKilled;
 	public int _totalEnemies;
 	public int _spawnPoints;
-
-	public List <int> _resources = new List <int>();
-
-	// Use this for initialization
-	void Awake () {
-		_spawnPoints =GameObject.FindGameObjectsWithTag("Spawn Point").Length;
-		_resourcesAvailable = GameObject.FindGameObjectsWithTag("Resource").Length * 10;
-		_resources.Clear();
-		_resources.Add(0);
-		_resources.Add(0);
-		_resources.Add(0);
-		_resources.Add(0);
-	}
 }

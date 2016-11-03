@@ -70,7 +70,7 @@ public class Priest : MonoBehaviour {
 		_currVit.text = _CombatManager._maxHealth.ToString();
 		_currAtt.text = (_CombatManager._attBlessings * 10) + " %";
 		_currDef.text = (_CombatManager._defBlessings * 10 )+ " %";
-		_currSpd.text = _CombatManager._speed.ToString();
+		_currSpd.text = (_CombatManager._speed + _CombatManager._speedPenalty).ToString();
 
 		_costText.text = _cost.ToString();
 
