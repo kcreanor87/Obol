@@ -29,6 +29,7 @@ public class _CombatManager : MonoBehaviour {
 	public static List<int> _itemsEquipped = new List<int>();
 	//ITEM UNLOCKS
 	public static List<bool> _itemsUnlocked = new List <bool>();
+	public static List<bool> _collectables = new List<bool>();
 
 	public static int _blessings;
 	public static int _availBlessings;
@@ -59,6 +60,9 @@ public class _CombatManager : MonoBehaviour {
 		_headSlot = _armourDb._headDatabase[0];
 		_chestSlot = _armourDb._chestDatabase[0];
 		_legSlot = _armourDb._legDatabase[0];
+		for (int i = 0; i < 50; i++){
+			_collectables.Add(false);
+		}
 		for (int i = 0; i < 16; i++){
 			_itemLevels.Add(1);
 		}
@@ -69,7 +73,7 @@ public class _CombatManager : MonoBehaviour {
 			_itemsUnlocked.Add(false);
 		}
 		_itemsUnlocked[0] = true;
-		CalculateStats();		
+		CalculateStats();	
 	}
 
 	//Calculate derivative stats
@@ -77,7 +81,7 @@ public class _CombatManager : MonoBehaviour {
 		_speedPenalty = _headSlot._weight + _chestSlot._weight + _legSlot._weight;
 		_attBonus = 1.0f + (float) 0.05f * _attBlessings;
 		_defBonus = 1.0f + (float) 0.05f * _defBlessings;
-		_speed = 80.0f + (2.5f * _spdBonus) - _speedPenalty;
+		_speed = 100.0f + (2.5f * _spdBonus) - _speedPenalty;
 		_rangedDam = Mathf.FloorToInt((_equipRanged._dam * (0.9f + _itemLevels[_itemsEquipped[0]] * 0.1f)) * _attBonus);
 		_fireRate = _equipRanged._fireRate;
 		_radius = _equipRanged._radius;

@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 
@@ -50,7 +50,6 @@ public class PlayerControls_Combat : MonoBehaviour {
 		_agent.speed = (_CombatManager._speed / 10.0f);
 		_anim.SetFloat("Speed", (_CombatManager._speed / 10.0f));
 		_armour = ((1000 - _CombatManager._armourRating) / 1000.0f);
-		print (_armour);
 	}
 
 	public void UpdateMesh(){
@@ -161,7 +160,7 @@ public class PlayerControls_Combat : MonoBehaviour {
         	StartCoroutine(FireRate());       					
         }
         else if (go.tag == "Resource" || go.tag == "Destructible"){
-       		var h = 3 + go.transform.position.y;
+       		var h = 1.0f + go.transform.position.y;
        		var _aimTarget = new Vector3(go.transform.position.x, h, go.transform.position.z);
        		_shooting.CalcVelocity(_aimTarget);
        		StartCoroutine(FireRate());

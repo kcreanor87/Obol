@@ -5,7 +5,8 @@ using UnityEngine.SceneManagement;
 
 public class Combat_UI : MonoBehaviour {
 
-	public Text _boneTxt, _ironTxt, _sulphurTxt, _crystalTxt, _enemiesTxt;
+	public Text _boneTxt, _ironTxt, _sulphurTxt, _crystalTxt, _enemiesTxt, _obols;
+	public Text _popUpText;
 	public RectTransform _hpBar;
 	public int _hpMax = 580; 
 	public CombatCounters _counter;
@@ -26,6 +27,7 @@ public class Combat_UI : MonoBehaviour {
 	public GameObject _portalCanvas;
 	public GameObject _mainUI;
 	public GameObject _blackout;
+	public GameObject _popUp;
 	public int _resIndex;
 	public bool _ticker;
 	public Text _currentHP;
@@ -59,7 +61,11 @@ public class Combat_UI : MonoBehaviour {
 		_sulphurTxt = GameObject.Find("Sulphur").GetComponent<Text>();
 		_crystalTxt = GameObject.Find("Crystal").GetComponent<Text>();
 		_enemiesTxt = GameObject.Find("EnemiesKilled").GetComponent<Text>();
+		_obols = GameObject.Find("Obols").GetComponent<Text>();
 		_hpBar = GameObject.Find("HP").GetComponent<RectTransform>();
+		_popUp = GameObject.Find("PopUp");
+		_popUpText = GameObject.Find("PopUpText").GetComponent<Text>();
+		_popUp.SetActive(false);
 		_activeGO.SetActive(false);
 		UpdateUI();
 	}
@@ -112,6 +118,7 @@ public class Combat_UI : MonoBehaviour {
 		_enemiesTxt.text = _counter._totalEnemies.ToString();
 		var HPwidth = (float) ((float)_CombatManager._currentHealth / _CombatManager._maxHealth) * _hpMax;
 		_hpBar.sizeDelta = new Vector2(HPwidth, 130);
+		_obols.text = _manager._obols.ToString();
 	}
 
 	public void DamageText(Transform target, int damage, bool playerHit){
@@ -191,6 +198,17 @@ public class Combat_UI : MonoBehaviour {
 			break;
 			}
 		}		
+	}
+
+	public void PopUpBox(int value, string text){
+		_popUpText.text = "+ " + value + " " + text;
+		_popUp.SetActive(true);
+		StartCoroutine(FadePopUp());
+	}
+
+	public IEnumerator FadePopUp(){
+		yield return new WaitForSeconds(2.0f);
+		_popUp.SetActive(false);
 	}
 
 	public void ExitGame(){

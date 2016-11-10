@@ -15,15 +15,17 @@ public class SaveGame : MonoBehaviour {
 		SaveResources();
 		SaveLocations();
 		SaveItems();
+		SaveCollectables();
 		NewGame._newGame = false;
 	}
 
 	public void Load(){
+		LoadCollectables();
 		LoadResources();
 		LoadBlessings();
 		LoadItems();
 		LoadCombatStats();
-		LoadLocations();	
+		LoadLocations();		
 	}
 
 	void SaveResources(){
@@ -71,6 +73,18 @@ public class SaveGame : MonoBehaviour {
 		}
 	}
 
+	void SaveCollectables(){
+		for (int i = 0; i < _CombatManager._collectables.Count; i++){
+			PlayerPrefs.SetInt("Collectables" + i, (_CombatManager._collectables[i] ? 1: 0));
+		}
+	}
+
+	void LoadCollectables(){
+		for (int i = 0; i < _CombatManager._collectables.Count; i++){
+			_CombatManager._collectables[i] = (PlayerPrefs.GetInt("Collectables" + i) > 0);
+		}
+	}
+
 	void LoadCombatStats(){
 		_CombatManager._equipRanged = _CombatManager._weaponDb._rangedDatabase[PlayerPrefs.GetInt("Ranged")];
 		_CombatManager._headSlot = _CombatManager._armourDb._headDatabase[PlayerPrefs.GetInt("Head")];
@@ -81,10 +95,10 @@ public class SaveGame : MonoBehaviour {
 
 	void SaveLocations(){
 		for (int i = 2; i < _manager._activeLevels.Count; i++){
-			PlayerPrefs.SetInt("Level" + i, _manager._activeLevels[i] ? 1 : 0);
+			PlayerPrefs.SetInt("Level" + i, (_manager._activeLevels[i] ? 1 : 0));
 		}
 		for (int i = 0; i < _manager._activePortals.Count; i++){
-			PlayerPrefs.SetInt("Level Portals" + i, _manager._activePortals[i]);
+			PlayerPrefs.SetInt("Level Portals" + i, (_manager._activePortals[i]));
 		}
 	}
 
@@ -118,5 +132,11 @@ public class SaveGame : MonoBehaviour {
 		_CombatManager._attBlessings = PlayerPrefs.GetInt("AttBonus");
 		_CombatManager._defBlessings = PlayerPrefs.GetInt("DefBonus");
 		_CombatManager._spdBonus = PlayerPrefs.GetInt("SpdBonus");
+	}
+
+	public void CombatSave(){
+		SaveLocations();
+		SaveResources();
+		SaveCollectables();
 	}
 }

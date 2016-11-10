@@ -4,7 +4,7 @@ using System.Collections.Generic;
 public class _manager : MonoBehaviour {
 
 	public static List <int> _resources = new List <int>();
-	public static int _obols = 2000000;
+	public static int _obols = 2;
 	public static List <string> _resourceNames = new List<string>();
 	public static List <int> _prices = new List <int>();
 	public static bool _combatOver;
@@ -25,10 +25,10 @@ public class _manager : MonoBehaviour {
 		_resourceNames.Add("Crystal");
 
 		_resources.Clear();
-		_resources.Add(500);
-		_resources.Add(500);
-		_resources.Add(500);
-		_resources.Add(500);
+		_resources.Add(0);
+		_resources.Add(0);
+		_resources.Add(0);
+		_resources.Add(0);
 
 		_manager._activeLevels.Add(true);
 		_manager._activeLevels.Add(true);

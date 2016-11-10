@@ -11,7 +11,7 @@ public class SpawnPoint : MonoBehaviour {
 	public int _spawned;
 	public float _timer;
 
-	void Start(){
+	void Awake(){
 		_timer = 10.0f;
 		_counterScript = GameObject.Find("Counters").GetComponent<CombatCounters>();
 		transform.FindChild("Indicator").gameObject.SetActive(false);
