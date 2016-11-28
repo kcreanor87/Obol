@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 public class NonCombat_UI : MonoBehaviour {
 
-	public Text _boneTxt, _ironTxt, _silverTxt, _crystalTxt, _obols;
+	public Text _obols;
 	public RectTransform _hpBar;
 	public int _hpMax = 580;
 	public GameObject _damageText;
@@ -41,10 +41,6 @@ public class NonCombat_UI : MonoBehaviour {
 		_currentHP = GameObject.Find("CurrentHP").GetComponent<Text>();
 		_maxHP = GameObject.Find("MaxHP").GetComponent<Text>();
 		_hpBar = GameObject.Find("HP").GetComponent<RectTransform>();
-		_boneTxt = GameObject.Find("BoneTxt").GetComponent<Text>();
-		_ironTxt = GameObject.Find("IronTxt").GetComponent<Text>();
-		_silverTxt = GameObject.Find("SilverTxt").GetComponent<Text>();
-		_crystalTxt = GameObject.Find("CrystalTxt").GetComponent<Text>();
 		_saveGame = GameObject.Find("Loader").GetComponent<SaveGame>();
 		UpdateUI();
 		for (int i = 0; i < _canvases.Count; i++){
@@ -83,10 +79,6 @@ public class NonCombat_UI : MonoBehaviour {
 
 	public void UpdateUI(){
 		_obols.text = _manager._obols.ToString();
-		_boneTxt.text = _manager._resources[0].ToString();
-		_ironTxt.text = _manager._resources[1].ToString();
-		_silverTxt.text = _manager._resources[2].ToString();
-		_crystalTxt.text = _manager._resources[3].ToString();
 		_currentHP.text = _CombatManager._currentHealth.ToString();
 		_maxHP.text = _CombatManager._maxHealth.ToString();
 	}

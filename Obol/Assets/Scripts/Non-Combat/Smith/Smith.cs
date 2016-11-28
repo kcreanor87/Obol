@@ -27,8 +27,8 @@ public class Smith : MonoBehaviour {
 	public PlayerControls_NonCombat _playerControls;
 
 	void Awake(){
-		_weapUpgradeButton = GameObject.Find("WeaponUpgrade").GetComponent<Button>();	
-		_armUpgradeButton = GameObject.Find("ArmourUpgrade").GetComponent<Button>();
+		_weapUpgradeButton = GameObject.Find("CostBackWP").GetComponent<Button>();	
+		_armUpgradeButton = GameObject.Find("CostBackAR").GetComponent<Button>();
 		_weapUpgradeButton.interactable = false;
 		_armUpgradeButton.interactable = false;
 

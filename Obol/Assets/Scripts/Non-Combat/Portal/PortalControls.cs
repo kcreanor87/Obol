@@ -56,7 +56,6 @@ public class PortalControls : MonoBehaviour {
 
 	public void Travel(){
 		Time.timeScale = 1.0f;
-		SaveResources();
 		SaveLocations();
 		SceneManager.LoadScene(_level);
 
@@ -66,13 +65,6 @@ public class PortalControls : MonoBehaviour {
 		for (int i = 0; i < _activePortals.Count; i++){
 			_activePortals[i].SetActive(false);
 		}
-	}
-
-	void SaveResources(){
-		for (int i = 0; i < _manager._resources.Count; i++){
-			PlayerPrefs.SetInt("Resources" + i, _manager._resources[i]);
-		}
-		PlayerPrefs.SetInt("Obols", _manager._obols);
 	}
 
 	void SaveLocations(){

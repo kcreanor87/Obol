@@ -56,10 +56,6 @@ public class Combat_UI : MonoBehaviour {
 		_startText = GameObject.Find("Start Text");
 		_startText.SetActive(false);
 		_counter = GameObject.Find("Counters").GetComponent<CombatCounters>();
-		_boneTxt = GameObject.Find("BoneTxt").GetComponent<Text>();
-		_ironTxt = GameObject.Find("Iron").GetComponent<Text>();
-		_sulphurTxt = GameObject.Find("Sulphur").GetComponent<Text>();
-		_crystalTxt = GameObject.Find("Crystal").GetComponent<Text>();
 		_enemiesTxt = GameObject.Find("EnemiesKilled").GetComponent<Text>();
 		_obols = GameObject.Find("Obols").GetComponent<Text>();
 		_hpBar = GameObject.Find("HP").GetComponent<RectTransform>();
@@ -104,10 +100,6 @@ public class Combat_UI : MonoBehaviour {
 	}
 	
 	public void UpdateUI(){
-		_boneTxt.text = "" + _manager._resources[0];
-		_ironTxt.text = "" + _manager._resources[1];
-		_sulphurTxt.text = "" + _manager._resources[2];
-		_crystalTxt.text = "" + _manager._resources[3];
 		if (_CombatManager._currentHealth > 0){
 			_currentHP.text = _CombatManager._currentHealth.ToString();
 			_maxHP.text = _CombatManager._maxHealth.ToString();
@@ -139,12 +131,7 @@ public class Combat_UI : MonoBehaviour {
 
 	public IEnumerator Restart(){
 		yield return new WaitForSeconds(2.0f);
-		_CombatManager.CalculateStats();
-		for (int i = 0; i < _manager._resources.Count; i++){
-			_manager._resources[i] = 0;
-			PlayerPrefs.SetInt("Resources" + i, 0);
-		}
-		SceneManager.LoadScene(_tutorial ? "Level0" : "Crypt");
+		SceneManager.LoadScene("Crypt");
 	}
 
 	void EnlargeSprite(){

@@ -104,23 +104,17 @@ public class PlayerControls_NonCombat : MonoBehaviour {
 					_moving = true;
 					if (_ui._uiOpen) _ui.CloseCanvas(_npcIndex);
 					switch (hit.collider.name){
-						case "Merchant":
+						case "Smith":
 						_npcIndex = 1;
 						break;
-						case "Smith":
+						case "Priest":
 						_npcIndex = 2;
 						break;
-						case "Priest":
+						case "Portal":
 						_npcIndex = 3;
 						break;
-						case "Librarian":
-						_npcIndex = 4;
-						break;
 						case "Thief":
-						_npcIndex = 5;
-						break;
-						case "Portal":
-						_npcIndex = 6;
+						_npcIndex = 4;
 						break;
 					}
 				}		

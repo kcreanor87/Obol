@@ -33,11 +33,6 @@ public class Projectiles : MonoBehaviour {
 				case "Ground":
 				if (!_hit) Explode();
 				break;
-				case "Resource":
-				if (!_hit) Explode();
-				var resScript = col.GetComponent<ResourceHubs>();
-				resScript.BeenHit(_damage);
-				break;
 				case "Enemy":
 				if (!_hit) Explode();
 				if (col.gameObject.name == "Warden_Parent"){
