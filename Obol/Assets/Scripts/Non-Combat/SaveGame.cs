@@ -16,7 +16,9 @@ public class SaveGame : MonoBehaviour {
 		SaveLocations();
 		SaveItems();
 		SaveCollectables();
+		SaveChatStates();
 		NewGame._newGame = false;
+		print("Game Saved");
 	}
 
 	public void Load(){
@@ -25,7 +27,11 @@ public class SaveGame : MonoBehaviour {
 		LoadBlessings();
 		LoadItems();
 		LoadCombatStats();
-		LoadLocations();		
+		LoadChatStates();
+		LoadLocations();
+		print ("Game Loaded");
+
+			
 	}
 
 	void SaveResources(){
@@ -82,6 +88,24 @@ public class SaveGame : MonoBehaviour {
 	void LoadCollectables(){
 		for (int i = 0; i < _CombatManager._collectables.Count; i++){
 			_CombatManager._collectables[i] = (PlayerPrefs.GetInt("Collectables" + i) > 0);
+		}
+	}
+
+	void SaveChatStates(){
+		for (int i = 0; i < _manager._npcChat.Count; i++){
+			PlayerPrefs.SetInt("ChatActive" + i, (_manager._npcChat[i] ? 1: 0));
+		}
+		for (int i = 0; i < _manager._chatState.Count; i++){
+			PlayerPrefs.SetInt("ChatState" + i, _manager._chatState[i]);
+		}
+	}
+
+	void LoadChatStates(){
+		for (int i = 0; i < _manager._npcChat.Count; i++){
+			_manager._npcChat[i] = (PlayerPrefs.GetInt("ChatActive" + i) > 0);
+		}
+		for (int i = 0; i <  _manager._chatState.Count; i++){
+			 _manager._chatState[i] = PlayerPrefs.GetInt("ChatState" + i);
 		}
 	}
 

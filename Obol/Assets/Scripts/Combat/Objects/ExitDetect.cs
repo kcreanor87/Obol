@@ -1,39 +1,25 @@
 ﻿using UnityEngine;
 using UnityEngine.SceneManagement;
+using System.Collections;
 
 public class ExitDetect : MonoBehaviour {
 
-	public GameObject _exitPrompt;
 	public SaveGame _saveGame;
-	public CombatCounters _counters;
-	public Combat_UI _ui;
+	public GameObject _fadeOut;
 
 	void Start(){
-		_counters = GameObject.Find("Counters").GetComponent<CombatCounters>();
-		_ui = GameObject.Find("UI").GetComponent<Combat_UI>();
 		_saveGame = GameObject.Find("Loader").GetComponent<SaveGame>();
-		_exitPrompt = GameObject.Find("ExitPrompt");
-		_exitPrompt.SetActive(false);
 	}
 
 	void OnTriggerEnter(Collider col){
 		if (col.tag == "Player"){
-			ExitPrompt();
+			StartCoroutine(FadeOut());
 		}
 	}
 
-	void OnTriggerExit(Collider col){
-		if (col.tag == "Player"){
-			_exitPrompt.SetActive(false);
-		}
-	}
-
-	public void Exit(){
-		NewGame._newGame = true;
+	public IEnumerator FadeOut(){
+		_fadeOut.SetActive(true);
+		yield return new WaitForSeconds(2.0f);
 		SceneManager.LoadScene("Crypt");
-	}
-
-	public void ExitPrompt(){
-		_exitPrompt.SetActive(true);
 	}
 }

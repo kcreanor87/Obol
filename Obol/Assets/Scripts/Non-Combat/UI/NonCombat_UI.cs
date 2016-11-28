@@ -19,9 +19,19 @@ public class NonCombat_UI : MonoBehaviour {
 
 	public GameObject _pauseMenu;
 	public bool _paused;
+	public bool _uiOpen;
+
+	public GameObject _npcChatGO;
+	public Text _npcChatText;
+	public bool _inChat;
+	public NPCChat _npcChat;
 
 	// Use this for initialization
-	void Start () {	
+	void Start () {
+		_npcChatGO = GameObject.Find("TextBox");
+		_npcChat = gameObject.GetComponent<NPCChat>();
+		_npcChatText = GameObject.Find("NPCtext").GetComponent<Text>();
+		_npcChatGO.SetActive(false);
 		_pauseMenu = GameObject.Find("PauseMenu");
 		_pauseMenu.SetActive(false);
 		_smithCamera = GameObject.Find("SmithCamera").GetComponent<Camera>();
@@ -40,7 +50,7 @@ public class NonCombat_UI : MonoBehaviour {
 		for (int i = 0; i < _canvases.Count; i++){
 			_canvases[i].SetActive(false);
 		}
-		_canvases[0].SetActive(true);
+		_canvases[0].SetActive(true);	
 	}
 
 	void Update(){
@@ -82,18 +92,29 @@ public class NonCombat_UI : MonoBehaviour {
 	}
 
 	public void OpenCanvas(int index){
-		_canvases[0].SetActive(false);
-		_canvases[index].SetActive(true);
-		_smithCamera.enabled = (index == 2);
-		if (index == 2) _smithScript.ToggleScreens(0);
+		if (!_manager._npcChat[index]){
+			_canvases[0].SetActive(false);
+			_canvases[index].SetActive(true);
+			_smithCamera.enabled = (index == 2);
+			if (index == 2) _smithScript.ToggleScreens(0);
+		}
+		else{
+			_npcChat.UpdateText(index);
+			_npcChatText.text = _npcChat._text;
+			_npcChatGO.SetActive(_manager._npcChat[index]);
+			_inChat = _manager._npcChat[index];
+		}
+		_uiOpen = true;
 	}
 
 	public void CloseCanvas(int index){
+		_npcChatGO.SetActive(false);
 		_smithCamera.enabled = false;
 		_canvases[index].SetActive(false);
 		_canvases[0].SetActive(true);
 		_saveGame.Save();
 		UpdateUI();
+		_uiOpen = false;
 	}
 
 	public void ExitGame(){

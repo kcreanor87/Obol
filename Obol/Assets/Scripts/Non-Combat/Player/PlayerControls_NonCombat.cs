@@ -65,11 +65,16 @@ public class PlayerControls_NonCombat : MonoBehaviour {
 		_agent = gameObject.GetComponent<NavMeshAgent>();
 		_agent.enabled = true;
 		_saveGame = GameObject.Find("Loader").GetComponent<SaveGame>();
-		_saveGame.Save();
 	}
 
 	void DetectInput(){
-		if (!Input.GetMouseButton(1)) DetectMove();
+		if (!Input.GetMouseButton(1) && !_ui._inChat) DetectMove();
+		if (_ui._inChat){
+			if (Input.GetMouseButtonDown(0)){
+				_moving = false;
+				_ui.OpenCanvas(_npcIndex);
+			}	
+		}
 		DetectAim();
 		Heal();		
 	}
@@ -84,12 +89,12 @@ public class PlayerControls_NonCombat : MonoBehaviour {
 				_anim.SetFloat("Speed", (_CombatManager._speed / 10.0f));
 				if (hit.collider.tag == "Ground"){
 					float dist = Vector3.Distance(hit.point, transform.position);
-					if (dist > 1.0f){
+					if (dist > 1.0f && !_ui._inChat){
 						_agent.SetDestination(hit.point);
 						_anim.SetBool("Running", true);
 						_moving = true;
 						_moveToNPC = false;
-						_ui.CloseCanvas(_npcIndex);
+						if (_ui._uiOpen) _ui.CloseCanvas(_npcIndex);						
 					}
 				}
 				else if (hit.collider.tag == "NPC"){
@@ -97,7 +102,7 @@ public class PlayerControls_NonCombat : MonoBehaviour {
 					_moveToNPC = true;
 					_anim.SetBool("Running", true);
 					_moving = true;
-					_ui.CloseCanvas(_npcIndex);
+					if (_ui._uiOpen) _ui.CloseCanvas(_npcIndex);
 					switch (hit.collider.name){
 						case "Merchant":
 						_npcIndex = 1;

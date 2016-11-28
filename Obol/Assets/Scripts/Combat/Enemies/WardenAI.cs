@@ -151,6 +151,10 @@ public class WardenAI : MonoBehaviour {
 			_bladePart.Stop();
 			Destroy(_wardenTxt);
 			_doorAnim.SetBool("Open", true);
+			_manager._npcChat[1] = true;
+			_manager._npcChat[2] = true;
+			_manager._npcChat[3] = true;
+			_manager._npcChat[4] = true;
 		}
 	}
 
