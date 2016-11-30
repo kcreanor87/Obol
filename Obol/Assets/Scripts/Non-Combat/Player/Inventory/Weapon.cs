@@ -11,7 +11,7 @@ public class Weapon {
 	public bool _bought;
 
 
-	public Weapon(int id, string name, float radius, int dam, float fireRate, int cost, int levelReq){
+	public Weapon(int id, string name, float radius, int dam, float fireRate, int cost, int levelReq, bool bought){
 		_id = id;
 		_name = name;
 		_radius = radius;
@@ -19,5 +19,6 @@ public class Weapon {
 		_fireRate = fireRate;
 		_cost = cost;
 		_levelReq = levelReq;
+		_bought = bought;
 	}
 }

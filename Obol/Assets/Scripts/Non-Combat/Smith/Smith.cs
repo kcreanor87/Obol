@@ -27,6 +27,20 @@ public class Smith : MonoBehaviour {
 	public GameObject _weaponStats;
 	public GameObject _armourStats;
 
+	public Sprite _boughtSprite;
+	public Sprite _equippedSprite;
+	public Sprite _affordableSprite;
+	public Sprite _nonAffordable;
+	public Sprite _notUnlocked;
+
+	public Text _currentWeapName, _currentWeapDam, _currentWeapFire, _currentWeapRad;
+	public Text _newWeapName, _newWeapDam, _newWeapFire, _newWeapRad;
+	public Text _weaponCost;
+
+	public Text _currentArmName, _currentArmBns, _currentArmWeight;
+	public Text _newArmName, _newArmBns, _newArmWeight;
+	public Text _armourCost;
+
 	public void OpenCanvas(){
 		_smithGO.SetActive(true);
 		SetOpenCanvas(3);
@@ -40,11 +54,19 @@ public class Smith : MonoBehaviour {
 		for (int i = 0; i < _weapons.Count; i++){
 			_activeWeapon = _CombatManager._weaponDb._rangedDatabase[i];
 			var text = _weapons[i].GetComponentInChildren<Text>();
+			var image = _weapons[i].GetComponent<Image>();
 			if (_manager._level < _activeWeapon._levelReq){
 				_weapons[i].interactable = false;
 				text.text = "Unlocked Lvl " + _activeWeapon._levelReq;
+				image.sprite = _notUnlocked;
 			}
-			else{
+			else{				
+				if (_activeWeapon._bought){					
+					image.sprite = (_CombatManager._equipRanged._id == _activeWeapon._id) ? _equippedSprite : _boughtSprite;
+				}
+				else{
+					image.sprite = (_manager._obols >= _activeWeapon._cost) ? _affordableSprite : _nonAffordable;
+				}
 				_weapons[i].interactable = true;
 				text.text = _activeWeapon._name;
 			}
@@ -54,21 +76,70 @@ public class Smith : MonoBehaviour {
 	void CheckHelmAvailability(){
 		for (int i = 0; i < _head.Count; i++){
 			_activeArmour = _CombatManager._armourDb._headDatabase[i];
-			_head[i].interactable = (_manager._level >= _activeArmour._levelReq);
+			var text = _head[i].GetComponentInChildren<Text>();
+			var image = _head[i].GetComponent<Image>();
+			if (_manager._level < _activeArmour._levelReq){
+				_head[i].interactable = false;
+				text.text = "Unlocked Lvl " + _activeArmour._levelReq;
+				image.sprite = _notUnlocked;
+			}
+			else{
+				if (_activeArmour._bought){					
+					image.sprite = (_CombatManager._headSlot._id == _activeArmour._id) ? _equippedSprite : _boughtSprite;
+				}
+				else{
+					image.sprite = (_manager._obols >= _activeArmour._cost) ? _affordableSprite : _nonAffordable;
+				}
+				_head[i].interactable = true;
+				text.text = _activeArmour._name;
+			}
 		}
 	}
 
 	void CheckChestAvailability(){
 		for (int i = 0; i < _chest.Count; i++){
-			_activeArmour = _CombatManager._armourDb._chestDatabase[i];
-			_chest[i].interactable = (_manager._level >= _activeArmour._levelReq);
+			_activeArmour = _CombatManager._armourDb._chestDatabase[i];			
+			var text = _chest[i].GetComponentInChildren<Text>();
+			var image = _chest[i].GetComponent<Image>();
+			if (_manager._level < _activeArmour._levelReq){
+				_chest[i].interactable = false;
+				text.text = "Unlocked Lvl " + _activeArmour._levelReq;
+				image.sprite = _notUnlocked;
+			}
+			else{
+				if (_activeArmour._bought){					
+					image.sprite = (_CombatManager._chestSlot._id == _activeArmour._id) ? _equippedSprite : _boughtSprite;
+				}
+				else{
+					image.sprite = (_manager._obols >= _activeArmour._cost) ? _affordableSprite : _nonAffordable;
+				}
+				_chest[i].interactable = true;
+				text.text = _activeArmour._name;
+			}
+
 		}
 	}
 
 	void CheckLegAvailability(){
 		for (int i = 0; i < _legs.Count; i++){
 			_activeArmour = _CombatManager._armourDb._legDatabase[i];
-			_legs[i].interactable = (_manager._level >= _activeArmour._levelReq);
+			var text = _legs[i].GetComponentInChildren<Text>();
+			var image = _legs[i].GetComponent<Image>();
+			if (_manager._level < _activeArmour._levelReq){
+				_legs[i].interactable = false;
+				text.text = "Unlocked Lvl " + _activeArmour._levelReq;
+				image.sprite = _notUnlocked;
+			}
+			else{
+				if (_activeArmour._bought){					
+					image.sprite = (_CombatManager._legSlot._id == _activeArmour._id) ? _equippedSprite : _boughtSprite;
+				}
+				else{
+					image.sprite = (_manager._obols >= _activeArmour._cost) ? _affordableSprite : _nonAffordable;
+				}
+				_legs[i].interactable = true;
+				text.text = _activeArmour._name;
+			}
 		}
 	}
 
