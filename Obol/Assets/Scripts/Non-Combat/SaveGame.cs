@@ -38,18 +38,12 @@ public class SaveGame : MonoBehaviour {
 	}
 
 	void SaveItems(){
-		for (int i = 0; i < _CombatManager._itemsUnlocked.Count; i++){
-			PlayerPrefs.SetInt("Unlocked" + i, (_CombatManager._itemsUnlocked[i] ? 1 : 0));
-		}
 		for (int i = 0; i < _CombatManager._itemsEquipped.Count; i++){
 			PlayerPrefs.SetInt("ItemEquipped" + i, _CombatManager._itemsEquipped[i]);
 		}
 	}
 
 	void LoadItems(){
-		for (int i = 0; i < _CombatManager._itemsUnlocked.Count; i++){
-			_CombatManager._itemsUnlocked[i] = (PlayerPrefs.GetInt("Unlocked" + i) > 0);
-		}
 		for (int i = 0; i < _CombatManager._itemsEquipped.Count; i++){
 			_CombatManager._itemsEquipped[i] = PlayerPrefs.GetInt("ItemEquipped" + i);
 		}

@@ -12,10 +12,7 @@ public class NonCombat_UI : MonoBehaviour {
 	public Text _maxHP;
 	public SaveGame _saveGame;
 
-	public List <GameObject> _canvases = new List <GameObject>();
-
 	public Camera _smithCamera;
-	public Smith _smithScript;
 
 	public GameObject _pauseMenu;
 	public bool _paused;
@@ -26,8 +23,11 @@ public class NonCombat_UI : MonoBehaviour {
 	public bool _inChat;
 	public NPCChat _npcChat;
 
+	public Smith _smith;
+
 	// Use this for initialization
 	void Start () {
+		_smith = gameObject.GetComponent<Smith>();
 		_npcChatGO = GameObject.Find("TextBox");
 		_npcChat = gameObject.GetComponent<NPCChat>();
 		_npcChatText = GameObject.Find("NPCtext").GetComponent<Text>();
@@ -36,17 +36,17 @@ public class NonCombat_UI : MonoBehaviour {
 		_pauseMenu.SetActive(false);
 		_smithCamera = GameObject.Find("SmithCamera").GetComponent<Camera>();
 		_smithCamera.enabled = false;
-		_smithScript = GameObject.Find("SmithScreen").GetComponent<Smith>();
 		_obols = GameObject.Find("CurrentObols").GetComponent<Text>();		
 		_currentHP = GameObject.Find("CurrentHP").GetComponent<Text>();
 		_maxHP = GameObject.Find("MaxHP").GetComponent<Text>();
 		_hpBar = GameObject.Find("HP").GetComponent<RectTransform>();
 		_saveGame = GameObject.Find("Loader").GetComponent<SaveGame>();
-		UpdateUI();
-		for (int i = 0; i < _canvases.Count; i++){
-			_canvases[i].SetActive(false);
-		}
-		_canvases[0].SetActive(true);	
+		UpdateUI();	
+		CloseAllCanvases();
+	}
+
+	void CloseAllCanvases(){
+		CloseCanvas(1);
 	}
 
 	void Update(){
@@ -84,29 +84,20 @@ public class NonCombat_UI : MonoBehaviour {
 	}
 
 	public void OpenCanvas(int index){
-		if (!_manager._npcChat[index]){
-			_canvases[0].SetActive(false);
-			_canvases[index].SetActive(true);
-			_smithCamera.enabled = (index == 2);
-			if (index == 2) _smithScript.ToggleScreens(0);
+		switch (index){
+			case 1:
+			_smith.OpenCanvas();
+			break;
 		}
-		else{
-			_npcChat.UpdateText(index);
-			_npcChatText.text = _npcChat._text;
-			_npcChatGO.SetActive(_manager._npcChat[index]);
-			_inChat = _manager._npcChat[index];
-		}
-		_uiOpen = true;
+		
 	}
 
 	public void CloseCanvas(int index){
-		_npcChatGO.SetActive(false);
-		_smithCamera.enabled = false;
-		_canvases[index].SetActive(false);
-		_canvases[0].SetActive(true);
-		_saveGame.Save();
-		UpdateUI();
-		_uiOpen = false;
+		switch (index){
+			case 1:
+			_smith.CloseCanvas();
+			break;
+		}
 	}
 
 	public void ExitGame(){

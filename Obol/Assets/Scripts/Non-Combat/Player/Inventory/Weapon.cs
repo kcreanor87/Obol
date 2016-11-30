@@ -3,18 +3,21 @@ public class Weapon {
 
 	public int _id;
 	public string _name;
-	public float _radius;
 	public int _dam;
+	public float _radius;	
 	public float _fireRate;
-	public string _desc;
+	public int _cost;
+	public int _levelReq;
+	public bool _bought;
 
 
-	public Weapon(int id, string name, float radius, int dam, float fireRate, string desc){
+	public Weapon(int id, string name, float radius, int dam, float fireRate, int cost, int levelReq){
 		_id = id;
 		_name = name;
 		_radius = radius;
 		_dam = dam;
 		_fireRate = fireRate;
-		_desc = desc;
+		_cost = cost;
+		_levelReq = levelReq;
 	}
 }

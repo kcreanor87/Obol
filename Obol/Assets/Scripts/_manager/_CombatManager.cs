@@ -25,11 +25,7 @@ public class _CombatManager : MonoBehaviour {
 	public static Armour _legSlot;
 
 	//ITEM LEVELS
-	public static List<int> _itemLevels = new List <int>();
 	public static List<int> _itemsEquipped = new List<int>();
-	//ITEM UNLOCKS
-	public static List<bool> _itemsUnlocked = new List <bool>();
-	public static List<bool> _collectables = new List<bool>();
 
 	public static int _blessings;
 	public static int _availBlessings;
@@ -60,19 +56,9 @@ public class _CombatManager : MonoBehaviour {
 		_headSlot = _armourDb._headDatabase[0];
 		_chestSlot = _armourDb._chestDatabase[0];
 		_legSlot = _armourDb._legDatabase[0];
-		for (int i = 0; i < 50; i++){
-			_collectables.Add(false);
-		}
-		for (int i = 0; i < 16; i++){
-			_itemLevels.Add(1);
-		}
 		for (int i = 0; i < 4; i++){
 			_itemsEquipped.Add(0);
 		}
-		for (int i = 0; i < 16; i++){
-			_itemsUnlocked.Add(false);
-		}
-		_itemsUnlocked[0] = true;
 		CalculateStats();	
 	}
 
@@ -82,12 +68,12 @@ public class _CombatManager : MonoBehaviour {
 		_attBonus = 1.0f + (float) 0.05f * _attBlessings;
 		_defBonus = 1.0f + (float) 0.05f * _defBlessings;
 		_speed = 100.0f + (2.5f * _spdBonus) - _speedPenalty;
-		_rangedDam = Mathf.FloorToInt((_equipRanged._dam * (0.9f + _itemLevels[_itemsEquipped[0]] * 0.1f)) * _attBonus);
+		_rangedDam = Mathf.FloorToInt(_equipRanged._dam * _attBonus);
 		_fireRate = _equipRanged._fireRate;
 		_radius = _equipRanged._radius;
-		_headBonus = Mathf.FloorToInt(_headSlot._armourBonus * (0.9f + _itemLevels[_itemsEquipped[1]] * 0.1f) * _defBonus);
-		_chestBonus = Mathf.FloorToInt(_chestSlot._armourBonus * (0.9f + _itemLevels[_itemsEquipped[2]] * 0.1f) * _defBonus);
-		_legBonus = Mathf.FloorToInt(_legSlot._armourBonus * (0.9f + _itemLevels[_itemsEquipped[3]] * 0.1f) * _defBonus);
+		_headBonus = Mathf.FloorToInt(_headSlot._armourBonus * _defBonus);
+		_chestBonus = Mathf.FloorToInt(_chestSlot._armourBonus * _defBonus);
+		_legBonus = Mathf.FloorToInt(_legSlot._armourBonus * _defBonus);
 		_armourRating = _headBonus + _chestBonus + _legBonus;
 		_maxHealth = 700 + 50 *_vitBonus;
 		_currentHealth = _maxHealth;
