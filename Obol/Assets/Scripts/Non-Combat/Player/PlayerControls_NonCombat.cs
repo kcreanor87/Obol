@@ -38,7 +38,7 @@ public class PlayerControls_NonCombat : MonoBehaviour {
 		DetectInput();
 	}
 
-	public void UpdateMesh(){
+	/*public void UpdateMesh(){
 		for (int i = 0; i < _weaponGOs.Count; i++){
 			_weaponGOs[i].SetActive(_CombatManager._itemsEquipped[0] == i);
 		}
@@ -51,10 +51,10 @@ public class PlayerControls_NonCombat : MonoBehaviour {
 		for (int i = 0; i < _legGOs.Count; i++){
 			_legGOs[i].SetActive(_CombatManager._itemsEquipped[3] == (i + 11));
 		}
-	}
+	}*/
 
 	void Spawn(){
-		UpdateMesh();
+		//UpdateMesh();
 		_smith = GameObject.Find("SmithScreen").GetComponent<Smith>();
 		transform.position = NewGame._newGame ? _posA.position : _posB.position;
 		_indicator = GameObject.Find("Indicator");

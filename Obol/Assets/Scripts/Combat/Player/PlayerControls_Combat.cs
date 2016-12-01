@@ -38,7 +38,7 @@ public class PlayerControls_Combat : MonoBehaviour {
 	}
 
 	void Spawn(){
-		UpdateMesh();
+		//UpdateMesh();
 		transform.position = _startPos[_manager._portal].position;
 		_indicator = GameObject.Find("AimIndicator");
 		_textSpawn = transform.Find("TextSpawn");
@@ -52,7 +52,7 @@ public class PlayerControls_Combat : MonoBehaviour {
 		_armour = ((1000 - _CombatManager._armourRating) / 1000.0f);
 	}
 
-	public void UpdateMesh(){
+	/*public void UpdateMesh(){
 		for (int i = 0; i < _weaponGOs.Count; i++){
 			_weaponGOs[i].SetActive(_CombatManager._itemsEquipped[0] == i);
 		}
@@ -65,7 +65,7 @@ public class PlayerControls_Combat : MonoBehaviour {
 		for (int i = 0; i < _legGOs.Count; i++){
 			_legGOs[i].SetActive(_CombatManager._itemsEquipped[3] == (i + 11));
 		}
-	}
+	}*/
 
 	void DetectInput(){
 		DetectMove();

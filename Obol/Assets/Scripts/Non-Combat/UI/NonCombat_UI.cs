@@ -24,10 +24,12 @@ public class NonCombat_UI : MonoBehaviour {
 	public NPCChat _npcChat;
 
 	public Smith _smith;
+	public Stats _stats;
 
 	// Use this for initialization
 	void Start () {
 		_smith = gameObject.GetComponent<Smith>();
+		_stats = gameObject.GetComponent<Stats>();
 		_npcChatGO = GameObject.Find("TextBox");
 		_npcChat = gameObject.GetComponent<NPCChat>();
 		_npcChatText = GameObject.Find("NPCtext").GetComponent<Text>();
@@ -47,6 +49,7 @@ public class NonCombat_UI : MonoBehaviour {
 
 	void CloseAllCanvases(){
 		CloseCanvas(1);
+		CloseCanvas(2);
 	}
 
 	void Update(){
@@ -88,6 +91,9 @@ public class NonCombat_UI : MonoBehaviour {
 			case 1:
 			_smith.OpenCanvas();
 			break;
+			case 2:
+			_stats.OpenCanvas();
+			break;
 		}
 		
 	}
@@ -96,6 +102,9 @@ public class NonCombat_UI : MonoBehaviour {
 		switch (index){
 			case 1:
 			_smith.CloseCanvas();
+			break;
+			case 2:
+			_stats.CloseCanvas();
 			break;
 		}
 	}

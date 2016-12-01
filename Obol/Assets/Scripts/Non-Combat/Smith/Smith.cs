@@ -11,6 +11,8 @@ public class Smith : MonoBehaviour {
 
 	public Button _buyWeapon;
 	public Button _buyArmour;
+	public Button _equipWeapon;
+	public Button _equipArmour;
 
 	public Weapon _activeWeapon;
 	public Armour _activeArmour;
@@ -27,17 +29,19 @@ public class Smith : MonoBehaviour {
 	public GameObject _weaponStats;
 	public GameObject _armourStats;
 
+	public GameObject _itemSelected;
+
 	public Sprite _boughtSprite;
 	public Sprite _equippedSprite;
 	public Sprite _affordableSprite;
 	public Sprite _nonAffordable;
 	public Sprite _notUnlocked;
 
-	public Text _currentWeapName, _currentWeapDam, _currentWeapFire, _currentWeapRad;
+	public Text _currentWeapDam, _currentWeapFire, _currentWeapRad;
 	public Text _newWeapName, _newWeapDam, _newWeapFire, _newWeapRad;
 	public Text _weaponCost;
 
-	public Text _currentArmName, _currentArmBns, _currentArmWeight;
+	public Text _currentArmBns, _currentArmWeight;
 	public Text _newArmName, _newArmBns, _newArmWeight;
 	public Text _armourCost;
 
@@ -48,6 +52,28 @@ public class Smith : MonoBehaviour {
 
 	public void CloseCanvas(){
 		_smithGO.SetActive(false);
+	}
+
+	void Awake(){
+		CollectText();
+	}
+
+	void CollectText(){
+		_currentWeapDam = GameObject.Find("CurrentWeapDam").GetComponent<Text>();
+		_currentWeapFire = GameObject.Find("CurrentWeapFR").GetComponent<Text>();
+		_currentWeapRad = GameObject.Find("CurrentWeapRad").GetComponent<Text>();
+		_newWeapName = GameObject.Find("WeaponName").GetComponent<Text>();
+		_newWeapDam = GameObject.Find("NewWeapDam").GetComponent<Text>();
+		_newWeapFire = GameObject.Find("NewWeapFR").GetComponent<Text>();
+		_newWeapRad = GameObject.Find("NewWeapRad").GetComponent<Text>();
+		_weaponCost = GameObject.Find("NewWeapCost").GetComponent<Text>();
+
+		_currentArmBns = GameObject.Find("CurrentArmDef").GetComponent<Text>();
+		_currentArmWeight = GameObject.Find("CurrentArmWeight").GetComponent<Text>();
+		_newArmName = GameObject.Find("ArmourName").GetComponent<Text>();
+		_newArmBns = GameObject.Find("NewArmDef").GetComponent<Text>();
+		_newArmWeight = GameObject.Find("NewArmWeight").GetComponent<Text>();
+		_armourCost = GameObject.Find("NewArmCost").GetComponent<Text>();
 	}
 
 	void CheckWeaponAvailability(){
@@ -149,20 +175,20 @@ public class Smith : MonoBehaviour {
 
 		switch(type){
 			case 0:
-			_headCanvas.SetActive(true);
 			CheckHelmAvailability();
+			_headCanvas.SetActive(true);			
 			break;
 			case 1:
-			_chestCanvas.SetActive(true);
 			CheckChestAvailability();
+			_chestCanvas.SetActive(true);			
 			break;
 			case 2:
-			_legCanvas.SetActive(true);
 			CheckLegAvailability();
+			_legCanvas.SetActive(true);			
 			break;
 			case 3:
-			_weaponCanvas.SetActive(true);
 			CheckWeaponAvailability();
+			_weaponCanvas.SetActive(true);			
 			break;
 		}
 		_activeType = type;
@@ -175,27 +201,40 @@ public class Smith : MonoBehaviour {
 		_weaponCanvas.SetActive(false);
 		_weaponStats.SetActive(false);
 		_armourStats.SetActive(false);
+		_itemSelected.SetActive(false);
 	}
 
 	public void SetActiveWeapon(int weapon){
 		_activeWeapon = _CombatManager._weaponDb._rangedDatabase[weapon];
 		_activeIndex = weapon;
+		_itemSelected.SetActive(true);
+		_itemSelected.transform.position = _weapons[weapon].transform.position;
+		UpdateWeaponText();
 		_weaponStats.SetActive(true);
 		_buyWeapon.interactable = (!_activeWeapon._bought && _manager._obols >= _activeWeapon._cost);
+		_equipWeapon.interactable = (_activeWeapon._bought && (_CombatManager._equipRanged._id != _activeWeapon._id));
 	}
 
 	public void SetActiveArmour(int armour){
+		_itemSelected.SetActive(true);		
 		switch(_activeType){
 			case 0:
 			_activeArmour = _CombatManager._armourDb._headDatabase[armour];
+			_equipArmour.interactable = (_activeArmour._bought && (_CombatManager._headSlot._id != _activeArmour._id));
+			_itemSelected.transform.position = _head[armour].transform.position;
 			break;
 			case 1:
 			_activeArmour = _CombatManager._armourDb._chestDatabase[armour];
+			_equipArmour.interactable = (_activeArmour._bought && (_CombatManager._chestSlot._id != _activeArmour._id));
+			_itemSelected.transform.position = _chest[armour].transform.position;
 			break;
 			case 2:
 			_activeArmour = _CombatManager._armourDb._legDatabase[armour];
+			_equipArmour.interactable = (_activeArmour._bought && (_CombatManager._legSlot._id != _activeArmour._id));
+			_itemSelected.transform.position = _legs[armour].transform.position;
 			break;
 		}
+		UpdateArmourText();
 		_armourStats.SetActive(true);
 		_activeIndex = armour;
 		_buyArmour.interactable = (!_activeArmour._bought && _manager._obols >= _activeArmour._cost);
@@ -205,6 +244,40 @@ public class Smith : MonoBehaviour {
 		_manager._obols -= _activeWeapon._cost;
 		_CombatManager._weaponDb._rangedDatabase[_activeIndex]._bought = true;
 		_buyWeapon.interactable = false;
+		CheckWeaponAvailability();
+		SetActiveWeapon(_activeIndex);
+	}
+
+	public void EquipWeapon(){
+		_equipWeapon.interactable = false;
+		_CombatManager._equipRanged = _activeWeapon;				
+		CheckWeaponAvailability();
+		_activeWeapon = _CombatManager._equipRanged;
+		_CombatManager.CalculateStats();
+		UpdateWeaponText();
+	}
+
+	public void EquipArmour(){
+		_equipArmour.interactable = false;
+		switch(_activeType){
+			case 0:
+			_CombatManager._headSlot = _activeArmour;
+			CheckHelmAvailability();
+			_activeArmour = _CombatManager._headSlot;
+			break;
+			case 1:
+			_CombatManager._chestSlot = _activeArmour;
+			CheckChestAvailability();
+			_activeArmour = _CombatManager._chestSlot;
+			break;
+			case 2:
+			_CombatManager._legSlot = _activeArmour;
+			CheckLegAvailability();
+			_activeArmour = _CombatManager._legSlot;
+			break;
+		}
+		_CombatManager.CalculateStats();
+		UpdateArmourText();
 	}
 
 	public void BuyArmour(){
@@ -212,14 +285,54 @@ public class Smith : MonoBehaviour {
 		switch(_activeType){
 			case 0:
 			_CombatManager._armourDb._headDatabase[_activeIndex]._bought = true;
+			CheckHelmAvailability();
 			break;
 			case 1:
 			_CombatManager._armourDb._chestDatabase[_activeIndex]._bought = true;
+			CheckChestAvailability();
 			break;
 			case 2:
 			_CombatManager._armourDb._legDatabase[_activeIndex]._bought = true;
+			CheckLegAvailability();
 			break;
 		}
 		_buyArmour.interactable = false;
+		SetActiveArmour(_activeIndex);
+	}
+
+	void UpdateWeaponText(){
+		_newWeapName.text = _activeWeapon._name;
+		
+		_currentWeapDam.text = _CombatManager._rangedDam.ToString();
+		_currentWeapFire.text = _CombatManager._fireRate + "s";
+		_currentWeapRad.text = _CombatManager._radius + "m";
+
+		_newWeapDam.text = Mathf.FloorToInt((float) _activeWeapon._dam * _CombatManager._attBonus).ToString();
+		_newWeapFire.text = _activeWeapon._fireRate + "s";
+		_newWeapRad.text = _activeWeapon._radius + "m";
+
+		_weaponCost.text = (_activeWeapon._bought) ? "-" : _activeWeapon._cost.ToString();
+	}
+
+	void UpdateArmourText(){
+		_newArmName.text = _activeArmour._name;
+		_newArmBns.text = Mathf.FloorToInt((float) _activeArmour._armourBonus * _CombatManager._defBonus).ToString();
+		_newArmWeight.text = _activeArmour._weight + "kg";
+		switch(_activeType){
+			case 0:
+			_currentArmBns.text = _CombatManager._headSlot._armourBonus.ToString();
+			_currentArmWeight.text = _CombatManager._headSlot._weight + "kg";
+			break;
+			case 1:
+			_currentArmBns.text = _CombatManager._chestSlot._armourBonus.ToString();
+			_currentArmWeight.text = _CombatManager._chestSlot._weight + "kg";
+			break;
+			case 2:
+			_currentArmBns.text = _CombatManager._legSlot._armourBonus.ToString();
+			_currentArmWeight.text = _CombatManager._legSlot._weight + "kg";
+			break;
+		}
+
+		_armourCost.text = (_activeArmour._bought) ? "-" : _activeArmour._cost.ToString();
 	}
 }

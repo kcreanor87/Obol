@@ -13,22 +13,21 @@ public class _CombatManager : MonoBehaviour {
 	public static int _armourRating;
 
 	//UPGRADABLE STATS
-	public static int _vitBonus;
-	public static int _attBlessings;
-	public static int _defBlessings;
-	public static int _spdBonus;
+	public static int _attRanks;
+	public static int _defRanks;
+	public static int _vitRanks;
+	public static int _dexRanks;
+	public static int _mechRanks;
+
+	//BONUSES
+	public static float _attBonus = 1.0f;
+	public static float _defBonus = 1.0f;	
 
 	//ITEM SLOTS
 	public static Weapon _equipRanged;
 	public static Armour _headSlot;
 	public static Armour _chestSlot;
 	public static Armour _legSlot;
-
-	//ITEM LEVELS
-	public static List<int> _itemsEquipped = new List<int>();
-
-	public static int _blessings;
-	public static int _availBlessings;
 
 	public static int _headBonus;
 	public static int  _chestBonus;
@@ -39,9 +38,6 @@ public class _CombatManager : MonoBehaviour {
 
 	public static float _speed;
 	public static float _speedPenalty;
-
-	public static float _attBonus;
-	public static float _defBonus;
 
 	//Scripts accessed
 	public static WeaponDatabase _weaponDb;
@@ -56,26 +52,27 @@ public class _CombatManager : MonoBehaviour {
 		_headSlot = _armourDb._headDatabase[0];
 		_chestSlot = _armourDb._chestDatabase[0];
 		_legSlot = _armourDb._legDatabase[0];
-		for (int i = 0; i < 4; i++){
-			_itemsEquipped.Add(0);
-		}
 		CalculateStats();	
 	}
 
 	//Calculate derivative stats
 	public static void CalculateStats(){
-		_speedPenalty = _headSlot._weight + _chestSlot._weight + _legSlot._weight;
-		_attBonus = 1.0f + (float) 0.05f * _attBlessings;
-		_defBonus = 1.0f + (float) 0.05f * _defBlessings;
-		_speed = 100.0f + (2.5f * _spdBonus) - _speedPenalty;
+		//Speed
+		_speedPenalty = _headSlot._weight + _chestSlot._weight + _legSlot._weight;		
+		_speed = 100.0f + (2.5f * _dexRanks) - _speedPenalty;
+		//Health
+		_maxHealth = 700 + 50 *_vitRanks;
+		_currentHealth = _maxHealth;
+		//Weapon Stats
+		_attBonus = 1.0f + (float) 0.05f * _attRanks;
 		_rangedDam = Mathf.FloorToInt(_equipRanged._dam * _attBonus);
 		_fireRate = _equipRanged._fireRate;
 		_radius = _equipRanged._radius;
+		//Armour Stats
+		_defBonus = 1.0f + (float) 0.05f * _defRanks;
 		_headBonus = Mathf.FloorToInt(_headSlot._armourBonus * _defBonus);
 		_chestBonus = Mathf.FloorToInt(_chestSlot._armourBonus * _defBonus);
 		_legBonus = Mathf.FloorToInt(_legSlot._armourBonus * _defBonus);
-		_armourRating = _headBonus + _chestBonus + _legBonus;
-		_maxHealth = 700 + 50 *_vitBonus;
-		_currentHealth = _maxHealth;
+		_armourRating = _headBonus + _chestBonus + _legBonus;		
 	}
 }

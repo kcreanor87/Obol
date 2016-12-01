@@ -13,7 +13,6 @@ public class SaveGame : MonoBehaviour {
 		SaveCombatStats();
 		SaveBlessings();
 		SaveLocations();
-		SaveItems();
 		SaveChatStates();
 		NewGame._newGame = false;
 		print("Game Saved");
@@ -21,7 +20,6 @@ public class SaveGame : MonoBehaviour {
 
 	public void Load(){
 		LoadBlessings();
-		LoadItems();
 		LoadCombatStats();
 		LoadChatStates();
 		LoadLocations();
@@ -35,18 +33,6 @@ public class SaveGame : MonoBehaviour {
 		PlayerPrefs.SetInt("Head", _CombatManager._armourDb._headDatabase.IndexOf(_CombatManager._headSlot));
 		PlayerPrefs.SetInt("Chest", _CombatManager._armourDb._chestDatabase.IndexOf(_CombatManager._chestSlot));
 		PlayerPrefs.SetInt("Legs", _CombatManager._armourDb._legDatabase.IndexOf(_CombatManager._legSlot));
-	}
-
-	void SaveItems(){
-		for (int i = 0; i < _CombatManager._itemsEquipped.Count; i++){
-			PlayerPrefs.SetInt("ItemEquipped" + i, _CombatManager._itemsEquipped[i]);
-		}
-	}
-
-	void LoadItems(){
-		for (int i = 0; i < _CombatManager._itemsEquipped.Count; i++){
-			_CombatManager._itemsEquipped[i] = PlayerPrefs.GetInt("ItemEquipped" + i);
-		}
 	}
 
 	void SaveChatStates(){
@@ -93,20 +79,20 @@ public class SaveGame : MonoBehaviour {
 	}
 
 	void SaveBlessings(){
-		PlayerPrefs.SetInt("Blessings", _CombatManager._blessings);
-		PlayerPrefs.SetInt("AvailBlessings", _CombatManager._availBlessings);
-		PlayerPrefs.SetInt("VitBonus", _CombatManager._vitBonus);
-		PlayerPrefs.SetInt("AttBonus", _CombatManager._attBlessings);
-		PlayerPrefs.SetInt("DefBonus", _CombatManager._defBlessings);
-		PlayerPrefs.SetInt("SpdBonus", _CombatManager._spdBonus);
+		PlayerPrefs.SetInt("Level", _manager._level);
+		PlayerPrefs.SetInt("AvailRanks", _manager._availableRanks);
+		PlayerPrefs.SetInt("VitBonus", _CombatManager._vitRanks);
+		PlayerPrefs.SetInt("AttBonus", _CombatManager._attRanks);
+		PlayerPrefs.SetInt("DefBonus", _CombatManager._defRanks);
+		PlayerPrefs.SetInt("SpdBonus", _CombatManager._dexRanks);
 	}
 
 	void LoadBlessings(){
-		_CombatManager._blessings = PlayerPrefs.GetInt("Blessings");
-		_CombatManager._availBlessings = PlayerPrefs.GetInt("AvailBlessings");
-		_CombatManager._vitBonus = PlayerPrefs.GetInt("VitBonus");
-		_CombatManager._attBlessings = PlayerPrefs.GetInt("AttBonus");
-		_CombatManager._defBlessings = PlayerPrefs.GetInt("DefBonus");
-		_CombatManager._spdBonus = PlayerPrefs.GetInt("SpdBonus");
+		_manager._level = PlayerPrefs.GetInt("Level");
+		_manager._availableRanks = PlayerPrefs.GetInt("AvailRanks");
+		_CombatManager._vitRanks = PlayerPrefs.GetInt("VitBonus");
+		_CombatManager._attRanks = PlayerPrefs.GetInt("AttBonus");
+		_CombatManager._defRanks = PlayerPrefs.GetInt("DefBonus");
+		_CombatManager._dexRanks = PlayerPrefs.GetInt("SpdBonus");
 	}
 }

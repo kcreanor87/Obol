@@ -3,10 +3,17 @@ using System.Collections.Generic;
 
 public class _manager : MonoBehaviour {
 
+	public static string _name;
+
 	public static int _obols = 200;
 
 	public static int _portal;
 	public static int _level = 3;
+	public static int _currentXP = 1;
+	public static int _nextLvlXP = 100;
+
+	public static int _totalRanks;
+	public static int _availableRanks;
 
 	public static List <bool> _activeLevels = new List <bool>();
 	public static List <int> _activePortals = new List <int>();
