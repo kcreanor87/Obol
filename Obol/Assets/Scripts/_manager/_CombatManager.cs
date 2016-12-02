@@ -73,6 +73,7 @@ public class _CombatManager : MonoBehaviour {
 		_headBonus = Mathf.FloorToInt(_headSlot._armourBonus * _defBonus);
 		_chestBonus = Mathf.FloorToInt(_chestSlot._armourBonus * _defBonus);
 		_legBonus = Mathf.FloorToInt(_legSlot._armourBonus * _defBonus);
-		_armourRating = _headBonus + _chestBonus + _legBonus;		
+		_armourRating = _headBonus + _chestBonus + _legBonus;
+		_manager._totalRanks = _attRanks + _defRanks + _vitRanks + _dexRanks + _mechRanks;	
 	}
 }

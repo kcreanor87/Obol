@@ -23,6 +23,9 @@ public class Stats : MonoBehaviour {
 	public NonCombat_UI _ui;
 	public Camera _hudCam;
 
+	//Buttons for stat increases
+	public List<Button> _buttons = new List<Button>();
+
 	void Awake(){
 		CollectElements();
 	}
@@ -91,6 +94,7 @@ public class Stats : MonoBehaviour {
 		UpdatePlayerStats();
 		UpdateWeaponStats();
 		UpdateArmourStats();
+		CheckButtons();
 	}
 
 	void UpdatePlayerStats(){
@@ -135,5 +139,37 @@ public class Stats : MonoBehaviour {
 
 		_totalVal.text = _CombatManager._armourRating.ToString();
 		_totalWgt.text = _CombatManager._speedPenalty + "kg";
+	}
+
+	void CheckButtons(){
+		for (int i = 0; i < _buttons.Count; i++){
+			_buttons[i].interactable = (_manager._availableRanks > 0);
+		}
+	}
+
+	public void IncreaseStat(int index){
+		switch (index){
+			case 0:
+			_CombatManager._attRanks++;
+			_manager._availableRanks--;
+			break;
+			case 1:
+			_CombatManager._defRanks++;
+			_manager._availableRanks--;
+			break;
+			case 2:
+			_CombatManager._vitRanks++;
+			_manager._availableRanks--;
+			break;
+			case 3:
+			_CombatManager._dexRanks++;
+			_manager._availableRanks--;
+			break;
+			case 4:
+			_CombatManager._mechRanks++;
+			_manager._availableRanks--;
+			break;
+		}
+		UpdateStats();
 	}
 }
