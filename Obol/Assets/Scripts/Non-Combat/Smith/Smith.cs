@@ -45,20 +45,28 @@ public class Smith : MonoBehaviour {
 	public Text _newArmName, _newArmBns, _newArmWeight;
 	public Text _armourCost;
 
+	public NonCombat_UI _ui;
+
+	public Camera _hudCam;
+
 	public void OpenCanvas(){
 		_smithGO.SetActive(true);
 		SetOpenCanvas(3);
+		_hudCam.enabled = true;
+		_ui._uiOpen = true;
 	}
 
 	public void CloseCanvas(){
 		_smithGO.SetActive(false);
+		_hudCam.enabled = false;
+		_ui._uiOpen = false;
 	}
 
 	void Awake(){
-		CollectText();
+		CollectElements();		
 	}
 
-	void CollectText(){
+	void CollectElements(){
 		_currentWeapDam = GameObject.Find("CurrentWeapDam").GetComponent<Text>();
 		_currentWeapFire = GameObject.Find("CurrentWeapFR").GetComponent<Text>();
 		_currentWeapRad = GameObject.Find("CurrentWeapRad").GetComponent<Text>();
@@ -74,6 +82,9 @@ public class Smith : MonoBehaviour {
 		_newArmBns = GameObject.Find("NewArmDef").GetComponent<Text>();
 		_newArmWeight = GameObject.Find("NewArmWeight").GetComponent<Text>();
 		_armourCost = GameObject.Find("NewArmCost").GetComponent<Text>();
+
+		_ui = gameObject.GetComponent<NonCombat_UI>();
+		_hudCam = GameObject.Find("HUDcam").GetComponent<Camera>();
 	}
 
 	void CheckWeaponAvailability(){

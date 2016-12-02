@@ -8,9 +8,9 @@ public class _manager : MonoBehaviour {
 	public static int _obols = 200;
 
 	public static int _portal;
-	public static int _level = 3;
+	public static int _level;
 	public static int _currentXP = 1;
-	public static int _nextLvlXP = 100;
+	public static int _nextLvlXP;
 
 	public static int _totalRanks;
 	public static int _availableRanks;
@@ -35,5 +35,29 @@ public class _manager : MonoBehaviour {
 		_manager._activePortals.Add(0);
 
 		DontDestroyOnLoad(gameObject);
+	}
+
+	void Update(){
+		if (Input.GetKeyDown(KeyCode.Space)){
+			_currentXP += 1000;
+			CheckXP();
+		}
+	}
+
+	public void CheckXP(){		
+		if (_currentXP >= _nextLvlXP){
+			LevelUp();
+		}
+	}
+
+	void LevelUp(){
+		_level++;
+		_availableRanks = _level - _totalRanks;
+		UpdateXP();
+	}
+
+	void UpdateXP(){
+		_nextLvlXP = (_level + 1)*(_level + 1)*200;
+		if (_currentXP >= _nextLvlXP) LevelUp();
 	}
 }

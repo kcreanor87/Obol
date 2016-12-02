@@ -12,8 +12,6 @@ public class NonCombat_UI : MonoBehaviour {
 	public Text _maxHP;
 	public SaveGame _saveGame;
 
-	public Camera _smithCamera;
-
 	public GameObject _pauseMenu;
 	public bool _paused;
 	public bool _uiOpen;
@@ -36,8 +34,6 @@ public class NonCombat_UI : MonoBehaviour {
 		_npcChatGO.SetActive(false);
 		_pauseMenu = GameObject.Find("PauseMenu");
 		_pauseMenu.SetActive(false);
-		_smithCamera = GameObject.Find("SmithCamera").GetComponent<Camera>();
-		_smithCamera.enabled = false;
 		_obols = GameObject.Find("CurrentObols").GetComponent<Text>();		
 		_currentHP = GameObject.Find("CurrentHP").GetComponent<Text>();
 		_maxHP = GameObject.Find("MaxHP").GetComponent<Text>();
@@ -47,7 +43,7 @@ public class NonCombat_UI : MonoBehaviour {
 		CloseAllCanvases();
 	}
 
-	void CloseAllCanvases(){
+	public void CloseAllCanvases(){
 		CloseCanvas(1);
 		CloseCanvas(2);
 	}

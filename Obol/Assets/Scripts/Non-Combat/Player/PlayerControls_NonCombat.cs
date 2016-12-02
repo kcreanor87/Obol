@@ -94,7 +94,7 @@ public class PlayerControls_NonCombat : MonoBehaviour {
 						_anim.SetBool("Running", true);
 						_moving = true;
 						_moveToNPC = false;
-						if (_ui._uiOpen) _ui.CloseCanvas(_npcIndex);						
+						if (_ui._uiOpen) _ui.CloseAllCanvases();						
 					}
 				}
 				else if (hit.collider.tag == "NPC"){
@@ -102,7 +102,7 @@ public class PlayerControls_NonCombat : MonoBehaviour {
 					_moveToNPC = true;
 					_anim.SetBool("Running", true);
 					_moving = true;
-					if (_ui._uiOpen) _ui.CloseCanvas(_npcIndex);
+					if (_ui._uiOpen) _ui.CloseAllCanvases();
 					switch (hit.collider.name){
 						case "Smith":
 						_npcIndex = 1;

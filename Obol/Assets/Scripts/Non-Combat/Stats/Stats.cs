@@ -20,6 +20,8 @@ public class Stats : MonoBehaviour {
 	public Text _totalVal, _totalWgt;
 
 	public GameObject _statScreen;
+	public NonCombat_UI _ui;
+	public Camera _hudCam;
 
 	void Awake(){
 		CollectElements();
@@ -28,10 +30,14 @@ public class Stats : MonoBehaviour {
 	public void OpenCanvas(){
 		UpdateStats();
 		_statScreen.SetActive(true);
+		_hudCam.enabled = true;
+		_ui._uiOpen = true;
 	}
 
 	public void CloseCanvas(){
 		_statScreen.SetActive(false);
+		_ui._uiOpen = false;
+		_hudCam.enabled = false;
 	}
 
 	void CollectElements(){
@@ -74,6 +80,10 @@ public class Stats : MonoBehaviour {
 		_totalWgt = GameObject.Find("TotalWgtTxt").GetComponent<Text>();
 
 		_statScreen = GameObject.Find("PlayerStats");
+
+		_ui = gameObject.GetComponent<NonCombat_UI>();
+
+		_hudCam = GameObject.Find("HUDcam").GetComponent<Camera>();
 	}
 
 	public void UpdateStats(){
