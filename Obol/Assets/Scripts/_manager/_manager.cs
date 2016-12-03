@@ -44,7 +44,7 @@ public class _manager : MonoBehaviour {
 
 	void Update(){
 		if (Input.GetKeyDown(KeyCode.Space)){
-			_currentXP += 100;			
+			_currentXP += 10000;			
 			CheckXP();
 			_ui.UpdateUI();
 		}
