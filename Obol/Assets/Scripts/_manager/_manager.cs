@@ -9,8 +9,9 @@ public class _manager : MonoBehaviour {
 
 	public static int _portal;
 	public static int _level;
-	public static int _currentXP = 1;
+	public static int _currentXP;
 	public static int _nextLvlXP;
+	public static int _prevXP;
 
 	public static int _totalRanks;
 	public static int _availableRanks;
@@ -21,8 +22,10 @@ public class _manager : MonoBehaviour {
 	public static List <bool> _npcChat = new List <bool>();
 	public static List <int> _chatState = new List <int>();
 
-	void Awake(){
+	public NonCombat_UI _ui;
 
+	void Awake(){
+		_ui = GameObject.Find("Non-Combat UI").GetComponent<NonCombat_UI>();
 		for (int i = 0; i < 6; i++){
 			_npcChat.Add(false);
 			_chatState.Add(0);
@@ -35,12 +38,15 @@ public class _manager : MonoBehaviour {
 		_manager._activePortals.Add(0);
 
 		DontDestroyOnLoad(gameObject);
+
+		CheckXP();
 	}
 
 	void Update(){
 		if (Input.GetKeyDown(KeyCode.Space)){
-			_currentXP += 1000;
+			_currentXP += 100;			
 			CheckXP();
+			_ui.UpdateUI();
 		}
 	}
 
@@ -57,6 +63,7 @@ public class _manager : MonoBehaviour {
 	}
 
 	void UpdateXP(){
+		_prevXP = _nextLvlXP;
 		_nextLvlXP = (_level + 1)*(_level + 1)*200;
 		if (_currentXP >= _nextLvlXP) LevelUp();
 	}

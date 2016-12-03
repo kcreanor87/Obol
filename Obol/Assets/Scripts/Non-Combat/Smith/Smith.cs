@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Collections.Generic;
 using UnityEngine.UI;
 
@@ -319,28 +319,51 @@ public class Smith : MonoBehaviour {
 		_currentWeapRad.text = _CombatManager._radius + "m";
 
 		_newWeapDam.text = Mathf.FloorToInt((float) _activeWeapon._dam * _CombatManager._attBonus).ToString();
+		ChangeTextColor(_newWeapDam, (float) _activeWeapon._dam, (float) _CombatManager._equipRanged._dam);
+
 		_newWeapFire.text = _activeWeapon._fireRate + "s";
+		ChangeTextColor(_newWeapFire, _CombatManager._equipRanged._fireRate, _activeWeapon._fireRate);
+
 		_newWeapRad.text = _activeWeapon._radius + "m";
+		ChangeTextColor(_newWeapRad, _activeWeapon._radius, _CombatManager._equipRanged._radius);
 
 		_weaponCost.text = (_activeWeapon._bought) ? "-" : _activeWeapon._cost.ToString();
 	}
 
+	void ChangeTextColor(Text text, float valA, float valB){
+		if (valA > valB){
+			text.color = Color.green;
+		}
+		else if (valA < valB){
+			text.color = Color.red;
+		}
+		else{
+			text.color = Color.white;
+		}
+	}
+
 	void UpdateArmourText(){
 		_newArmName.text = _activeArmour._name;
-		_newArmBns.text = Mathf.FloorToInt((float) _activeArmour._armourBonus * _CombatManager._defBonus).ToString();
+		_newArmBns.text = Mathf.FloorToInt((float) _activeArmour._armourBonus * _CombatManager._defBonus).ToString();		
 		_newArmWeight.text = _activeArmour._weight + "kg";
 		switch(_activeType){
 			case 0:
 			_currentArmBns.text = _CombatManager._headSlot._armourBonus.ToString();
 			_currentArmWeight.text = _CombatManager._headSlot._weight + "kg";
+			ChangeTextColor(_newArmBns, (float) _activeArmour._armourBonus, (float) _CombatManager._headSlot._armourBonus);
+			ChangeTextColor(_newArmWeight, _CombatManager._headSlot._weight, _activeArmour._weight);
 			break;
 			case 1:
 			_currentArmBns.text = _CombatManager._chestSlot._armourBonus.ToString();
 			_currentArmWeight.text = _CombatManager._chestSlot._weight + "kg";
+			ChangeTextColor(_newArmBns, (float) _activeArmour._armourBonus, (float) _CombatManager._chestSlot._armourBonus);
+			ChangeTextColor(_newArmWeight, _CombatManager._chestSlot._weight, _activeArmour._weight);
 			break;
 			case 2:
 			_currentArmBns.text = _CombatManager._legSlot._armourBonus.ToString();
 			_currentArmWeight.text = _CombatManager._legSlot._weight + "kg";
+			ChangeTextColor(_newArmBns, (float) _activeArmour._armourBonus, (float) _CombatManager._legSlot._armourBonus);
+			ChangeTextColor(_newArmWeight, _CombatManager._legSlot._weight, _activeArmour._weight);
 			break;
 		}
 

@@ -6,6 +6,7 @@ public class NonCombat_UI : MonoBehaviour {
 
 	public Text _obols;
 	public RectTransform _hpBar;
+	public RectTransform _xpBar;
 	public int _hpMax = 580;
 	public GameObject _damageText;
 	public Text _currentHP;
@@ -38,6 +39,7 @@ public class NonCombat_UI : MonoBehaviour {
 		_currentHP = GameObject.Find("CurrentHP").GetComponent<Text>();
 		_maxHP = GameObject.Find("MaxHP").GetComponent<Text>();
 		_hpBar = GameObject.Find("HP").GetComponent<RectTransform>();
+		_xpBar = GameObject.Find("XP").GetComponent<RectTransform>();
 		_saveGame = GameObject.Find("Loader").GetComponent<SaveGame>();
 		UpdateUI();	
 		CloseAllCanvases();
@@ -80,6 +82,12 @@ public class NonCombat_UI : MonoBehaviour {
 		_obols.text = _manager._obols.ToString();
 		_currentHP.text = _CombatManager._currentHealth.ToString();
 		_maxHP.text = _CombatManager._maxHealth.ToString();
+		//UpdateHP
+		var HPwidth = (float) ((float)_CombatManager._currentHealth / _CombatManager._maxHealth) * _hpMax;
+		_hpBar.sizeDelta = new Vector2(HPwidth, 130);
+		//UpdateXP
+		var XPwidth = (float) ((float)(_manager._currentXP - _manager._prevXP) /( _manager._nextLvlXP - _manager._prevXP)) * 571;
+		_xpBar.sizeDelta = new Vector2(XPwidth, 130);
 	}
 
 	public void OpenCanvas(int index){
