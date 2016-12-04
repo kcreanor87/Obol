@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 public class Combat_UI : MonoBehaviour {
 
@@ -13,6 +14,7 @@ public class Combat_UI : MonoBehaviour {
 	public SaveGame _saveGame;
 
 	public GameObject _pauseMenu;
+	public GameObject _playerHUD;
 	public bool _paused;
 	public bool _uiOpen;
 	public Stats _stats;
@@ -21,6 +23,7 @@ public class Combat_UI : MonoBehaviour {
 	void Start () {
 		_stats = gameObject.GetComponent<Stats>();
 		_pauseMenu = GameObject.Find("PauseMenu");
+		_playerHUD = GameObject.Find("BaseHUD");
 		_pauseMenu.SetActive(false);
 		_obols = GameObject.Find("CurrentObols").GetComponent<Text>();		
 		_currentHP = GameObject.Find("CurrentHP").GetComponent<Text>();
@@ -29,7 +32,7 @@ public class Combat_UI : MonoBehaviour {
 		_xpBar = GameObject.Find("XP").GetComponent<RectTransform>();
 		_saveGame = GameObject.Find("Loader").GetComponent<SaveGame>();
 		UpdateUI();
-		CloseAllCanvases();	
+		OpenCanvas(0);	
 	}
 
 	void Update(){
@@ -77,12 +80,21 @@ public class Combat_UI : MonoBehaviour {
 	}
 
 	public void OpenCanvas(int index){
+		CloseAllCanvases();
 		switch (index){
+			case 0:
+			_playerHUD.SetActive(true);
+			break;
 			case 2:
 			_stats.OpenCanvas();
+			_playerHUD.SetActive(false);
 			break;
-		}
-		
+		}		
+	}
+
+	public void Concede(){
+		Time.timeScale = 1.0f;
+		SceneManager.LoadScene(1);
 	}
 
 	public void CloseCanvas(int index){
@@ -91,6 +103,7 @@ public class Combat_UI : MonoBehaviour {
 			_stats.CloseCanvas();
 			break;
 		}
+		_playerHUD.SetActive(true);
 		_saveGame.Save();
 	}
 

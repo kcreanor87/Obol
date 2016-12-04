@@ -13,6 +13,7 @@ public class NonCombat_UI : MonoBehaviour {
 	public SaveGame _saveGame;
 
 	public GameObject _pauseMenu;
+	public GameObject _playerHUD;
 	public bool _paused;
 	public bool _uiOpen;
 
@@ -31,6 +32,7 @@ public class NonCombat_UI : MonoBehaviour {
 		_stats = gameObject.GetComponent<Stats>();
 		_portal = gameObject.GetComponent<PortalControls>();
 		_npcChatGO = GameObject.Find("TextBox");
+		_playerHUD = GameObject.Find("BaseHUD");
 		_npcChat = gameObject.GetComponent<NPCChat>();
 		_npcChatText = GameObject.Find("NPCtext").GetComponent<Text>();
 		_npcChatGO.SetActive(false);
@@ -42,8 +44,8 @@ public class NonCombat_UI : MonoBehaviour {
 		_hpBar = GameObject.Find("HP").GetComponent<RectTransform>();
 		_xpBar = GameObject.Find("XP").GetComponent<RectTransform>();
 		_saveGame = GameObject.Find("Loader").GetComponent<SaveGame>();
-		UpdateUI();	
-		CloseAllCanvases();
+		UpdateUI();
+		OpenCanvas(0);
 	}
 
 	public void CloseAllCanvases(){
@@ -70,11 +72,13 @@ public class NonCombat_UI : MonoBehaviour {
 	public void PauseMenu(bool paused){
 		if (paused){
 			_pauseMenu.SetActive(true);
+			_playerHUD.SetActive(false);
 			Time.timeScale = 0.0f;
 			_paused = true;
 		}
 		else{
 			_pauseMenu.SetActive(false);
+			_playerHUD.SetActive(true);
 			Time.timeScale = 1.0f;
 			_paused = false;
 		}
@@ -93,7 +97,12 @@ public class NonCombat_UI : MonoBehaviour {
 	}
 
 	public void OpenCanvas(int index){
+		CloseAllCanvases();
+		_playerHUD.SetActive(false);
 		switch (index){
+			case 0:
+			_playerHUD.SetActive(true);
+			break;
 			case 1:
 			_smith.OpenCanvas();
 			break;
@@ -119,6 +128,7 @@ public class NonCombat_UI : MonoBehaviour {
 			_portal.CloseCanvas();
 			break;
 		}
+		_playerHUD.SetActive(true);
 		_saveGame.Save();
 	}
 
