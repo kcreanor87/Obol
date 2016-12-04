@@ -1,6 +1,5 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
-using System.Collections.Generic;
 
 public class NonCombat_UI : MonoBehaviour {
 
@@ -24,11 +23,13 @@ public class NonCombat_UI : MonoBehaviour {
 
 	public Smith _smith;
 	public Stats _stats;
+	public PortalControls _portal;
 
 	// Use this for initialization
 	void Start () {
 		_smith = gameObject.GetComponent<Smith>();
 		_stats = gameObject.GetComponent<Stats>();
+		_portal = gameObject.GetComponent<PortalControls>();
 		_npcChatGO = GameObject.Find("TextBox");
 		_npcChat = gameObject.GetComponent<NPCChat>();
 		_npcChatText = GameObject.Find("NPCtext").GetComponent<Text>();
@@ -48,6 +49,7 @@ public class NonCombat_UI : MonoBehaviour {
 	public void CloseAllCanvases(){
 		CloseCanvas(1);
 		CloseCanvas(2);
+		CloseCanvas(3);
 	}
 
 	void Update(){
@@ -87,7 +89,7 @@ public class NonCombat_UI : MonoBehaviour {
 		_hpBar.sizeDelta = new Vector2(HPwidth, 130);
 		//UpdateXP
 		var XPwidth = (float) ((float)(_manager._currentXP - _manager._prevXP) /( _manager._nextLvlXP - _manager._prevXP)) * 571;
-		_xpBar.sizeDelta = new Vector2(XPwidth, 130);
+		_xpBar.sizeDelta = new Vector2(XPwidth, 14);
 	}
 
 	public void OpenCanvas(int index){
@@ -97,6 +99,9 @@ public class NonCombat_UI : MonoBehaviour {
 			break;
 			case 2:
 			_stats.OpenCanvas();
+			break;
+			case 3:
+			_portal.OpenCanvas();
 			break;
 		}
 		
@@ -110,7 +115,11 @@ public class NonCombat_UI : MonoBehaviour {
 			case 2:
 			_stats.CloseCanvas();
 			break;
+			case 3:
+			_portal.CloseCanvas();
+			break;
 		}
+		_saveGame.Save();
 	}
 
 	public void ExitGame(){

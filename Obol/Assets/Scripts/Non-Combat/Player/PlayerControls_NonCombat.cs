@@ -1,70 +1,45 @@
 ﻿using UnityEngine;
 using System.Collections;
-using System.Collections.Generic;
 
 public class PlayerControls_NonCombat : MonoBehaviour {
 
 	public NavMeshAgent _agent;
-	public float _range;
 	public Animator _anim;
 	public Vector3 _objectPos;
 	public Shooting _shooting;
 	public LayerMask _layerMask;
-	public bool _moving;
-	public bool _firing;
-	public string _target;
 	public NonCombat_UI _ui;
 	public Transform _textSpawn;
-	public GameObject _indicator;
-	public float _healTimer = 0.1f;
 	public Transform _posA, _posB;
+	public GameObject _indicator;	
 	public SaveGame _saveGame;
-	public bool _moveToNPC;
+
+	public string _target;
 	public int _npcIndex;
-	public Smith _smith;
+	public float _range;
+	public float _healTimer = 0.1f;
+	public bool _moving;
+	public bool _firing;	
+	public bool _moveToNPC;	
 
-	public List <GameObject> _weaponGOs = new List <GameObject>();
-	public List <GameObject> _helmGOs = new List <GameObject>();
-	public List <GameObject> _chestGOs = new List <GameObject>();
-	public List <GameObject> _legGOs = new List <GameObject>();
-
-	// Use this for initialization
 	void Awake () {		
 		Spawn();
 	}
 	
-	// Update is called once per frame
 	void Update () {
 		DetectInput();
 	}
 
-	/*public void UpdateMesh(){
-		for (int i = 0; i < _weaponGOs.Count; i++){
-			_weaponGOs[i].SetActive(_CombatManager._itemsEquipped[0] == i);
-		}
-		for (int i = 0; i < _helmGOs.Count; i++){
-			_helmGOs[i].SetActive(_CombatManager._itemsEquipped[1] == (i + 3));
-		}
-		for (int i = 0; i < _chestGOs.Count; i++){
-			_chestGOs[i].SetActive(_CombatManager._itemsEquipped[2] == (i + 7));
-		}
-		for (int i = 0; i < _legGOs.Count; i++){
-			_legGOs[i].SetActive(_CombatManager._itemsEquipped[3] == (i + 11));
-		}
-	}*/
-
 	void Spawn(){
-		//UpdateMesh();
-		_smith = GameObject.Find("SmithScreen").GetComponent<Smith>();
 		transform.position = NewGame._newGame ? _posA.position : _posB.position;
 		_indicator = GameObject.Find("Indicator");
-		_textSpawn = transform.Find("TextSpawn");
+		_saveGame = GameObject.Find("Loader").GetComponent<SaveGame>();
 		_ui = GameObject.Find("Non-Combat UI").GetComponent<NonCombat_UI>();
 		_anim = gameObject.GetComponentInChildren<Animator>();
-		_shooting = transform.FindChild("Launcher").GetComponent<Shooting>();
 		_agent = gameObject.GetComponent<NavMeshAgent>();
-		_agent.enabled = true;
-		_saveGame = GameObject.Find("Loader").GetComponent<SaveGame>();
+		_textSpawn = transform.Find("TextSpawn");		
+		_shooting = transform.FindChild("Launcher").GetComponent<Shooting>();		
+		_agent.enabled = true;		
 	}
 
 	void DetectInput(){

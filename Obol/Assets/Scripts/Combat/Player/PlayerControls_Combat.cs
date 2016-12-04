@@ -1,74 +1,47 @@
 using UnityEngine;
 using System.Collections;
-using System.Collections.Generic;
 
 public class PlayerControls_Combat : MonoBehaviour {
 
 	public NavMeshAgent _agent;
-	public float _range;
 	public Animator _anim;
 	public Vector3 _objectPos;
 	public Shooting _shooting;
 	public LayerMask _layerMask;
-	public bool _moving;
-	public bool _firing;
-	public string _target;
 	public Combat_UI _ui;
 	public Transform _textSpawn;
-	public GameObject _indicator;
+	public GameObject _indicator;	
+	public SaveGame _saveGame;
+
+	public string _target;
+	public int _npcIndex;
+	public float _range;
 	public float _healTimer = 0.1f;
-	public bool _moveToNPC;
-	public List <Transform> _startPos = new List <Transform>();
+	public bool _moving;
+	public bool _firing;	
+	public bool _moveToNPC;	
 
-	public float _armour;
-
-	public List <GameObject> _weaponGOs = new List <GameObject>();
-	public List <GameObject> _helmGOs = new List <GameObject>();
-	public List <GameObject> _chestGOs = new List <GameObject>();
-	public List <GameObject> _legGOs = new List <GameObject>();
-
-	// Use this for initialization
-	void Start () {		
+	void Awake () {		
 		Spawn();
 	}
 	
-	// Update is called once per frame
 	void Update () {
 		DetectInput();
 	}
 
 	void Spawn(){
-		//UpdateMesh();
-		transform.position = _startPos[_manager._portal].position;
 		_indicator = GameObject.Find("AimIndicator");
-		_textSpawn = transform.Find("TextSpawn");
-		_ui = GameObject.Find("UI").GetComponent<Combat_UI>();
+		_saveGame = GameObject.Find("Loader").GetComponent<SaveGame>();
+		_ui = GameObject.Find("Combat UI").GetComponent<Combat_UI>();
 		_anim = gameObject.GetComponentInChildren<Animator>();
-		_shooting = transform.FindChild("Launcher").GetComponent<Shooting>();
 		_agent = gameObject.GetComponent<NavMeshAgent>();
-		_agent.enabled = true;
-		_agent.speed = (_CombatManager._speed / 10.0f);
-		_anim.SetFloat("Speed", (_CombatManager._speed / 10.0f));
-		_armour = ((1000 - _CombatManager._armourRating) / 1000.0f);
+		_textSpawn = transform.Find("TextSpawn");		
+		_shooting = transform.FindChild("Launcher").GetComponent<Shooting>();		
+		_agent.enabled = true;		
 	}
 
-	/*public void UpdateMesh(){
-		for (int i = 0; i < _weaponGOs.Count; i++){
-			_weaponGOs[i].SetActive(_CombatManager._itemsEquipped[0] == i);
-		}
-		for (int i = 0; i < _helmGOs.Count; i++){
-			_helmGOs[i].SetActive(_CombatManager._itemsEquipped[1] == (i + 3));
-		}
-		for (int i = 0; i < _chestGOs.Count; i++){
-			_chestGOs[i].SetActive(_CombatManager._itemsEquipped[2] == (i + 7));
-		}
-		for (int i = 0; i < _legGOs.Count; i++){
-			_legGOs[i].SetActive(_CombatManager._itemsEquipped[3] == (i + 11));
-		}
-	}*/
-
 	void DetectInput(){
-		DetectMove();
+		if (!Input.GetMouseButton(1)) DetectMove();
 		DetectAim();
 		Heal();		
 	}
@@ -78,8 +51,9 @@ public class PlayerControls_Combat : MonoBehaviour {
 			RaycastHit hit;
 			Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
 			if (Physics.Raycast(ray, out hit, 100f, _layerMask) && !UnityEngine.EventSystems.EventSystem.current.IsPointerOverGameObject()){
-				_ui.OpenCanvas(1);
-				_anim.speed = 1.0f;
+				_agent.speed = (_CombatManager._speed / 10.0f);		
+				_anim.speed = 1.0f;		
+				_anim.SetFloat("Speed", (_CombatManager._speed / 10.0f));
 				if (hit.collider.tag == "Ground"){
 					float dist = Vector3.Distance(hit.point, transform.position);
 					if (dist > 1.0f){
@@ -87,6 +61,7 @@ public class PlayerControls_Combat : MonoBehaviour {
 						_anim.SetBool("Running", true);
 						_moving = true;
 						_moveToNPC = false;
+						if (_ui._uiOpen) _ui.CloseAllCanvases();						
 					}
 				}
 				else if (hit.collider.tag == "NPC"){
@@ -94,37 +69,55 @@ public class PlayerControls_Combat : MonoBehaviour {
 					_moveToNPC = true;
 					_anim.SetBool("Running", true);
 					_moving = true;
-				}	
+					if (_ui._uiOpen) _ui.CloseAllCanvases();
+					switch (hit.collider.name){
+						case "Smith":
+						_npcIndex = 1;
+						break;
+						case "Priest":
+						_npcIndex = 2;
+						break;
+						case "Portal":
+						_npcIndex = 3;
+						break;
+						case "Thief":
+						_npcIndex = 4;
+						break;
+					}
+				}		
 			}
 		}
 		if (_moving){
 			float dist = Vector3.Distance(transform.position, _agent.destination);
 			if (dist <= 0.3f){
-				_agent.SetDestination(transform.position);
-				_anim.SetBool("Running", false);
-				_moving = false;
+				Stop();
 				if (_moveToNPC){
-					_ui.OpenCanvas(0);
-					Time.timeScale = 0.0f;
+					_ui.OpenCanvas(_npcIndex);
 					_moveToNPC = false;
 				}
 			}
 		}
 	}
 
+	void Stop(){
+		_agent.SetDestination(transform.position);
+		_anim.SetBool("Running", false);
+		_moving = false;
+	}
+
 	void DetectAim(){
 		if (Input.GetMouseButton(1)){
-			_moveToNPC = false;
+			Stop();
 			RaycastHit hit;
 			Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
 			if (Physics.Raycast(ray, out hit, 100f, _layerMask)){
-				if (hit.collider.tag == "Ground" || hit.collider.tag == "Resource" || hit.collider.tag == "Enemy" || hit.collider.tag == "Destructible"){
-					if (hit.collider.tag == "Ground" || hit.collider.tag == "Enemy"){
-						_indicator.SetActive(hit.collider.name != "Warden_Parent");	
-						_indicator.transform.position = hit.point;					
+				if (hit.collider.tag == "Ground" || hit.collider.tag == "Enemy" || hit.collider.tag == "NPC"){
+					if (hit.collider.tag == "Ground"){
+						_indicator.SetActive(true);
+						_indicator.transform.position = hit.point;	
 					}
 					else{
-						_indicator.SetActive(false);							
+						_indicator.SetActive(false);
 					}						
 					_agent.SetDestination(transform.position);
 					_anim.SetBool("Running", false);
@@ -136,22 +129,22 @@ public class PlayerControls_Combat : MonoBehaviour {
         			if (Input.GetMouseButton(0) && !_firing){
         				Shoot(hit.collider.gameObject, hit.point);
         			}
-        			if (Input.GetMouseButtonDown(0) && !_firing){        				
+        			if (Input.GetMouseButtonDown(0) && !_firing){
         				Shoot(hit.collider.gameObject, hit.point);
         			}
-				}					
+				}			
 			}			
 		}		
 		if (Input.GetMouseButtonUp(1)){
-			_anim.SetBool("Attack", false);
 			_indicator.SetActive(false);
+
 		}	
 	}
 
 	void Shoot(GameObject go, Vector3 target){
 		var dist = Vector3.Distance(transform.position, target);	
 		if (go.tag == "Ground"){
-			if (dist <= 6.0f){
+			if (dist <= 4.0f){
 				_shooting.ShootStraight(target);
 			}
 			else{
@@ -160,7 +153,7 @@ public class PlayerControls_Combat : MonoBehaviour {
         	StartCoroutine(FireRate());       					
         }
         else if (go.tag == "Resource" || go.tag == "Destructible"){
-       		var h = 1.0f + go.transform.position.y;
+       		var h = 3 + go.transform.position.y;
        		var _aimTarget = new Vector3(go.transform.position.x, h, go.transform.position.z);
        		_shooting.CalcVelocity(_aimTarget);
        		StartCoroutine(FireRate());
@@ -175,19 +168,19 @@ public class PlayerControls_Combat : MonoBehaviour {
         		}
         		
         	}
-        	else if (dist <= 7.0f){
+        	else if (dist <= 5.0f){
         		_shooting.ShootStraight(go.transform.parent.position);
         	}
         	else{
         		_shooting.CalcVelocity(go.transform.parent.position);
         	}        	
         	StartCoroutine(FireRate());
-        }	
-        _anim.SetBool("Attack", true);	
+        }
+        _anim.SetBool("Attack", true);		
 	}
 
 	public IEnumerator FireRate(){
-		_firing = true;
+		_firing = true;	
 		switch(_CombatManager._equipRanged._id){
 			case 200:
 			_anim.speed = 1.0f;
@@ -201,23 +194,10 @@ public class PlayerControls_Combat : MonoBehaviour {
 			case 203:
 			_anim.speed = .71f;
 			break;
-		}
+		}	
 		yield return new WaitForSeconds(_CombatManager._equipRanged._fireRate);
-		_anim.speed = 1.0f;
 		_firing = false;
 		_anim.SetBool("Attack", false);
-	}
-
-	public void BeenHit(int damage){
-		var dam = Mathf.FloorToInt((float) damage * _armour);
-		_CombatManager._currentHealth -= dam;
-		_ui.DamageText(_textSpawn, dam, true);
-		_ui.UpdateUI();
-		if (_CombatManager._currentHealth <= 0){
-			_agent.Stop();
-			_anim.SetBool("Dead", true);
-			_ui.GameOver();
-		}
 	}
 
 	void Heal(){
@@ -230,5 +210,18 @@ public class PlayerControls_Combat : MonoBehaviour {
 				_ui.UpdateUI();
 			}			
 		}		
+	}
+	
+	public void BeenHit(int damage){
+		/*
+		var dam = Mathf.FloorToInt((float) damage * _armour);
+		_CombatManager._currentHealth -= dam;
+		_ui.DamageText(_textSpawn, dam, true);
+		_ui.UpdateUI();
+		if (_CombatManager._currentHealth <= 0){
+			_agent.Stop();
+			_anim.SetBool("Dead", true);
+			_ui.GameOver();
+		}*/
 	}
 }

@@ -49,6 +49,8 @@ public class Smith : MonoBehaviour {
 
 	public Camera _hudCam;
 
+	public PrefabControl _prefabControls;
+
 	public void OpenCanvas(){
 		_smithGO.SetActive(true);
 		SetOpenCanvas(3);
@@ -57,6 +59,7 @@ public class Smith : MonoBehaviour {
 	}
 
 	public void CloseCanvas(){
+		_prefabControls.EquipGOs();
 		_smithGO.SetActive(false);
 		_hudCam.enabled = false;
 		_ui._uiOpen = false;
@@ -85,6 +88,8 @@ public class Smith : MonoBehaviour {
 
 		_ui = gameObject.GetComponent<NonCombat_UI>();
 		_hudCam = GameObject.Find("HUDcam").GetComponent<Camera>();
+
+		_prefabControls = GameObject.Find("Player").GetComponent<PrefabControl>();
 	}
 
 	void CheckWeaponAvailability(){
@@ -203,6 +208,7 @@ public class Smith : MonoBehaviour {
 			break;
 		}
 		_activeType = type;
+		_prefabControls.EquipGOs();
 	}
 
 	void ResetCanvases(){
@@ -224,6 +230,7 @@ public class Smith : MonoBehaviour {
 		_weaponStats.SetActive(true);
 		_buyWeapon.interactable = (!_activeWeapon._bought && _manager._obols >= _activeWeapon._cost);
 		_equipWeapon.interactable = (_activeWeapon._bought && (_CombatManager._equipRanged._id != _activeWeapon._id));
+		_prefabControls.PreviewItems(_activeType, weapon);
 	}
 
 	public void SetActiveArmour(int armour){
@@ -245,6 +252,7 @@ public class Smith : MonoBehaviour {
 			_itemSelected.transform.position = _legs[armour].transform.position;
 			break;
 		}
+		_prefabControls.PreviewItems(_activeType, armour);
 		UpdateArmourText();
 		_armourStats.SetActive(true);
 		_activeIndex = armour;

@@ -1,78 +1,39 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
-using System.Collections;
-using UnityEngine.SceneManagement;
 
 public class Combat_UI : MonoBehaviour {
 
-	public Text _boneTxt, _ironTxt, _sulphurTxt, _crystalTxt, _enemiesTxt, _obols;
-	public Text _popUpText;
+	public Text _obols;
 	public RectTransform _hpBar;
-	public int _hpMax = 580; 
-	public CombatCounters _counter;
+	public RectTransform _xpBar;
+	public int _hpMax = 580;
 	public GameObject _damageText;
-	public bool _gameOver;
-	public Image _gameOverImage;
-	public GameObject _startGO;
-	public GameObject _endGO;
-	public GameObject _activeGO;
-	public bool _victory;
-	public Sprite _winSprite;
-	public Sprite _lossSprite;
-	public float _size = 50.0f;
-	public float _timer = 3.0f;
-	public bool _switch;
-	public bool _imageActive = true;
-	public GameObject _startText;
-	public GameObject _portalCanvas;
-	public GameObject _mainUI;
-	public GameObject _blackout;
-	public GameObject _popUp;
-	public int _resIndex;
-	public bool _ticker;
 	public Text _currentHP;
 	public Text _maxHP;
-	public bool _tutorial;
-	public GameObject _fadeOut;
+	public SaveGame _saveGame;
+
 	public GameObject _pauseMenu;
 	public bool _paused;
+	public bool _uiOpen;
+	public Stats _stats;
 
 	// Use this for initialization
-	void Start () {	
-		_fadeOut = GameObject.Find("FadeOut");
-		_fadeOut.SetActive(false);
+	void Start () {
+		_stats = gameObject.GetComponent<Stats>();
 		_pauseMenu = GameObject.Find("PauseMenu");
 		_pauseMenu.SetActive(false);
-		_blackout = GameObject.Find("Blackout");
-		_blackout.SetActive(false);
-		_portalCanvas = GameObject.Find("PortalScreen");
-		_portalCanvas.SetActive(false);
-		_mainUI = GameObject.Find("MainUI");
+		_obols = GameObject.Find("CurrentObols").GetComponent<Text>();		
 		_currentHP = GameObject.Find("CurrentHP").GetComponent<Text>();
 		_maxHP = GameObject.Find("MaxHP").GetComponent<Text>();
-		_activeGO = _startGO;		
-		_gameOverImage = _endGO.GetComponent<Image>();
-		_endGO.SetActive(false);
-		_startText = GameObject.Find("Start Text");
-		_startText.SetActive(false);
-		_counter = GameObject.Find("Counters").GetComponent<CombatCounters>();
-		_enemiesTxt = GameObject.Find("EnemiesKilled").GetComponent<Text>();
-		_obols = GameObject.Find("Obols").GetComponent<Text>();
 		_hpBar = GameObject.Find("HP").GetComponent<RectTransform>();
-		_popUp = GameObject.Find("PopUp");
-		_popUpText = GameObject.Find("PopUpText").GetComponent<Text>();
-		_popUp.SetActive(false);
-		_activeGO.SetActive(false);
+		_xpBar = GameObject.Find("XP").GetComponent<RectTransform>();
+		_saveGame = GameObject.Find("Loader").GetComponent<SaveGame>();
 		UpdateUI();
+		CloseAllCanvases();	
 	}
 
-	void Update (){
-		if (_tutorial && _imageActive){
-			EnlargeSprite();
-		}
-		if (!_imageActive){
-			PauseDetect();
-		}
+	void Update(){
+		PauseDetect();
 	}
 
 	void PauseDetect(){
@@ -84,6 +45,10 @@ public class Combat_UI : MonoBehaviour {
 				PauseMenu(false);
 			}			
 		}
+	}
+
+	public void CloseAllCanvases(){
+		CloseCanvas(2);
 	}
 
 	public void PauseMenu(bool paused){
@@ -98,19 +63,39 @@ public class Combat_UI : MonoBehaviour {
 			_paused = false;
 		}
 	}
-	
+
 	public void UpdateUI(){
-		if (_CombatManager._currentHealth > 0){
-			_currentHP.text = _CombatManager._currentHealth.ToString();
-			_maxHP.text = _CombatManager._maxHealth.ToString();
-		}
-		else{
-			_currentHP.text = "0";
-		}		
-		_enemiesTxt.text = _counter._totalEnemies.ToString();
+		_obols.text = _manager._obols.ToString();
+		_currentHP.text = _CombatManager._currentHealth.ToString();
+		_maxHP.text = _CombatManager._maxHealth.ToString();
+		//UpdateHP
 		var HPwidth = (float) ((float)_CombatManager._currentHealth / _CombatManager._maxHealth) * _hpMax;
 		_hpBar.sizeDelta = new Vector2(HPwidth, 130);
-		_obols.text = _manager._obols.ToString();
+		//UpdateXP
+		var XPwidth = (float) ((float)(_manager._currentXP - _manager._prevXP) /( _manager._nextLvlXP - _manager._prevXP)) * 571;
+		_xpBar.sizeDelta = new Vector2(XPwidth, 14);
+	}
+
+	public void OpenCanvas(int index){
+		switch (index){
+			case 2:
+			_stats.OpenCanvas();
+			break;
+		}
+		
+	}
+
+	public void CloseCanvas(int index){
+		switch (index){
+			case 2:
+			_stats.CloseCanvas();
+			break;
+		}
+		_saveGame.Save();
+	}
+
+	public void ExitGame(){
+		Application.Quit();
 	}
 
 	public void DamageText(Transform target, int damage, bool playerHit){
@@ -123,70 +108,7 @@ public class Combat_UI : MonoBehaviour {
 		txt.text = damage.ToString();
 		textGO.GetComponent<RectTransform>().anchoredPosition = pos;
 	}
-
-	public void GameOver(){
-		_fadeOut.SetActive(true);		
-		StartCoroutine(Restart());
-	}
-
-	public IEnumerator Restart(){
-		yield return new WaitForSeconds(2.0f);
-		SceneManager.LoadScene("Crypt");
-	}
-
-	void EnlargeSprite(){
-		if (!_switch){
-			_activeGO.SetActive(true);
-			if (_size <= 150.0f){
-				_size += 10.0f;
-				_activeGO.GetComponent<RectTransform>().sizeDelta = new Vector2(350, _size);
-			}
-			else{
-				_switch = true;
-				_startText.SetActive(true);
-			}
-		}
-		_timer -= Time.deltaTime;
-		if (_gameOver){
-			_blackout.SetActive(true);
-		}
-		if (_timer <= 0){
-			if (!_gameOver){			
-				_startText.SetActive(false);
-				if (_size >= 50.0f){
-					_size -= 5.0f;
-					_activeGO.GetComponent<RectTransform>().sizeDelta = new Vector2(350, _size);
-				}
-				else{
-					_timer = 4.0f;
-					_switch = false;
-					_activeGO.SetActive(false);
-					_activeGO = _endGO;
-					_imageActive = false;
-				}				
-			}
-			else{				
-				_imageActive = false;
-				Time.timeScale = 0.0f;		
-			}
-		}			
-	}
-	public void OpenCanvas(int index){
-		if (!_paused){
-			switch (index){
-			case 0:
-			_portalCanvas.SetActive(true);
-			_mainUI.SetActive(false);
-			break;
-			case 1:
-			_portalCanvas.SetActive(false);
-			_mainUI.SetActive(true);
-			Time.timeScale = 1.0f;
-			break;
-			}
-		}		
-	}
-
+	/*
 	public void PopUpBox(int value, string text){
 		_popUpText.text = "+ " + value + " " + text;
 		_popUp.SetActive(true);
@@ -196,9 +118,5 @@ public class Combat_UI : MonoBehaviour {
 	public IEnumerator FadePopUp(){
 		yield return new WaitForSeconds(2.0f);
 		_popUp.SetActive(false);
-	}
-
-	public void ExitGame(){
-		Application.Quit();
-	}
+	}*/
 }

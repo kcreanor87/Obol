@@ -16,26 +16,22 @@ public class _manager : MonoBehaviour {
 	public static int _totalRanks;
 	public static int _availableRanks;
 
+	public static int _totalLevels = 5;
 	public static List <bool> _activeLevels = new List <bool>();
-	public static List <int> _activePortals = new List <int>();
 
 	public static List <bool> _npcChat = new List <bool>();
 	public static List <int> _chatState = new List <int>();
 
-	public NonCombat_UI _ui;
-
 	void Awake(){
-		_ui = GameObject.Find("Non-Combat UI").GetComponent<NonCombat_UI>();
 		for (int i = 0; i < 6; i++){
 			_npcChat.Add(false);
 			_chatState.Add(0);
 		}
 
-		_manager._activeLevels.Add(true);
-		_manager._activeLevels.Add(true);
-
-		_manager._activePortals.Add(0);
-		_manager._activePortals.Add(0);
+		for (int i = 0; i < _totalLevels; i++){
+			_activeLevels.Add(false);
+		}
+		_activeLevels[0] = true;
 
 		DontDestroyOnLoad(gameObject);
 
@@ -44,9 +40,8 @@ public class _manager : MonoBehaviour {
 
 	void Update(){
 		if (Input.GetKeyDown(KeyCode.Space)){
-			_currentXP += 10000;			
+			_currentXP += 100;			
 			CheckXP();
-			_ui.UpdateUI();
 		}
 	}
 
