@@ -38,26 +38,19 @@ public class _manager : MonoBehaviour {
 		CheckXP();
 	}
 
-	void Update(){
-		if (Input.GetKeyDown(KeyCode.Space)){
-			_currentXP += 100;			
-			CheckXP();
-		}
-	}
-
-	public void CheckXP(){		
+	public static void CheckXP(){		
 		if (_currentXP >= _nextLvlXP){
 			LevelUp();
 		}
 	}
 
-	void LevelUp(){
+	public static void LevelUp(){
 		_level++;
 		_availableRanks = _level - _totalRanks;
 		UpdateXP();
 	}
 
-	void UpdateXP(){
+	public static void UpdateXP(){
 		_prevXP = _nextLvlXP;
 		_nextLvlXP = (_level + 1)*(_level + 1)*200;
 		if (_currentXP >= _nextLvlXP) LevelUp();

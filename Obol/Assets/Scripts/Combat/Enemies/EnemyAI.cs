@@ -24,6 +24,12 @@ public class EnemyAI : MonoBehaviour {
 	public GameObject _attackGO;
 	public GameObject _deathGO;
 
+	public int _exp = 200;
+	public int _goldChance = 50;
+	public int _goldDropped = 10;
+
+	public GameObject _coin;
+
 	void Start(){
 		_anim = transform.GetChild(0).GetComponentInChildren<Animator>();
 		_col = transform.GetChild(0).GetComponentInChildren<Collider>();
@@ -32,7 +38,7 @@ public class EnemyAI : MonoBehaviour {
 		_player = GameObject.Find("Player").GetComponent<PlayerControls_Combat>();
 		if (_ranged) _shooting = GetComponentInChildren<Shooting>();
 		_counter = GameObject.Find("Counters").GetComponent<CombatCounters>();
-		_ui = GameObject.Find("UI").GetComponent<Combat_UI>();
+		_ui = GameObject.Find("Combat UI").GetComponent<Combat_UI>();
 		_agent.enabled = true;	
 		if (_exploder){
 			_attackGO.SetActive(false);
@@ -109,20 +115,33 @@ public class EnemyAI : MonoBehaviour {
 		_ui.DamageText(_textSpawn, dam, false);
 		_attacking = false;
 		if (_health <= 0){
-			StopAllCoroutines();			
-			_agent.enabled = false;
-			_counter._totalEnemies++;
-			_ui.UpdateUI();	
-			_col.enabled = false;			
-			if (_exploder){				
-				_mainGO.SetActive(false);
-				_deathGO.SetActive(true);
-				Instantiate(_exploderProjectile, transform.position, Quaternion.identity);
-			}
-			else{
-				_anim.SetBool("Dead", true);
-			}
-			StartCoroutine(Die());
+			OnDeath();
+		}
+	}
+
+	void OnDeath(){
+		StopAllCoroutines();			
+		_agent.enabled = false;
+		_counter._totalEnemies++;
+		_manager._currentXP += _exp;
+		_manager.CheckXP();
+		_ui.UpdateUI();	
+		_col.enabled = false;			
+		if (_exploder){				
+			_mainGO.SetActive(false);
+			_deathGO.SetActive(true);
+			Instantiate(_exploderProjectile, transform.position, Quaternion.identity);
+		}
+		else{
+			_anim.SetBool("Dead", true);
+		}
+		StartCoroutine(Die());
+	}
+
+	void GoldDrop(){
+		var chance = Random.Range(1, 101);
+		if (chance >= _goldChance){
+			Instantiate(_coin, transform.position, Quaternion.identity);
 		}
 	}
 

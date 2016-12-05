@@ -15,6 +15,7 @@ public class SpawnPoint : MonoBehaviour {
 		_timer = 10.0f;
 		_counterScript = GameObject.Find("Counters").GetComponent<CombatCounters>();
 		transform.FindChild("Indicator").gameObject.SetActive(false);
+		CheckCurrentSpawn();
 	}
 	public void CheckCurrentSpawn(){
 		//Is the spawn on screen? 
@@ -43,7 +44,7 @@ public class SpawnPoint : MonoBehaviour {
 		var enemyType = Random.Range(0, _enemyDatabase.Count);
 		Instantiate(_enemyDatabase[enemyType], transform.position, Quaternion.identity);
 		_spawned++;
-		if (_counterScript._resourcesCollected >= ( _counterScript._resourcesAvailable/2)) _timer = 7.0f;
+		_timer = Random.Range(0.5f, 4.0f);
 		StartCoroutine(Timer(_timer));		
 	}
 

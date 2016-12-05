@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 
@@ -31,8 +31,8 @@ public class Combat_UI : MonoBehaviour {
 		_hpBar = GameObject.Find("HP").GetComponent<RectTransform>();
 		_xpBar = GameObject.Find("XP").GetComponent<RectTransform>();
 		_saveGame = GameObject.Find("Loader").GetComponent<SaveGame>();
-		UpdateUI();
-		OpenCanvas(0);	
+		UpdateUI();	
+		OpenCanvas(0);
 	}
 
 	void Update(){
@@ -42,29 +42,62 @@ public class Combat_UI : MonoBehaviour {
 	void PauseDetect(){
 		if (Input.GetKeyDown(KeyCode.Escape)){
 			if (!_paused){
-				PauseMenu(true);
+				OpenCanvas(1);
 			}
 			else{
-				PauseMenu(false);
+				OpenCanvas(0);
 			}			
 		}
 	}
 
 	public void CloseAllCanvases(){
-		CloseCanvas(2);
+		CloseCanvas(1);
+	}	
+
+	public void OpenCanvas(int index){
+		switch (index){
+			case 0:
+			_playerHUD.SetActive(true);
+			CloseCanvas(1);
+			CloseCanvas(2);
+			_paused = false;
+			Time.timeScale = 1.0f;
+			break;
+			case 1:
+			_pauseMenu.SetActive(true);
+			_paused = true;
+			Time.timeScale = 0.0f;
+			CloseCanvas(0);
+			CloseCanvas(2);
+			break;
+			case 2:
+			CloseCanvas(1);
+			_stats.OpenCanvas();
+			break;
+		}			
+	}	
+
+	public void CloseCanvas(int index){
+		switch (index){
+			case 0:
+			_playerHUD.SetActive(false);
+			break;
+			case 1:
+			_pauseMenu.SetActive(false);
+			break;
+			case 2:
+			_stats.CloseCanvas();
+			break;
+		}		
 	}
 
-	public void PauseMenu(bool paused){
-		if (paused){
-			_pauseMenu.SetActive(true);
-			Time.timeScale = 0.0f;
-			_paused = true;
-		}
-		else{
-			_pauseMenu.SetActive(false);
-			Time.timeScale = 1.0f;
-			_paused = false;
-		}
+	public void Concede(){
+		Time.timeScale = 1.0f;
+		SceneManager.LoadScene(1);
+	}
+
+	public void ExitGame(){
+		Application.Quit();
 	}
 
 	public void UpdateUI(){
@@ -77,38 +110,6 @@ public class Combat_UI : MonoBehaviour {
 		//UpdateXP
 		var XPwidth = (float) ((float)(_manager._currentXP - _manager._prevXP) /( _manager._nextLvlXP - _manager._prevXP)) * 571;
 		_xpBar.sizeDelta = new Vector2(XPwidth, 14);
-	}
-
-	public void OpenCanvas(int index){
-		CloseAllCanvases();
-		switch (index){
-			case 0:
-			_playerHUD.SetActive(true);
-			break;
-			case 2:
-			_stats.OpenCanvas();
-			_playerHUD.SetActive(false);
-			break;
-		}		
-	}
-
-	public void Concede(){
-		Time.timeScale = 1.0f;
-		SceneManager.LoadScene(1);
-	}
-
-	public void CloseCanvas(int index){
-		switch (index){
-			case 2:
-			_stats.CloseCanvas();
-			break;
-		}
-		_playerHUD.SetActive(true);
-		_saveGame.Save();
-	}
-
-	public void ExitGame(){
-		Application.Quit();
 	}
 
 	public void DamageText(Transform target, int damage, bool playerHit){
