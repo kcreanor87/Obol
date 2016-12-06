@@ -16,8 +16,17 @@ public class SaveGame : MonoBehaviour {
 		SaveItems();
 		SaveLevels();
 		SaveChatStates();
+		SaveObols();
 		NewGame._newGame = false;
 		print("Game Saved");
+	}
+
+	public void CombatSave(){
+		SaveExp();
+		SaveRanks();
+		SaveLevels();
+		SaveObols();
+		print("Combat Save");
 	}
 
 	public void Load(){	
@@ -27,6 +36,7 @@ public class SaveGame : MonoBehaviour {
 		LoadItems();
 		LoadChatStates();
 		LoadLevels();
+		LoadObols();
 		print ("Game Loaded");			
 	}
 
@@ -135,5 +145,13 @@ public class SaveGame : MonoBehaviour {
 		_manager._currentXP = PlayerPrefs.GetInt("CurrentXP");
 		_manager._prevXP = PlayerPrefs.GetInt("PrevXP");
 		_manager._nextLvlXP = PlayerPrefs.GetInt("NextXP");
+	}
+
+	void SaveObols(){
+		PlayerPrefs.SetInt("Obols", _manager._obols);
+	}
+
+	void LoadObols(){
+		_manager._obols = PlayerPrefs.GetInt("Obols");
 	}
 }

@@ -26,7 +26,9 @@ public class EnemyAI : MonoBehaviour {
 
 	public int _exp = 200;
 	public int _goldChance = 50;
-	public int _goldDropped = 10;
+	public int _goldDropped;
+	public int _minGold = 10;
+	public int _maxGold = 100;
 
 	public GameObject _coin;
 
@@ -40,6 +42,7 @@ public class EnemyAI : MonoBehaviour {
 		_counter = GameObject.Find("Counters").GetComponent<CombatCounters>();
 		_ui = GameObject.Find("Combat UI").GetComponent<Combat_UI>();
 		_agent.enabled = true;	
+		_goldDropped = Random.Range(_minGold, _maxGold);
 		if (_exploder){
 			_attackGO.SetActive(false);
 			_deathGO.SetActive(false);
@@ -135,13 +138,17 @@ public class EnemyAI : MonoBehaviour {
 		else{
 			_anim.SetBool("Dead", true);
 		}
+		GoldDrop();
+		_ui.ExpText(_exp);
 		StartCoroutine(Die());
 	}
 
 	void GoldDrop(){
 		var chance = Random.Range(1, 101);
 		if (chance >= _goldChance){
-			Instantiate(_coin, transform.position, Quaternion.identity);
+			var coin = (GameObject) Instantiate(_coin, transform.position, Quaternion.identity);
+			var coinScript = coin.GetComponent<Coin>();
+			coinScript._value = _goldDropped;
 		}
 	}
 

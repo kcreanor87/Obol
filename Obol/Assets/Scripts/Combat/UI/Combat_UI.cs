@@ -8,7 +8,7 @@ public class Combat_UI : MonoBehaviour {
 	public RectTransform _hpBar;
 	public RectTransform _xpBar;
 	public int _hpMax = 580;
-	public GameObject _damageText;
+	
 	public Text _currentHP;
 	public Text _maxHP;
 	public SaveGame _saveGame;
@@ -18,6 +18,10 @@ public class Combat_UI : MonoBehaviour {
 	public bool _paused;
 	public bool _uiOpen;
 	public Stats _stats;
+
+	public GameObject _damageText;
+	public GameObject _goldText;
+	public GameObject _xpText;
 
 	// Use this for initialization
 	void Start () {
@@ -110,6 +114,7 @@ public class Combat_UI : MonoBehaviour {
 		//UpdateXP
 		var XPwidth = (float) ((float)(_manager._currentXP - _manager._prevXP) /( _manager._nextLvlXP - _manager._prevXP)) * 571;
 		_xpBar.sizeDelta = new Vector2(XPwidth, 14);
+
 	}
 
 	public void DamageText(Transform target, int damage, bool playerHit){
@@ -122,6 +127,19 @@ public class Combat_UI : MonoBehaviour {
 		txt.text = damage.ToString();
 		textGO.GetComponent<RectTransform>().anchoredPosition = pos;
 	}
+
+	public void GoldText(int gold){
+		var textGO = (GameObject) Instantiate(_goldText, transform);
+		var txt = textGO.GetComponent<Text>();
+		txt.text = "+ " + gold;
+	}
+
+	public void ExpText(int exp){
+		var textGO = (GameObject) Instantiate(_xpText, transform);
+		var txt = textGO.GetComponent<Text>();
+		txt.text = "+ " + exp + " xp";
+	}
+
 	/*
 	public void PopUpBox(int value, string text){
 		_popUpText.text = "+ " + value + " " + text;

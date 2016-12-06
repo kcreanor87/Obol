@@ -265,6 +265,7 @@ public class Smith : MonoBehaviour {
 		_buyWeapon.interactable = false;
 		CheckWeaponAvailability();
 		SetActiveWeapon(_activeIndex);
+		_ui.UpdateUI();
 	}
 
 	public void EquipWeapon(){
@@ -273,7 +274,7 @@ public class Smith : MonoBehaviour {
 		CheckWeaponAvailability();
 		_activeWeapon = _CombatManager._equipRanged;
 		_CombatManager.CalculateStats();
-		UpdateWeaponText();
+		UpdateWeaponText();		
 	}
 
 	public void EquipArmour(){
@@ -317,6 +318,7 @@ public class Smith : MonoBehaviour {
 		}
 		_buyArmour.interactable = false;
 		SetActiveArmour(_activeIndex);
+		_ui.UpdateUI();
 	}
 
 	void UpdateWeaponText(){
