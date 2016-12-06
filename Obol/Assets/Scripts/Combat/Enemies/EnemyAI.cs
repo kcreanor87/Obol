@@ -106,7 +106,7 @@ public class EnemyAI : MonoBehaviour {
 			_col.enabled = false;
 			Instantiate(_exploderProjectile, transform.position, Quaternion.identity);
 			_attacking = false;	
-			_counter._totalEnemies++;
+			_counter._enemiesKilled++;
 			_ui.UpdateUI();	
 			StartCoroutine(Die());
 		}	
@@ -125,7 +125,7 @@ public class EnemyAI : MonoBehaviour {
 	void OnDeath(){
 		StopAllCoroutines();			
 		_agent.enabled = false;
-		_counter._totalEnemies++;
+		_counter._enemiesKilled++;
 		_manager._currentXP += _exp;
 		_manager.CheckXP();
 		_ui.UpdateUI();	

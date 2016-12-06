@@ -20,6 +20,7 @@ public class Destructibles : MonoBehaviour {
 	public GameObject _spawnPoint;
 
 	public CombatCounters _counters;
+	public Combat_UI _ui;
 
 	// Use this for initialization
 	void Start () {
@@ -27,6 +28,7 @@ public class Destructibles : MonoBehaviour {
 		_currentHP = _maxHP;
 		_col = gameObject.GetComponent<Collider>();
 		_anim = gameObject.GetComponentInChildren<Animator>();
+		_ui = GameObject.Find("Combat UI").GetComponent<Combat_UI>();
 	}
 	
 	public void BeenHit(int damage){
@@ -50,6 +52,7 @@ public class Destructibles : MonoBehaviour {
 			Destroy(_spawnPoint);
 			_counters._spawnPoints--;
 		}
+		_ui.UpdateUI();
 	}
 
 	void ChangeSpawns(){

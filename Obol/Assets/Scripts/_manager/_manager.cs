@@ -32,9 +32,8 @@ public class _manager : MonoBehaviour {
 			_activeLevels.Add(false);
 		}
 		_activeLevels[0] = true;
-
 		DontDestroyOnLoad(gameObject);
-
+		UpdateXP();
 		CheckXP();
 	}
 

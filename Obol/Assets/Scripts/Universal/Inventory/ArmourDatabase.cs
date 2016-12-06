@@ -15,7 +15,7 @@ public class ArmourDatabase: MonoBehaviour{
 		_headDatabase.Add(new Armour(303, "Silver Helm", 30, 2.0f, 300, 3, false));
 		_headDatabase.Add(new Armour(304, "Crystal Helm", 50, 4.0f, 400, 4, false));
 
-		_chestDatabase.Add(new Armour(400, "None", 0, 0.0f, 100, 1, true));
+		_chestDatabase.Add(new Armour(400, "None", 0, 0.0f, 100, 0, true));
 		_chestDatabase.Add(new Armour(401, "Bone Plate", 50, 10.0f, 100, 1, false));
 		_chestDatabase.Add(new Armour(402, "Iron Plate", 125, 19.0f, 200, 2, false));
 		_chestDatabase.Add(new Armour(403, "Silver Plate", 50, 4.0f, 300, 3, false));
