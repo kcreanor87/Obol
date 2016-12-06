@@ -12,8 +12,10 @@ public class Coin : MonoBehaviour {
 
 	public bool _active;
 	public SaveGame _saveGame;
+	public CombatCounters _counters;
 
 	void Awake(){
+		_counters = GameObject.Find("Counters").GetComponent<CombatCounters>();
 		_player = GameObject.Find("Player").GetComponent<Transform>();
 		_ui = GameObject.Find("Combat UI").GetComponent<Combat_UI>();
 		_saveGame = GameObject.Find("Loader").GetComponent<SaveGame>();
@@ -55,6 +57,7 @@ public class Coin : MonoBehaviour {
 
 	void CollectResource(){
 		_manager._obols += _value;
+		_counters._obolsCollected += _value;
 		_ui.UpdateUI();
 		_ui.GoldText(_value);
 		_saveGame.CombatSave();

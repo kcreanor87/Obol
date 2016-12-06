@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
+using System.Collections;
 
 public class Combat_UI : MonoBehaviour {
 
@@ -38,20 +39,20 @@ public class Combat_UI : MonoBehaviour {
 	public Sprite _winSprite;
 	public Sprite _loseSprite;
 
-	public Text _gatesTxt, _enemiesTxt, _goldEarnedTxt, _goldBonus, _xpGainedTxt, _xpBonus;
+	public Text _gatesDestroyedTxt, _enemiesTxt, _goldEarnedTxt, _goldBonus, _xpGainedTxt, _xpBonus;
 
 	// Use this for initialization
 	void Start () {
 		_fadeOut = GameObject.Find("FadeOut");
 		_fadeOut.SetActive(false);
 		_gameOverImage = GameObject.Find("GameOverImage").GetComponent<Image>();
-		_gateText = GameObject.Find("GatesDestroyed").GetComponent<Text>();
+		_gatesDestroyedTxt = GameObject.Find("GatesDestroyed").GetComponent<Text>();
 		_enemiesTxt = GameObject.Find("EnemiesKilled").GetComponent<Text>();
 		_goldEarnedTxt = GameObject.Find("GoldEarned").GetComponent<Text>();
 		_goldBonus = GameObject.Find("GoldBonus").GetComponent<Text>();
 		_xpGainedTxt = GameObject.Find("XPGained").GetComponent<Text>();
 		_xpBonus = GameObject.Find("XPBonus").GetComponent<Text>();
-		_endCanvas = transform.FindChild("GameOVerScreen").gameObject;
+		_endCanvas = transform.FindChild("GameOverScreen").gameObject;
 		_endCanvas.SetActive(false);
 		_counters = GameObject.Find("Counters").GetComponent<CombatCounters>();
 		_gateText = GameObject.Find("GateText").GetComponent<Text>();
@@ -160,7 +161,6 @@ public class Combat_UI : MonoBehaviour {
 		_gateText.text = (_counters._spawnPoints > 0) ? "Gates Left:" : "Enemies Remaining";
 		_gateRemaining.text = (_counters._spawnPoints > 0) ? _counters._spawnPoints.ToString() : (_counters._enemiesSpawned - _counters._enemiesKilled).ToString();
 		_enemiesKilled.text = _counters._enemiesKilled.ToString();
-
 	}
 
 	public void DamageText(Transform target, int damage, bool playerHit){
@@ -186,7 +186,7 @@ public class Combat_UI : MonoBehaviour {
 		txt.text = "+ " + exp + " xp";
 	}
 
-	void LevelEnd(bool victory){
+	public void LevelEnd(bool victory){
 		//Close all other canvases
 		CloseCanvas(0);
 		CloseCanvas(1);
@@ -198,17 +198,24 @@ public class Combat_UI : MonoBehaviour {
 			spareGold += array[i].GetComponent<Coin>()._value;
 		}
 		_manager._obols += spareGold;
+		_counters._obolsCollected += spareGold;
+		print (spareGold);
 		//Open canvas
 		_gameOverImage.sprite = victory ? _winSprite : _loseSprite;
 		_endCanvas.SetActive(true);
 		//Show gold, xp, enemies killed and gates.
-
-		//calculate win bonus + add (show);
+		EndText();
 		//once added, enable game over button
 		//enabled GameOVer button
 	}
 
 	void EndText(){
-		
+		_gatesDestroyedTxt.text = "" + (_counters._totalSpawns - _counters._spawnPoints) + " / " + _counters._totalSpawns;
+		_goldEarnedTxt.text = _counters._obolsCollected.ToString();
+		_xpGainedTxt.text = _counters._xpGained.ToString();
+		_enemiesTxt.text = _counters._enemiesKilled.ToString();
+	}
+	public IEnumerator FadeOut(){
+		yield return new WaitForSeconds(1.0f);
 	}
 }
