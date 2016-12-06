@@ -10,19 +10,23 @@ public class Destructibles : MonoBehaviour {
 	public List <GameObject> _highlightGOs = new List <GameObject>();
 	public Animator _anim;
 	public Collider _col;
-	public ParticleSystem _part;
 	public Material _matA;
 	public Material _matB;
 	public bool _mouseOver;
 	public List <GameObject> _nextSpawns = new List <GameObject>();
 	public List <GameObject> _lastSpawns = new List <GameObject>();
 
+	public bool _gate;
+	public GameObject _spawnPoint;
+
+	public CombatCounters _counters;
+
 	// Use this for initialization
 	void Start () {
+		_counters = GameObject.Find("Counters").GetComponent<CombatCounters>();
 		_currentHP = _maxHP;
 		_col = gameObject.GetComponent<Collider>();
 		_anim = gameObject.GetComponentInChildren<Animator>();
-		if (_hiddenBool) _part = gameObject.GetComponentInChildren<ParticleSystem>();
 	}
 	
 	public void BeenHit(int damage){
@@ -36,12 +40,15 @@ public class Destructibles : MonoBehaviour {
 	void Destroy(){
 		if (_hiddenBool) {
 			_hiddenObj.SetActive(false);
-			_part.Play();
 		}
 		_anim.SetBool("Destroyed", true);
 		_col.enabled = false;
 		for (int i = 0; i < _highlightGOs.Count; i++){
 			_highlightGOs[i].GetComponent<MeshRenderer>().material = _matA;
+		}
+		if (_gate){
+			Destroy(_spawnPoint);
+			_counters._spawnPoints--;
 		}
 	}
 

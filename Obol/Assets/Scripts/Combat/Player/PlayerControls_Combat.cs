@@ -111,7 +111,7 @@ public class PlayerControls_Combat : MonoBehaviour {
 			RaycastHit hit;
 			Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
 			if (Physics.Raycast(ray, out hit, 100f, _layerMask)){
-				if (hit.collider.tag == "Ground" || hit.collider.tag == "Enemy" || hit.collider.tag == "NPC"){
+				if (hit.collider.tag == "Ground" || hit.collider.tag == "Enemy" || hit.collider.tag == "Destructible"){
 					if (hit.collider.tag == "Ground"){
 						_indicator.SetActive(true);
 						_indicator.transform.position = hit.point;	

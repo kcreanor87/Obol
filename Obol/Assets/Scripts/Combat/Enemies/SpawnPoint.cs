@@ -18,15 +18,7 @@ public class SpawnPoint : MonoBehaviour {
 		CheckCurrentSpawn();
 	}
 	public void CheckCurrentSpawn(){
-		//Is the spawn on screen? 
-		var ScreenPos = Camera.main.WorldToScreenPoint(transform.position);
-		_spawnOnScreen = ((ScreenPos.x <= Screen.width && ScreenPos.x >= 0) && (ScreenPos.y <= Screen.height && ScreenPos.y >= 0));
-		if (!_spawnOnScreen){			
-			CheckRNG();
-		}
-		else{
-			StartCoroutine(Timer(_timer));
-		}
+		CheckRNG();
 	}
 	//Function to control the RNG that determines whether an enemy spawns or not
 	void CheckRNG(){

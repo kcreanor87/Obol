@@ -23,8 +23,15 @@ public class Combat_UI : MonoBehaviour {
 	public GameObject _goldText;
 	public GameObject _xpText;
 
+	public GameObject _statsText;
+	public GameObject _levelUpText;
+	public GameObject _levelUpPrompt;
+
 	// Use this for initialization
 	void Start () {
+		_levelUpPrompt = GameObject.Find("LevelUpPrompt");
+		_levelUpText = GameObject.Find("LevelUpText");
+		_statsText = GameObject.Find("StatsText");
 		_stats = gameObject.GetComponent<Stats>();
 		_pauseMenu = GameObject.Find("PauseMenu");
 		_playerHUD = GameObject.Find("BaseHUD");
@@ -92,7 +99,8 @@ public class Combat_UI : MonoBehaviour {
 			case 2:
 			_stats.CloseCanvas();
 			break;
-		}		
+		}
+		UpdateUI();		
 	}
 
 	public void Concede(){
@@ -114,6 +122,9 @@ public class Combat_UI : MonoBehaviour {
 		//UpdateXP
 		var XPwidth = (float) ((float)(_manager._currentXP - _manager._prevXP) /( _manager._nextLvlXP - _manager._prevXP)) * 571;
 		_xpBar.sizeDelta = new Vector2(XPwidth, 14);
+		_levelUpPrompt.SetActive(_manager._availableRanks > 0);
+		_levelUpText.SetActive(_manager._availableRanks > 0);
+		_statsText.SetActive(_manager._availableRanks == 0);
 
 	}
 
