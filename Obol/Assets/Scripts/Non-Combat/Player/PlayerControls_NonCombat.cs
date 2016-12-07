@@ -20,14 +20,16 @@ public class PlayerControls_NonCombat : MonoBehaviour {
 	public float _healTimer = 0.1f;
 	public bool _moving;
 	public bool _firing;	
-	public bool _moveToNPC;		
+	public bool _moveToNPC;	
+
+	public bool _placing;
 
 	void Awake () {		
 		Spawn();
 	}
 	
 	void Update () {
-		if (!_ui._paused) DetectInput();
+		if (!_ui._paused && !_placing) DetectInput();
 	}
 
 	void Spawn(){
