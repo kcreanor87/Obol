@@ -26,7 +26,7 @@ public class PlayerControls_Combat : MonoBehaviour {
 	}
 	
 	void Update () {
-		DetectInput();
+		if (!_ui._gameOver) DetectInput();
 	}
 
 	void Spawn(){
@@ -204,7 +204,7 @@ public class PlayerControls_Combat : MonoBehaviour {
 		if (_CombatManager._currentHealth < _CombatManager._maxHealth){
 			_healTimer -= Time.deltaTime;
 			if (_healTimer <= 0){
-				_CombatManager._currentHealth += (!_moving && !_firing) ? 2 : 1;
+				_CombatManager._currentHealth += Mathf.CeilToInt((float) _CombatManager._maxHealth * 0.001f);
 				if (_CombatManager._currentHealth > _CombatManager._maxHealth) _CombatManager._currentHealth = _CombatManager._maxHealth;
 				_healTimer = 0.1f;
 				_ui.UpdateUI();
@@ -213,15 +213,22 @@ public class PlayerControls_Combat : MonoBehaviour {
 	}
 	
 	public void BeenHit(int damage){
-		/*
-		var dam = Mathf.FloorToInt((float) damage * _armour);
-		_CombatManager._currentHealth -= dam;
-		_ui.DamageText(_textSpawn, dam, true);
-		_ui.UpdateUI();
-		if (_CombatManager._currentHealth <= 0){
-			_agent.Stop();
-			_anim.SetBool("Dead", true);
-			_ui.GameOver();
-		}*/
+		if (!_ui._gameOver){
+			var dam = Mathf.FloorToInt((float) damage);
+			_CombatManager._currentHealth -= dam;
+			_ui.DamageText(_textSpawn, dam, true);
+			_ui.UpdateUI();		
+			if (_CombatManager._currentHealth <= 0){
+				_ui._gameOver = true;
+				_agent.Stop();
+				_anim.SetBool("Dead", true);
+				StartCoroutine(Pause());
+			}
+		}		
+	}
+
+	public IEnumerator Pause(){
+		yield return new WaitForSeconds(1.0f);
+		_ui.LevelEnd(false);
 	}
 }

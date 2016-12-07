@@ -2,6 +2,7 @@
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 using System.Collections.Generic;
+using System.Collections;
 
 
 public class PortalControls : MonoBehaviour {
@@ -17,8 +18,12 @@ public class PortalControls : MonoBehaviour {
 
 	public NonCombat_UI _ui;
 
+	public GameObject _fadeOut;
+
 	// Use this for initialization
 	void Awake () {
+		_fadeOut = GameObject.Find("FadeOut");
+		_fadeOut.SetActive(false);
 		_portalCanvas = GameObject.Find("PortalScreen");
 		_travelButton = GameObject.Find("Travel").GetComponent<Button>();
 		_ui = gameObject.GetComponent<NonCombat_UI>();
@@ -47,6 +52,12 @@ public class PortalControls : MonoBehaviour {
 	}
 
 	public void Travel(){
+		StartCoroutine(Fade());
+	}
+
+	public IEnumerator Fade(){
+		_fadeOut.SetActive(true);
+		yield return new WaitForSeconds(1.2f);
 		SceneManager.LoadScene(_level);
 	}
 

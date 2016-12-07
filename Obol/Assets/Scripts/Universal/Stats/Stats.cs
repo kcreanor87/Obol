@@ -116,7 +116,7 @@ public class Stats : MonoBehaviour {
 		_avaialRanks.text = _manager._availableRanks.ToString();
 
 		_hp.text = _CombatManager._currentHealth + "/" + _CombatManager._maxHealth;
-		_dps.text = ((float)_CombatManager._equipRanged._dam / _CombatManager._equipRanged._fireRate).ToString();
+		_dps.text = (((float)_CombatManager._equipRanged._dam * _CombatManager._attBonus) / _CombatManager._equipRanged._fireRate).ToString();
 		_ar.text = _CombatManager._armourRating.ToString();
 		_heal.text = (_CombatManager._maxHealth / 100) + " hp/s";
 		_speed.text = (_CombatManager._speed / 10).ToString();

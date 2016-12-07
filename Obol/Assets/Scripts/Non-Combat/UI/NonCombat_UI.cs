@@ -26,8 +26,15 @@ public class NonCombat_UI : MonoBehaviour {
 	public Stats _stats;
 	public PortalControls _portal;
 
+	public GameObject _levelUpPrompt;
+	public GameObject _levelUpText;
+	public GameObject _statsPrompt;
+
 	// Use this for initialization
 	void Start () {
+		_levelUpPrompt = GameObject.Find("LevelUpPrompt");
+		_levelUpText = GameObject.Find("LevelUpText");
+		_statsPrompt = GameObject.Find("StatsPrompt");
 		_smith = gameObject.GetComponent<Smith>();
 		_stats = gameObject.GetComponent<Stats>();
 		_portal = gameObject.GetComponent<PortalControls>();
@@ -73,13 +80,13 @@ public class NonCombat_UI : MonoBehaviour {
 		if (paused){
 			_pauseMenu.SetActive(true);
 			_playerHUD.SetActive(false);
-			Time.timeScale = 0.0f;
+			_levelUpText.SetActive(_manager._availableRanks > 0);
+			_statsPrompt.SetActive(_manager._availableRanks == 0);
 			_paused = true;
 		}
 		else{
 			_pauseMenu.SetActive(false);
 			_playerHUD.SetActive(true);
-			Time.timeScale = 1.0f;
 			_paused = false;
 		}
 	}
@@ -94,6 +101,7 @@ public class NonCombat_UI : MonoBehaviour {
 		//UpdateXP
 		var XPwidth = (float) ((float)(_manager._currentXP - _manager._prevXP) /( _manager._nextLvlXP - _manager._prevXP)) * 571;
 		_xpBar.sizeDelta = new Vector2(XPwidth, 14);
+		_levelUpPrompt.SetActive(_manager._availableRanks > 0);
 	}
 
 	public void OpenCanvas(int index){
@@ -108,6 +116,8 @@ public class NonCombat_UI : MonoBehaviour {
 			break;
 			case 2:
 			_stats.OpenCanvas();
+			PauseMenu(false);
+			_playerHUD.SetActive(false);
 			break;
 			case 3:
 			_portal.OpenCanvas();
@@ -128,6 +138,7 @@ public class NonCombat_UI : MonoBehaviour {
 			_portal.CloseCanvas();
 			break;
 		}
+		_paused = false;
 		_playerHUD.SetActive(true);
 		_saveGame.Save();
 	}

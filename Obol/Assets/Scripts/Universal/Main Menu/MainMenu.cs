@@ -33,7 +33,7 @@ public class MainMenu : MonoBehaviour {
 	public void StartNewGame(){
 		NewGame._newGame = true;
 		PlayerPrefs.DeleteAll();
-		SceneManager.LoadScene("Level0");
+		SceneManager.LoadScene("Crypt");
 	}
 
 	public void ExitGame(){

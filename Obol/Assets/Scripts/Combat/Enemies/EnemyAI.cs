@@ -55,12 +55,14 @@ public class EnemyAI : MonoBehaviour {
 	}
 
 	void ChasePlayer(){
-		_anim.SetBool("Running", true);		
-		StartCoroutine(ChaseLoop(0.25f));
+		if (!_ui._gameOver){
+			_anim.SetBool("Running", true);		
+			StartCoroutine(ChaseLoop(0.25f));
+		}		
 	}
 
 	void AttackStart(){
-		StartCoroutine(Attack());
+		if (!_ui._gameOver) StartCoroutine(Attack());
 	}
 
 	public IEnumerator ChaseLoop(float looptime){		
@@ -92,7 +94,7 @@ public class EnemyAI : MonoBehaviour {
 				ChasePlayer();
 			} 
 			else{
-				if (!_ranged){
+				if (!_ranged && !_ui._gameOver){
 					_player.BeenHit(_damage);	
 				}
 				yield return new WaitForSeconds(0.25f);
@@ -127,6 +129,7 @@ public class EnemyAI : MonoBehaviour {
 		_agent.enabled = false;
 		_counter._enemiesKilled++;
 		_manager._currentXP += _exp;
+		_counter._xpGained += _exp;
 		_manager.CheckXP();
 		_ui.UpdateUI();	
 		_col.enabled = false;			

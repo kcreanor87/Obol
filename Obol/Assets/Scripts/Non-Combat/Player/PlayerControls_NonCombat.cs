@@ -20,26 +20,27 @@ public class PlayerControls_NonCombat : MonoBehaviour {
 	public float _healTimer = 0.1f;
 	public bool _moving;
 	public bool _firing;	
-	public bool _moveToNPC;	
+	public bool _moveToNPC;		
 
 	void Awake () {		
 		Spawn();
 	}
 	
 	void Update () {
-		DetectInput();
+		if (!_ui._paused) DetectInput();
 	}
 
 	void Spawn(){
 		transform.position = NewGame._newGame ? _posA.position : _posB.position;
-		_indicator = GameObject.Find("Indicator");
+		_indicator = GameObject.Find("Indicator");		
 		_saveGame = GameObject.Find("Loader").GetComponent<SaveGame>();
 		_ui = GameObject.Find("Non-Combat UI").GetComponent<NonCombat_UI>();
 		_anim = gameObject.GetComponentInChildren<Animator>();
 		_agent = gameObject.GetComponent<NavMeshAgent>();
 		_textSpawn = transform.Find("TextSpawn");		
 		_shooting = transform.FindChild("Launcher").GetComponent<Shooting>();		
-		_agent.enabled = true;		
+		_agent.enabled = true;	
+
 	}
 
 	void DetectInput(){

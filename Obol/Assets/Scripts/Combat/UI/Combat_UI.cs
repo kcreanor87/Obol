@@ -40,11 +40,23 @@ public class Combat_UI : MonoBehaviour {
 	public Sprite _loseSprite;
 
 	public Text _gatesDestroyedTxt, _enemiesTxt, _goldEarnedTxt, _goldBonus, _xpGainedTxt, _xpBonus;
+	public bool _winBonus;
+	public int _tempGold;
+	public int _tempXP;
+
+	public bool _gameOver;
+
+	public Button _continueButton;
+
+	public Camera _miniMap;
 
 	// Use this for initialization
 	void Start () {
+		_miniMap = GameObject.Find("Minimap").GetComponent<Camera>();
 		_fadeOut = GameObject.Find("FadeOut");
 		_fadeOut.SetActive(false);
+		_continueButton = GameObject.Find("Continue").GetComponent<Button>();
+		_continueButton.interactable = false;
 		_gameOverImage = GameObject.Find("GameOverImage").GetComponent<Image>();
 		_gatesDestroyedTxt = GameObject.Find("GatesDestroyed").GetComponent<Text>();
 		_enemiesTxt = GameObject.Find("EnemiesKilled").GetComponent<Text>();
@@ -68,7 +80,7 @@ public class Combat_UI : MonoBehaviour {
 		_obols = GameObject.Find("CurrentObols").GetComponent<Text>();		
 		_currentHP = GameObject.Find("CurrentHP").GetComponent<Text>();
 		_maxHP = GameObject.Find("MaxHP").GetComponent<Text>();
-		_hpBar = GameObject.Find("HP").GetComponent<RectTransform>();
+		_hpBar = GameObject.Find("HPbar").GetComponent<RectTransform>();
 		_xpBar = GameObject.Find("XP").GetComponent<RectTransform>();
 		_saveGame = GameObject.Find("Loader").GetComponent<SaveGame>();
 		UpdateUI();	
@@ -77,6 +89,7 @@ public class Combat_UI : MonoBehaviour {
 
 	void Update(){
 		PauseDetect();
+		if (_winBonus) AddBonus();
 	}
 
 	void PauseDetect(){
@@ -95,9 +108,11 @@ public class Combat_UI : MonoBehaviour {
 	}	
 
 	public void OpenCanvas(int index){
+		_miniMap.enabled = false;
 		switch (index){
 			case 0:
 			_playerHUD.SetActive(true);
+			_miniMap.enabled = true;
 			CloseCanvas(1);
 			CloseCanvas(2);
 			_paused = false;
@@ -132,12 +147,11 @@ public class Combat_UI : MonoBehaviour {
 		UpdateUI();		
 	}
 
-	public void Concede(){
-		//Disable all UI
-		//enable fade out
-		//wait for seconds
-		Time.timeScale = 1.0f;
-		SceneManager.LoadScene(1);
+	public void Concede(){		
+		CloseAllCanvases();
+		_endCanvas.SetActive(false);
+		Time.timeScale = 1.0f;	
+		StartCoroutine(FadeOut());
 	}
 
 	public void ExitGame(){
@@ -187,6 +201,9 @@ public class Combat_UI : MonoBehaviour {
 	}
 
 	public void LevelEnd(bool victory){
+		_miniMap.enabled = false;
+		Time.timeScale = 1.0f;
+		_gameOver = true;
 		//Close all other canvases
 		CloseCanvas(0);
 		CloseCanvas(1);
@@ -199,12 +216,18 @@ public class Combat_UI : MonoBehaviour {
 		}
 		_manager._obols += spareGold;
 		_counters._obolsCollected += spareGold;
-		print (spareGold);
 		//Open canvas
 		_gameOverImage.sprite = victory ? _winSprite : _loseSprite;
 		_endCanvas.SetActive(true);
 		//Show gold, xp, enemies killed and gates.
 		EndText();
+		if (victory) {
+			CalcBonus();
+		}
+		else{
+			_continueButton.interactable = true;
+			Time.timeScale = 0.2f;
+		}
 		//once added, enable game over button
 		//enabled GameOVer button
 	}
@@ -215,7 +238,56 @@ public class Combat_UI : MonoBehaviour {
 		_xpGainedTxt.text = _counters._xpGained.ToString();
 		_enemiesTxt.text = _counters._enemiesKilled.ToString();
 	}
+
+	void CalcBonus(){
+		_tempGold = Mathf.FloorToInt(_counters._obolsCollected * 0.2f);
+		_tempXP = Mathf.FloorToInt(_counters._xpGained * 0.2f);
+		_goldBonus.text = _tempGold.ToString();
+		_xpBonus.text = _tempXP.ToString();
+		_manager._obols += _tempGold;
+		_manager._currentXP += _tempXP;
+		StartCoroutine(Pause());
+	}
+
+	void AddBonus(){
+		if (_tempGold >= 2){
+			_tempGold -= 2;
+			_counters._obolsCollected += 2;
+		}
+		else{
+			_counters._obolsCollected += _tempGold;
+			_tempGold = 0;
+		}
+		if (_tempXP >= 8){
+			_tempXP -= 8;
+			_counters._xpGained += 8;
+		}
+		else{
+			_counters._xpGained += _tempXP;
+			_tempXP = 0;
+		}
+		if (_tempGold == 0 && _tempXP == 0){
+			_winBonus = false;
+			_continueButton.interactable = true;
+			Time.timeScale = 0.0f;
+			UpdateUI();
+		}
+		_xpBonus.text = _tempXP.ToString();
+		_xpGainedTxt.text = _counters._xpGained.ToString();
+		_goldEarnedTxt.text = _counters._obolsCollected.ToString();
+		_goldBonus.text = _tempGold.ToString();
+	}
+
+	public IEnumerator Pause(){
+		yield return new WaitForSeconds(1.5f);
+		_winBonus = true;
+	}
+
 	public IEnumerator FadeOut(){
-		yield return new WaitForSeconds(1.0f);
+		_fadeOut.SetActive(true);
+		Time.timeScale = 1.0f;
+		_endCanvas.SetActive(false);
+		yield return new WaitForSeconds(1.2f);		
+		SceneManager.LoadScene("Crypt");
 	}
 }
