@@ -9,8 +9,9 @@ public class PrefabControl : MonoBehaviour {
 	public List <GameObject> _legGOs = new List<GameObject>();
 	public List <GameObject> _turretGOs = new List<GameObject>();
 
-	public GameObject _activeTurretA;
-	public GameObject _activeTurretB;
+	public GameObject _activeTurret;
+
+	public TurretControls _turretControls;
 
 	void Start(){
 		FindGos();
@@ -40,8 +41,7 @@ public class PrefabControl : MonoBehaviour {
 		UpdateHead(_CombatManager._armourDb._headDatabase.IndexOf(_CombatManager._headSlot));
 		UpdateChest(_CombatManager._armourDb._chestDatabase.IndexOf(_CombatManager._chestSlot));
 		UpdateLegs(_CombatManager._armourDb._legDatabase.IndexOf(_CombatManager._legSlot));
-		UpdateTurretA(_CombatManager._turretDb._turretDatabase.IndexOf(_CombatManager._turretSlotA));
-		UpdateTurretB(_CombatManager._turretDb._turretDatabase.IndexOf(_CombatManager._turretSlotB));
+		UpdateTurret(_CombatManager._turretDb._turretDatabase.IndexOf(_CombatManager._turretSlot));
 	}
 
 	public void PreviewItems(int type, int index){
@@ -84,13 +84,16 @@ public class PrefabControl : MonoBehaviour {
 			_legGOs[i].SetActive(index == i);
 		}
 	}
-	void UpdateTurretA(int index){
-		_activeTurretA = _turretGOs[index];
-	}
-	void UpdateTurretB(int index){
-		_activeTurretB = _turretGOs[index];
+	void UpdateTurret(int index){
+		_activeTurret = _turretGOs[index];
 		for (int i = 0; i < _turretGOs.Count; i++){
 			_turretGOs[i].SetActive(false);
 		}
+		_turretControls = _activeTurret.GetComponent<TurretControls>();
+		_activeTurret.SetActive(true);
+	}
+
+	public void SetTurretStatic(){
+		_turretControls.SwitchStatic();
 	}
 }

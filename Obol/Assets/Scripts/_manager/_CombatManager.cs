@@ -28,8 +28,7 @@ public class _CombatManager : MonoBehaviour {
 	public static Armour _headSlot;
 	public static Armour _chestSlot;
 	public static Armour _legSlot;
-	public static Turret _turretSlotA;
-	public static Turret _turretSlotB;
+	public static Turret _turretSlot;
 
 	public static int _headBonus;
 	public static int  _chestBonus;
@@ -56,9 +55,7 @@ public class _CombatManager : MonoBehaviour {
 		_headSlot = _armourDb._headDatabase[0];
 		_chestSlot = _armourDb._chestDatabase[0];
 		_legSlot = _armourDb._legDatabase[0];
-		_turretSlotA = _turretDb._turretDatabase[0];
-		_turretSlotB = _turretDb._turretDatabase[1];
-		print(_turretSlotA._name);
+		_turretSlot = _turretDb._turretDatabase[1];
 		CalculateStats();	
 	}
 

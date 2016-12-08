@@ -16,9 +16,6 @@ public class PlayerControls_Combat : MonoBehaviour {
 	public PrefabControl _prefabs;
 	public GameObject _activeTurret;
 
-	public List <GameObject> _placedTurrets = new List <GameObject>();
-	public int _maxTurrets = 5;
-
 	public string _target;
 	public int _npcIndex;
 	public float _range;
@@ -26,15 +23,13 @@ public class PlayerControls_Combat : MonoBehaviour {
 	public bool _moving;
 	public bool _firing;	
 	public bool _moveToNPC;	
-	public bool _placing;
 
 	void Awake () {
 		Spawn();
 	}
 	
 	void Update () {
-		if (!_ui._gameOver && !_placing) DetectInput();
-		if (!_ui._gameOver && _placing) PositionTurret();
+		if (!_ui._gameOver) DetectInput();
 	}
 
 	void Spawn(){
@@ -239,41 +234,5 @@ public class PlayerControls_Combat : MonoBehaviour {
 	public IEnumerator Pause(){
 		yield return new WaitForSeconds(1.0f);
 		_ui.LevelEnd(false);
-	}
-
-	public void ActivateTurretPos(int type){
-		if (!_placing){
-			_activeTurret = (type == 0) ? Instantiate (_prefabs._activeTurretA) : Instantiate (_prefabs._activeTurretB);
-			_placing = true;
-		}			
-	}
-
-	void PositionTurret(){
-		RaycastHit hit;
-		Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-		if (Physics.Raycast(ray, out hit, 100f, _layerMask)){
-			if (hit.collider.tag == "Ground"){
-				_activeTurret.SetActive(true);
-				_activeTurret.transform.position = hit.point;
-				if (Input.GetMouseButtonDown(0)){
-					//Check List of turrets
-					//If not max, place turret and add to list;
-					var prefabTurret = (GameObject) Instantiate(_activeTurret, 	hit.point, Quaternion.identity);
-					prefabTurret.SetActive(true);
-					_placedTurrets.Add(prefabTurret);
-					if (_placedTurrets.Count > _maxTurrets){
-						Destroy(_placedTurrets[0]);
-						_placedTurrets.RemoveAt(0);
-					}
-				}
-				if (Input.GetMouseButtonDown(1) || Input.GetKeyDown(KeyCode.T)) _placing = false;
-			}
-			else{
-				_activeTurret.SetActive(false);
-			}		
-		}
-		if (!_placing){
-			Destroy(_activeTurret);
-		}
 	}
 }
