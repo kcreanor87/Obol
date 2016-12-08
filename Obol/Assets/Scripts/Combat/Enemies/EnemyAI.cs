@@ -31,6 +31,9 @@ public class EnemyAI : MonoBehaviour {
 	public int _maxGold = 100;
 
 	public GameObject _coin;
+	public float _speed = 6.0f;
+
+	public float _attackRate = 0.5f;
 
 	void Start(){
 		_anim = transform.GetChild(0).GetComponentInChildren<Animator>();
@@ -42,6 +45,7 @@ public class EnemyAI : MonoBehaviour {
 		_counter = GameObject.Find("Counters").GetComponent<CombatCounters>();
 		_ui = GameObject.Find("Combat UI").GetComponent<Combat_UI>();
 		_agent.enabled = true;	
+		_agent.speed = _speed;
 		_goldDropped = Random.Range(_minGold, _maxGold);
 		if (_exploder){
 			_attackGO.SetActive(false);
@@ -85,7 +89,7 @@ public class EnemyAI : MonoBehaviour {
 			_shooting.CalcVelocity(_player.transform.position);
 		}
 		_anim.SetBool("Attack", true);
-		yield return new WaitForSeconds(0.5f);
+		yield return new WaitForSeconds(_attackRate);
 		if (!_exploder){
 			var dist = Vector3.Distance(transform.position, _player.transform.position);
 			if (dist > _range){
@@ -97,7 +101,7 @@ public class EnemyAI : MonoBehaviour {
 				if (!_ranged && !_ui._gameOver){
 					_player.BeenHit(_damage);	
 				}
-				yield return new WaitForSeconds(0.25f);
+				yield return new WaitForSeconds(_attackRate/2);
 				AttackStart();
 			}
 		}
@@ -170,6 +174,20 @@ public class EnemyAI : MonoBehaviour {
         float step = 4.0f * Time.deltaTime;
         Vector3 newDir = Vector3.RotateTowards(transform.forward, targetDir, step, 0.0F);
         transform.rotation = Quaternion.LookRotation(newDir);
+	}
+
+	public void Slowed(float duration){
+		StartCoroutine(Slow(duration));
+	}
+
+	public IEnumerator Slow(float duration){
+		_agent.speed = _speed/2;
+		_anim.speed = 0.5f;
+		_attackRate = _attackRate*2;
+		yield return new WaitForSeconds(duration);
+		_attackRate = _attackRate/2;
+		_anim.speed = 1.0f;
+		_agent.speed = _speed;
 	}
 }
 

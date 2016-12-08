@@ -10,7 +10,7 @@ public class TurretControls : MonoBehaviour {
 	public float _fireRate;
 	public int _damage;
 	public EnemyAI _targetScript;
-	public bool _attacking;
+	public bool _active;
 	public bool _static;
 	public Transform _player;
 
@@ -20,18 +20,29 @@ public class TurretControls : MonoBehaviour {
 		CollectData();			
 	}
 
+	void CollectData(){
+		_type = _CombatManager._turretSlot._type;
+		_agent = gameObject.GetComponent<NavMeshAgent>();
+		_player = GameObject.Find("Player").GetComponent<Transform>();
+		_fireRate = _CombatManager._turretSlot._fireRate;
+		_damage = _CombatManager._turretSlot._dam;
+	}
+
 	void Update(){
 		if (_enemiesInRange.Count > 0){						
 			if (_type == 0){
 				RotateToTarget();
 			}			
-			if (!_attacking){
+			if (!_active){
 				switch (_type){
 					case 0:
-					SingleTarget();
+					DamageSingle();
 					break;
 					case 1:
-					AreaEffect();
+					DamageArea();
+					break;
+					case 2:
+					SlowEnemies();
 					break;
 				}
 			}			
@@ -42,14 +53,16 @@ public class TurretControls : MonoBehaviour {
 		if (!_static) FollowPlayer();	
 	}
 
-	void FollowPlayer(){
-			StartCoroutine(CheckPlayerDistance());
+	void RotateToTarget(){
+		Quaternion newRotation = Quaternion.LookRotation(_enemiesInRange[0].transform.position - transform.position);
+		newRotation.x = 0f;
+       	newRotation.z = 0f;
+        transform.rotation = Quaternion.Slerp(transform.rotation, newRotation, Time.deltaTime * 15);
 	}
 
-	public void SwitchStatic(){
-		_static = !_static;
-		if (_static) _agent.Stop();
-	}
+	void FollowPlayer(){
+			StartCoroutine(CheckPlayerDistance());
+	}	
 
 	public IEnumerator CheckPlayerDistance(){
 		if (Vector3.Distance(transform.position, _player.position) < 8.0f){
@@ -60,29 +73,52 @@ public class TurretControls : MonoBehaviour {
 			_agent.Resume();
 		}
 		yield return new WaitForSeconds (1.0f);
-	}
+	}	
 
-	void CollectData(){
-		_agent = gameObject.GetComponent<NavMeshAgent>();
-		_player = GameObject.Find("Player").GetComponent<Transform>();
-		_fireRate = _CombatManager._turretSlot._fireRate;
-		_damage = _CombatManager._turretSlot._dam;
-	}
-
-	void SingleTarget(){
+	void DamageSingle(){
 		StartCoroutine(SingleFireRate());
 	}
 
-	void AreaEffect(){
+	void DamageArea(){
 		StartCoroutine(AreaFireRate());
+	}
+
+	void SlowEnemies(){
+		StartCoroutine(Slow());
+	}
+
+	void BoostPlayerDamage(){
+
+	}
+
+	void BoostPlayerDefense(){
+
+	}
+
+	void BoostResources(){
+
 	}
 
 	public IEnumerator SingleFireRate(){
 		AttackSingleTarget();
-		_attacking = true;
+		_active = true;
 		yield return new WaitForSeconds(_fireRate);
 		print("Attack single target");
-		_attacking = false;
+		_active = false;
+	}
+
+	public IEnumerator AreaFireRate(){
+		AreaDamage();
+		_active = true;
+		yield return new WaitForSeconds(_fireRate);	
+		_active = false;
+	}
+
+	public IEnumerator Slow(){
+		ImplementSlow();
+		_active = true;
+		yield return new WaitForSeconds(_fireRate);	
+		_active = false;
 	}
 
 	void AttackSingleTarget(){
@@ -91,13 +127,6 @@ public class TurretControls : MonoBehaviour {
 		if (script._health <= 0){
 		_enemiesInRange.RemoveAt(0);
 		}		
-	}
-
-	public IEnumerator AreaFireRate(){
-		AreaDamage();
-		_attacking = true;
-		yield return new WaitForSeconds(_fireRate);	
-		_attacking = false;
 	}
 
 	void AreaDamage(){
@@ -110,12 +139,15 @@ public class TurretControls : MonoBehaviour {
 		}
 	}
 
-	void RotateToTarget(){
-		Quaternion newRotation = Quaternion.LookRotation(_enemiesInRange[0].transform.position - transform.position);
-		newRotation.x = 0f;
-       	newRotation.z = 0f;
-        transform.rotation = Quaternion.Slerp(transform.rotation, newRotation, Time.deltaTime * 15);
-	}
+	void ImplementSlow(){
+		for (int i = 0; i < _enemiesInRange.Count; i++){
+			var script = _enemiesInRange[i].GetComponentInParent<EnemyAI>();
+			if (!(script._agent.speed < script._speed)) script.Slowed(5.0f);
+			if (script._health <= 0){
+				_enemiesInRange.RemoveAt(i);
+			}
+		}
+	}			
 
 	void OnTriggerEnter(Collider col){
 		if (col.tag == "Enemy"){
@@ -134,4 +166,9 @@ public class TurretControls : MonoBehaviour {
 			_playerInRange = false;
 		}
 	}	
+
+	public void SwitchStatic(){
+		_static = !_static;
+		if (_static) _agent.Stop();
+	}
 }
