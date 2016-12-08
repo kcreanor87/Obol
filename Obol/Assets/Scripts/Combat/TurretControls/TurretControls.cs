@@ -14,6 +14,9 @@ public class TurretControls : MonoBehaviour {
 	public bool _static;
 	public Transform _player;
 
+	public PlayerControls_Combat _pcCombat;
+	public PlayerControls_NonCombat _pcNonCombat;
+
 	public NavMeshAgent _agent;
 
 	void Start(){
@@ -44,6 +47,12 @@ public class TurretControls : MonoBehaviour {
 					case 2:
 					SlowEnemies();
 					break;
+					case 3:
+					//**Boost player stats
+					break;
+					case 4:
+					BoostResources();
+					break;
 				}
 			}			
 		}
@@ -65,7 +74,7 @@ public class TurretControls : MonoBehaviour {
 	}	
 
 	public IEnumerator CheckPlayerDistance(){
-		if (Vector3.Distance(transform.position, _player.position) < 8.0f){
+		if (Vector3.Distance(transform.position, _player.position) < 6.0f){
 			_agent.Stop();
 		}
 		else{
@@ -96,6 +105,7 @@ public class TurretControls : MonoBehaviour {
 	}
 
 	void BoostResources(){
+		StartCoroutine(Boost());
 
 	}
 
@@ -116,6 +126,13 @@ public class TurretControls : MonoBehaviour {
 
 	public IEnumerator Slow(){
 		ImplementSlow();
+		_active = true;
+		yield return new WaitForSeconds(_fireRate);	
+		_active = false;
+	}
+
+	public IEnumerator Boost(){
+		ImplementBoost();
 		_active = true;
 		yield return new WaitForSeconds(_fireRate);	
 		_active = false;
@@ -147,15 +164,23 @@ public class TurretControls : MonoBehaviour {
 				_enemiesInRange.RemoveAt(i);
 			}
 		}
-	}			
+	}
+
+	void ImplementBoost(){
+		for (int i = 0; i < _enemiesInRange.Count; i++){
+			var script = _enemiesInRange[i].GetComponentInParent<EnemyAI>();
+			if (!(script._dropBoost)) script.Boost(2.0f);
+			if (script._health <= 0){
+				_enemiesInRange.RemoveAt(i);
+			}
+		}
+	}		
 
 	void OnTriggerEnter(Collider col){
 		if (col.tag == "Enemy"){
 			_enemiesInRange.Add(col.gameObject);
 		}
-		else if (col.tag == "Player"){
-			_playerInRange = true;
-		}
+		_playerInRange |= (col.tag == "Player");
 	}
 
 	void OnTriggerExit(Collider col){

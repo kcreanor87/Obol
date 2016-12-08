@@ -34,6 +34,7 @@ public class EnemyAI : MonoBehaviour {
 	public float _speed = 6.0f;
 
 	public float _attackRate = 0.5f;
+	public bool _dropBoost;
 
 	void Start(){
 		_anim = transform.GetChild(0).GetComponentInChildren<Animator>();
@@ -188,6 +189,21 @@ public class EnemyAI : MonoBehaviour {
 		_attackRate = _attackRate/2;
 		_anim.speed = 1.0f;
 		_agent.speed = _speed;
+	}
+
+	public void DropBoost(float duration){
+		StartCoroutine(Boost(duration));
+	}
+
+	public IEnumerator Boost(float duration){
+		_exp = _exp * 2;
+		_goldDropped = _goldDropped * 2;
+		_dropBoost = true;
+		yield return new WaitForSeconds(duration);
+		_exp = _exp/2;
+		_goldDropped = _goldDropped/2;
+		_dropBoost = false;
+
 	}
 }
 
