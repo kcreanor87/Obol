@@ -191,17 +191,17 @@ public class EnemyAI : MonoBehaviour {
 		_agent.speed = _speed;
 	}
 
-	public void DropBoost(float duration){
-		StartCoroutine(Boost(duration));
+	public void DropBoost(float duration, float amount){
+		StartCoroutine(Boost(duration, amount));
 	}
 
-	public IEnumerator Boost(float duration){
-		_exp = _exp * 2;
-		_goldDropped = _goldDropped * 2;
+	public IEnumerator Boost(float duration, float amount){
+		_exp = Mathf.FloorToInt(_exp * amount);
+		_goldDropped = Mathf.FloorToInt(_goldDropped * amount);
 		_dropBoost = true;
 		yield return new WaitForSeconds(duration);
-		_exp = _exp/2;
-		_goldDropped = _goldDropped/2;
+		_exp = Mathf.FloorToInt(_exp / amount);
+		_goldDropped = Mathf.FloorToInt(_goldDropped / amount);
 		_dropBoost = false;
 
 	}

@@ -45,6 +45,10 @@ public class _CombatManager : MonoBehaviour {
 	public static ArmourDatabase _armourDb;
 	public static TurretDatabase _turretDb;
 
+	//Is the player being boosted? Store as bool to add/remove on CalculateStats();
+	public static bool _boosted;
+	public static float _boostAmount;
+
 	//Initialized once only, stop _manager GO from being destroyed when loading a new scene
 	void Awake () {	
 		DontDestroyOnLoad(gameObject);
@@ -55,12 +59,13 @@ public class _CombatManager : MonoBehaviour {
 		_headSlot = _armourDb._headDatabase[0];
 		_chestSlot = _armourDb._chestDatabase[0];
 		_legSlot = _armourDb._legDatabase[0];
-		_turretSlot = _turretDb._turretDatabase[2];
+		_turretSlot = _turretDb._turretDatabase[3];
 		CalculateStats();	
 	}
 
 	//Calculate derivative stats
 	public static void CalculateStats(){
+		print ("Stats recalculated");
 		//Speed
 		_speedPenalty = _headSlot._weight + _chestSlot._weight + _legSlot._weight;		
 		_speed = 100.0f + (2.5f * _dexRanks) - _speedPenalty;
@@ -78,6 +83,21 @@ public class _CombatManager : MonoBehaviour {
 		_chestBonus = Mathf.FloorToInt(_chestSlot._armourBonus * _defBonus);
 		_legBonus = Mathf.FloorToInt(_legSlot._armourBonus * _defBonus);
 		_armourRating = _headBonus + _chestBonus + _legBonus;
-		_manager._totalRanks = _attRanks + _defRanks + _vitRanks + _dexRanks + _mechRanks;	
+		_manager._totalRanks = _attRanks + _defRanks + _vitRanks + _dexRanks + _mechRanks;
+		if (_boosted) Boost(_boostAmount);
+	}
+
+	public static void Boost(float boostValue){
+		_rangedDam = Mathf.FloorToInt(_rangedDam * boostValue); 
+		print("Boost added: Damage now: " + _rangedDam);
+		_boosted = true;
+		_boostAmount = boostValue;
+
+	}
+
+	public static void RemoveBoost(float boostValue){
+		_rangedDam =  Mathf.CeilToInt(_rangedDam / boostValue);
+		print("Boost removed: Damage now: " + _rangedDam);
+		_boosted = false;
 	}
 }

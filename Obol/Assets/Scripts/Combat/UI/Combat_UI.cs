@@ -40,6 +40,7 @@ public class Combat_UI : MonoBehaviour {
 	public Sprite _loseSprite;
 
 	public Text _gatesDestroyedTxt, _enemiesTxt, _goldEarnedTxt, _goldBonus, _xpGainedTxt, _xpBonus;
+	public GameObject _areaUnlocked;
 	public bool _winBonus;
 	public int _tempGold;
 	public int _tempXP;
@@ -55,6 +56,8 @@ public class Combat_UI : MonoBehaviour {
 	// Use this for initialization
 	void Start () {
 		_miniMap = GameObject.Find("Minimap").GetComponent<Camera>();
+		_areaUnlocked = GameObject.Find("AreaUnlocked");
+		_areaUnlocked.SetActive(false);
 		_fadeOut = GameObject.Find("FadeOut");
 		_fadeOut.SetActive(false);
 		_continueButton = GameObject.Find("Continue").GetComponent<Button>();
@@ -225,6 +228,9 @@ public class Combat_UI : MonoBehaviour {
 		EndText();
 		if (victory) {
 			CalcBonus();
+			var nextLevel = (SceneManager.GetActiveScene().buildIndex - 1);
+			_areaUnlocked.SetActive(!_manager._activeLevels[nextLevel]);
+			_manager._activeLevels[nextLevel] = true;
 		}
 		else{
 			_continueButton.interactable = true;

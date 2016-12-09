@@ -1,6 +1,5 @@
 using UnityEngine;
 using System.Collections;
-using System.Collections.Generic;
 
 public class PlayerControls_Combat : MonoBehaviour {
 
@@ -13,16 +12,13 @@ public class PlayerControls_Combat : MonoBehaviour {
 	public Transform _textSpawn;
 	public GameObject _indicator;
 	public SaveGame _saveGame;
-	public PrefabControl _prefabs;
-	public GameObject _activeTurret;
 
 	public string _target;
 	public int _npcIndex;
 	public float _range;
 	public float _healTimer = 0.1f;
 	public bool _moving;
-	public bool _firing;	
-	public bool _moveToNPC;	
+	public bool _firing;
 
 	void Awake () {
 		Spawn();
@@ -39,8 +35,7 @@ public class PlayerControls_Combat : MonoBehaviour {
 		_anim = gameObject.GetComponentInChildren<Animator>();
 		_agent = gameObject.GetComponent<NavMeshAgent>();
 		_textSpawn = transform.Find("TextSpawn");		
-		_shooting = transform.FindChild("Launcher").GetComponent<Shooting>();
-		_prefabs = gameObject.GetComponent<PrefabControl>();		
+		_shooting = transform.FindChild("Launcher").GetComponent<Shooting>();	
 		_agent.enabled = true;
 	}
 
@@ -64,29 +59,7 @@ public class PlayerControls_Combat : MonoBehaviour {
 						_agent.SetDestination(hit.point);
 						_anim.SetBool("Running", true);
 						_moving = true;
-						_moveToNPC = false;
 						if (_ui._uiOpen) _ui.CloseAllCanvases();						
-					}
-				}
-				else if (hit.collider.tag == "NPC"){
-					_agent.SetDestination(hit.transform.FindChild("PlayerPos").position);
-					_moveToNPC = true;
-					_anim.SetBool("Running", true);
-					_moving = true;
-					if (_ui._uiOpen) _ui.CloseAllCanvases();
-					switch (hit.collider.name){
-						case "Smith":
-						_npcIndex = 1;
-						break;
-						case "Priest":
-						_npcIndex = 2;
-						break;
-						case "Portal":
-						_npcIndex = 3;
-						break;
-						case "Thief":
-						_npcIndex = 4;
-						break;
 					}
 				}		
 			}
@@ -95,10 +68,6 @@ public class PlayerControls_Combat : MonoBehaviour {
 			float dist = Vector3.Distance(transform.position, _agent.destination);
 			if (dist <= 0.3f){
 				Stop();
-				if (_moveToNPC){
-					_ui.OpenCanvas(_npcIndex);
-					_moveToNPC = false;
-				}
 			}
 		}
 	}
@@ -156,8 +125,8 @@ public class PlayerControls_Combat : MonoBehaviour {
         	}
         	StartCoroutine(FireRate());       					
         }
-        else if (go.tag == "Resource" || go.tag == "Destructible"){
-       		var h = 3 + go.transform.position.y;
+        else if (go.tag == "Destructible"){
+       		var h = go.transform.position.y;
        		var _aimTarget = new Vector3(go.transform.position.x, h, go.transform.position.z);
        		_shooting.CalcVelocity(_aimTarget);
        		StartCoroutine(FireRate());
@@ -182,7 +151,7 @@ public class PlayerControls_Combat : MonoBehaviour {
         }
         _anim.SetBool("Attack", true);		
 	}
-
+	//**** FIRE RATE - TO BE SET FROM WEAPON STATS LATER *****
 	public IEnumerator FireRate(){
 		_firing = true;	
 		switch(_CombatManager._equipRanged._id){

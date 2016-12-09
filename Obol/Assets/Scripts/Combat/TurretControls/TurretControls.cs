@@ -13,10 +13,6 @@ public class TurretControls : MonoBehaviour {
 	public bool _active;
 	public bool _static;
 	public Transform _player;
-
-	public PlayerControls_Combat _pcCombat;
-	public PlayerControls_NonCombat _pcNonCombat;
-
 	public NavMeshAgent _agent;
 
 	void Start(){
@@ -32,7 +28,7 @@ public class TurretControls : MonoBehaviour {
 	}
 
 	void Update(){
-		if (_enemiesInRange.Count > 0){						
+		if (_enemiesInRange.Count > 0 && _type != 3){						
 			if (_type == 0){
 				RotateToTarget();
 			}			
@@ -46,9 +42,6 @@ public class TurretControls : MonoBehaviour {
 					break;
 					case 2:
 					SlowEnemies();
-					break;
-					case 3:
-					//**Boost player stats
 					break;
 					case 4:
 					BoostResources();
@@ -96,17 +89,13 @@ public class TurretControls : MonoBehaviour {
 		StartCoroutine(Slow());
 	}
 
-	void BoostPlayerDamage(){
-
-	}
-
-	void BoostPlayerDefense(){
-
-	}
-
 	void BoostResources(){
 		StartCoroutine(Boost());
+	}
 
+	void BoostPlayer(bool active){
+		if (active) _CombatManager.Boost(_CombatManager._turretSlot._boostValue);
+		if (!active) _CombatManager.RemoveBoost(_CombatManager._turretSlot._boostValue);
 	}
 
 	public IEnumerator SingleFireRate(){
@@ -131,8 +120,8 @@ public class TurretControls : MonoBehaviour {
 		_active = false;
 	}
 
-	public IEnumerator Boost(){
-		ImplementBoost();
+	public IEnumerator Boost(){		
+		ImplementResourceBoost();
 		_active = true;
 		yield return new WaitForSeconds(_fireRate);	
 		_active = false;
@@ -166,10 +155,10 @@ public class TurretControls : MonoBehaviour {
 		}
 	}
 
-	void ImplementBoost(){
+	void ImplementResourceBoost(){
 		for (int i = 0; i < _enemiesInRange.Count; i++){
 			var script = _enemiesInRange[i].GetComponentInParent<EnemyAI>();
-			if (!(script._dropBoost)) script.Boost(2.0f);
+			if (!(script._dropBoost)) script.DropBoost(2.0f, _CombatManager._turretSlot._boostValue);
 			if (script._health <= 0){
 				_enemiesInRange.RemoveAt(i);
 			}
@@ -177,18 +166,32 @@ public class TurretControls : MonoBehaviour {
 	}		
 
 	void OnTriggerEnter(Collider col){
-		if (col.tag == "Enemy"){
-			_enemiesInRange.Add(col.gameObject);
+		if (_type == 3){
+			if (col.tag == "Player" && !_active){
+				_playerInRange = true;
+				BoostPlayer(true);
+				_active = true;
+			}
 		}
-		_playerInRange |= (col.tag == "Player");
+		else{
+			if (col.tag == "Enemy"){
+				_enemiesInRange.Add(col.gameObject);
+			}
+		}		
 	}
 
 	void OnTriggerExit(Collider col){
-		if (col.tag == "Enemy"){
-			_enemiesInRange.Remove(col.gameObject);
+		if (_type == 3){
+			if (col.tag == "Player" && _active){
+				_playerInRange = false;
+				BoostPlayer(false);
+				_active = false;
+			}
 		}
-		else if (col.tag == "Player"){
-			_playerInRange = false;
+		else{
+			if (col.tag == "Enemy"){
+				_enemiesInRange.Remove(col.gameObject);
+			}
 		}
 	}	
 
