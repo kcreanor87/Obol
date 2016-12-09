@@ -59,7 +59,7 @@ public class _CombatManager : MonoBehaviour {
 		_headSlot = _armourDb._headDatabase[0];
 		_chestSlot = _armourDb._chestDatabase[0];
 		_legSlot = _armourDb._legDatabase[0];
-		_turretSlot = _turretDb._turretDatabase[3];
+		_turretSlot = _turretDb._turretDatabase[1];
 		CalculateStats();	
 	}
 

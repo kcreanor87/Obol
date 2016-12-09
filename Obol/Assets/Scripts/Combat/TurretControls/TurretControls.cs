@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 public class TurretControls : MonoBehaviour {
 
-	public List <GameObject> _enemiesInRange = new List <GameObject>();
+	public List <EnemyAI> _enemiesInRange = new List <EnemyAI>();
 	public bool _playerInRange;
 	public int _type;
 	public float _fireRate;
@@ -27,24 +27,25 @@ public class TurretControls : MonoBehaviour {
 		_damage = _CombatManager._turretSlot._dam;
 	}
 
-	void Update(){
+	void FixedUpdate(){
 		if (_enemiesInRange.Count > 0 && _type != 3){						
 			if (_type == 0){
 				RotateToTarget();
 			}			
 			if (!_active){
+				_active = true;
 				switch (_type){
 					case 0:
-					DamageSingle();
+					StartCoroutine(SingleFireRate());
 					break;
 					case 1:
-					DamageArea();
+					StartCoroutine(AreaFireRate());
 					break;
 					case 2:
-					SlowEnemies();
+					StartCoroutine(Slow());
 					break;
 					case 4:
-					BoostResources();
+					StartCoroutine(Boost());
 					break;
 				}
 			}			
@@ -75,22 +76,6 @@ public class TurretControls : MonoBehaviour {
 			_agent.Resume();
 		}
 		yield return new WaitForSeconds (1.0f);
-	}	
-
-	void DamageSingle(){
-		StartCoroutine(SingleFireRate());
-	}
-
-	void DamageArea(){
-		StartCoroutine(AreaFireRate());
-	}
-
-	void SlowEnemies(){
-		StartCoroutine(Slow());
-	}
-
-	void BoostResources(){
-		StartCoroutine(Boost());
 	}
 
 	void BoostPlayer(bool active){
@@ -100,56 +85,52 @@ public class TurretControls : MonoBehaviour {
 
 	public IEnumerator SingleFireRate(){
 		AttackSingleTarget();
-		_active = true;
 		yield return new WaitForSeconds(_fireRate);
 		print("Attack single target");
 		_active = false;
 	}
 
 	public IEnumerator AreaFireRate(){
-		AreaDamage();
-		_active = true;
+		AreaDamage();		
 		yield return new WaitForSeconds(_fireRate);	
 		_active = false;
 	}
 
 	public IEnumerator Slow(){
 		ImplementSlow();
-		_active = true;
 		yield return new WaitForSeconds(_fireRate);	
 		_active = false;
 	}
 
 	public IEnumerator Boost(){		
 		ImplementResourceBoost();
-		_active = true;
 		yield return new WaitForSeconds(_fireRate);	
 		_active = false;
 	}
 
 	void AttackSingleTarget(){
-		var script = _enemiesInRange[0].GetComponentInParent<EnemyAI>();
-		script.BeenHit(_damage);
-		if (script._health <= 0){
+		_enemiesInRange[0].BeenHit(_damage);
+		if (_enemiesInRange[0]._health <= 0){
 		_enemiesInRange.RemoveAt(0);
 		}		
 	}
 
 	void AreaDamage(){
 		for (int i = 0; i < _enemiesInRange.Count; i++){
-			var script = _enemiesInRange[i].GetComponentInParent<EnemyAI>();
-			script.BeenHit(_damage);
-			if (script._health <= 0){
-				_enemiesInRange.RemoveAt(i);
-			}
+			_enemiesInRange[i].BeenHit(_damage);			
 		}
+		for (int i = _enemiesInRange.Count - 1; i >= 0; i--){
+			if (_enemiesInRange[i]._health <= 0){
+				_enemiesInRange.RemoveAt(i);
+			}		
+		}
+
 	}
 
 	void ImplementSlow(){
 		for (int i = 0; i < _enemiesInRange.Count; i++){
-			var script = _enemiesInRange[i].GetComponentInParent<EnemyAI>();
-			if (!(script._agent.speed < script._speed)) script.Slowed(5.0f);
-			if (script._health <= 0){
+			if (!(_enemiesInRange[i]._agent.speed < _enemiesInRange[i]._speed)) _enemiesInRange[i].Slowed(5.0f);
+			if (_enemiesInRange[i]._health <= 0){
 				_enemiesInRange.RemoveAt(i);
 			}
 		}
@@ -157,9 +138,8 @@ public class TurretControls : MonoBehaviour {
 
 	void ImplementResourceBoost(){
 		for (int i = 0; i < _enemiesInRange.Count; i++){
-			var script = _enemiesInRange[i].GetComponentInParent<EnemyAI>();
-			if (!(script._dropBoost)) script.DropBoost(2.0f, _CombatManager._turretSlot._boostValue);
-			if (script._health <= 0){
+			if (!(_enemiesInRange[i]._dropBoost)) _enemiesInRange[i].DropBoost(2.0f, _CombatManager._turretSlot._boostValue);
+			if (_enemiesInRange[i]._health <= 0){
 				_enemiesInRange.RemoveAt(i);
 			}
 		}
@@ -175,7 +155,7 @@ public class TurretControls : MonoBehaviour {
 		}
 		else{
 			if (col.tag == "Enemy"){
-				_enemiesInRange.Add(col.gameObject);
+				_enemiesInRange.Add(col.gameObject.GetComponentInParent<EnemyAI>());
 			}
 		}		
 	}
@@ -190,7 +170,7 @@ public class TurretControls : MonoBehaviour {
 		}
 		else{
 			if (col.tag == "Enemy"){
-				_enemiesInRange.Remove(col.gameObject);
+				_enemiesInRange.Remove(col.gameObject.GetComponentInParent<EnemyAI>());
 			}
 		}
 	}	
