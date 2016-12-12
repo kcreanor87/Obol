@@ -187,7 +187,7 @@ public class PlayerControls_Combat : MonoBehaviour {
 	
 	public void BeenHit(int damage){
 		if (!_ui._gameOver){
-			var dam = Mathf.FloorToInt((float) damage);
+			var dam = Mathf.FloorToInt((float) damage * (1 - _CombatManager._damageReduction));
 			_CombatManager._currentHealth -= dam;
 			_ui.DamageText(_textSpawn, dam, true);
 			_ui.UpdateUI();		

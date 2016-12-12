@@ -11,6 +11,7 @@ public class _CombatManager : MonoBehaviour {
 	public static int _currentHealth;
 	public static int _rangedDam;
 	public static int _armourRating;
+	public static float _damageReduction;
 
 	//UPGRADABLE STATS
 	public static int _attRanks;
@@ -59,7 +60,7 @@ public class _CombatManager : MonoBehaviour {
 		_headSlot = _armourDb._headDatabase[0];
 		_chestSlot = _armourDb._chestDatabase[0];
 		_legSlot = _armourDb._legDatabase[0];
-		_turretSlot = _turretDb._turretDatabase[1];
+		_turretSlot = _turretDb._turretDatabase[3];
 		CalculateStats();	
 	}
 
@@ -84,20 +85,27 @@ public class _CombatManager : MonoBehaviour {
 		_legBonus = Mathf.FloorToInt(_legSlot._armourBonus * _defBonus);
 		_armourRating = _headBonus + _chestBonus + _legBonus;
 		_manager._totalRanks = _attRanks + _defRanks + _vitRanks + _dexRanks + _mechRanks;
+		if (_armourRating > 0){
+			_damageReduction = (float) _armourRating/1000;
+		}
+		else{
+			_damageReduction = 0.0f;
+		}
 		if (_boosted) Boost(_boostAmount);
 	}
 
 	public static void Boost(float boostValue){
-		_rangedDam = Mathf.FloorToInt(_rangedDam * boostValue); 
+		_rangedDam = Mathf.FloorToInt(_rangedDam * boostValue);
+		var _drBoost = (1 - _damageReduction) / boostValue;
+		_damageReduction = _damageReduction + _drBoost;
 		print("Boost added: Damage now: " + _rangedDam);
 		_boosted = true;
 		_boostAmount = boostValue;
 
 	}
 
-	public static void RemoveBoost(float boostValue){
-		_rangedDam =  Mathf.CeilToInt(_rangedDam / boostValue);
-		print("Boost removed: Damage now: " + _rangedDam);
+	public static void RemoveBoost(float boostValue){		
 		_boosted = false;
+		CalculateStats();
 	}
 }

@@ -14,7 +14,7 @@ public class EnemyAI : MonoBehaviour {
 	public bool _ranged;
 	public bool _attacking;
 	public int _damage = 10;
-	public float _armour = 1.0f;
+	public float _damageReduction;
 	public Shooting _shooting;
 	public Transform _textSpawn;
 	public bool _exploder;
@@ -120,7 +120,7 @@ public class EnemyAI : MonoBehaviour {
 	}
 
 	public void BeenHit(int damage){
-		var dam = Mathf.FloorToInt((float) damage * _armour);	
+		var dam = Mathf.FloorToInt((float) damage * (1 - _damageReduction));	
 		_health -= dam;
 		_ui.DamageText(_textSpawn, dam, false);
 		_attacking = false;

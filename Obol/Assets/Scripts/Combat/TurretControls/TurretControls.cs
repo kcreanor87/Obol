@@ -14,6 +14,7 @@ public class TurretControls : MonoBehaviour {
 	public bool _static;
 	public Transform _player;
 	public NavMeshAgent _agent;
+	public Transform _target;
 
 	void Start(){
 		CollectData();			
@@ -54,7 +55,7 @@ public class TurretControls : MonoBehaviour {
 			//Play idleAnim;
 		}
 		if (!_static) FollowPlayer();	
-	}
+	}	
 
 	void RotateToTarget(){
 		Quaternion newRotation = Quaternion.LookRotation(_enemiesInRange[0].transform.position - transform.position);
@@ -68,11 +69,11 @@ public class TurretControls : MonoBehaviour {
 	}	
 
 	public IEnumerator CheckPlayerDistance(){
-		if (Vector3.Distance(transform.position, _player.position) < 6.0f){
+		if (Vector3.Distance(transform.position, _target.position) < 1.0f){
 			_agent.Stop();
 		}
 		else{
-			_agent.SetDestination(_player.position);
+			_agent.SetDestination(_target.position);
 			_agent.Resume();
 		}
 		yield return new WaitForSeconds (1.0f);

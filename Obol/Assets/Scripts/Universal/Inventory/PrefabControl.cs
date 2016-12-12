@@ -13,6 +13,8 @@ public class PrefabControl : MonoBehaviour {
 
 	public TurretControls _turretControls;
 
+	public Transform _front, _back, _right, _left;
+
 	void Start(){
 		FindGos();
 		EquipGOs();
@@ -33,7 +35,7 @@ public class PrefabControl : MonoBehaviour {
 		}
 		foreach (Transform child in GameObject.Find("TurretsList").GetComponent<Transform>()){
 			_turretGOs.Add(child.gameObject);
-		}
+		}				
 	}
 
 	public void EquipGOs(){
@@ -91,9 +93,27 @@ public class PrefabControl : MonoBehaviour {
 		}
 		_turretControls = _activeTurret.GetComponent<TurretControls>();
 		_activeTurret.SetActive(true);
+		_turretControls._target = _back;
 	}
 
 	public void SetTurretStatic(){
 		_turretControls.SwitchStatic();
+	}
+
+	public void ChangeTurretTarget(int index){
+		switch (index){
+			case 0:
+			_turretControls._target = _front;
+			break;
+			case 1:
+			_turretControls._target = _back;
+			break;
+			case 2:
+			_turretControls._target = _right;
+			break;
+			case 3:
+			_turretControls._target = _left;
+			break;
+		}
 	}
 }
