@@ -53,6 +53,8 @@ public class Combat_UI : MonoBehaviour {
 
 	public TurretControls _turret;
 
+	public bool _end;
+
 	// Use this for initialization
 	void Start () {
 		_miniMap = GameObject.Find("Minimap").GetComponent<Camera>();

@@ -108,12 +108,6 @@ public class PrefabControl : MonoBehaviour {
 			case 1:
 			_turretControls._target = _back;
 			break;
-			case 2:
-			_turretControls._target = _right;
-			break;
-			case 3:
-			_turretControls._target = _left;
-			break;
 		}
 	}
 }

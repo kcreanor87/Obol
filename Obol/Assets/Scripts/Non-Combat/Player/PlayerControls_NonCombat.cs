@@ -33,7 +33,6 @@ public class PlayerControls_NonCombat : MonoBehaviour {
 	}
 
 	void Spawn(){
-		transform.position = NewGame._newGame ? _posA.position : _posB.position;
 		_indicator = GameObject.Find("Indicator");		
 		_saveGame = GameObject.Find("Loader").GetComponent<SaveGame>();
 		_ui = GameObject.Find("Non-Combat UI").GetComponent<NonCombat_UI>();
