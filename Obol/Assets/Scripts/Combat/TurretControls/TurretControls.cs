@@ -52,12 +52,14 @@ public class TurretControls : MonoBehaviour {
 			}			
 		}
 		else{
+			_agent.updateRotation = true;
 			//Play idleAnim;
 		}
 		if (!_static) FollowPlayer();	
 	}	
 
 	void RotateToTarget(){
+		_agent.updateRotation = false;
 		Quaternion newRotation = Quaternion.LookRotation(_enemiesInRange[0].transform.position - transform.position);
 		newRotation.x = 0f;
        	newRotation.z = 0f;
@@ -65,18 +67,7 @@ public class TurretControls : MonoBehaviour {
 	}
 
 	void FollowPlayer(){
-			StartCoroutine(CheckPlayerDistance());
-	}	
-
-	public IEnumerator CheckPlayerDistance(){
-		if (Vector3.Distance(transform.position, _target.position) < 1.0f){
-			_agent.Stop();
-		}
-		else{
-			_agent.SetDestination(_target.position);
-			_agent.Resume();
-		}
-		yield return new WaitForSeconds (1.0f);
+		_agent.SetDestination(_target.position);
 	}
 
 	void BoostPlayer(bool active){
