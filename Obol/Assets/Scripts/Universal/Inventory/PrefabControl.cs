@@ -13,7 +13,7 @@ public class PrefabControl : MonoBehaviour {
 
 	public TurretControls _turretControls;
 
-	public Transform _front, _back, _right, _left;
+	public Transform _back;
 
 	void Start(){
 		FindGos();
@@ -91,7 +91,7 @@ public class PrefabControl : MonoBehaviour {
 		for (int i = 0; i < _turretGOs.Count; i++){
 			_turretGOs[i].SetActive(false);
 		}
-		_turretControls = _activeTurret.GetComponent<TurretControls>();
+		_turretControls = _activeTurret.GetComponentInChildren<TurretControls>();
 		_activeTurret.SetActive(true);
 		_turretControls._target = _back;
 	}
@@ -100,13 +100,16 @@ public class PrefabControl : MonoBehaviour {
 		_turretControls.SwitchStatic();
 	}
 
-	public void ChangeTurretTarget(int index){
+	public void ChangeTurretState(int index){
 		switch (index){
 			case 0:
-			_turretControls._target = _front;
+			_turretControls._offensive = true;
+			_turretControls._static = false;
 			break;
 			case 1:
 			_turretControls._target = _back;
+			_turretControls._offensive = false;
+			_turretControls._static = false;
 			break;
 		}
 	}

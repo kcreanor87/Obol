@@ -15,6 +15,7 @@ public class TurretControls : MonoBehaviour {
 	public Transform _player;
 	public NavMeshAgent _agent;
 	public Transform _target;
+	public bool _offensive;
 
 	void Start(){
 		CollectData();			
@@ -22,14 +23,15 @@ public class TurretControls : MonoBehaviour {
 
 	void CollectData(){
 		_type = _CombatManager._turretSlot._type;
-		_agent = gameObject.GetComponent<NavMeshAgent>();
+		_agent = gameObject.GetComponentInParent<NavMeshAgent>();
 		_player = GameObject.Find("Player").GetComponent<Transform>();
 		_fireRate = _CombatManager._turretSlot._fireRate;
 		_damage = _CombatManager._turretSlot._dam;
 	}
 
 	void FixedUpdate(){
-		if (_enemiesInRange.Count > 0 && _type != 3){						
+		if (_enemiesInRange.Count > 0 && _type != 3){
+			if (!_static && _offensive) _target = _enemiesInRange[0].transform;						
 			if (_type == 0){
 				RotateToTarget();
 			}			
@@ -52,14 +54,12 @@ public class TurretControls : MonoBehaviour {
 			}			
 		}
 		else{
-			_agent.updateRotation = true;
-			//Play idleAnim;
+			_target = _player;
 		}
 		if (!_static) FollowPlayer();	
 	}	
 
 	void RotateToTarget(){
-		_agent.updateRotation = false;
 		Quaternion newRotation = Quaternion.LookRotation(_enemiesInRange[0].transform.position - transform.position);
 		newRotation.x = 0f;
        	newRotation.z = 0f;
@@ -67,7 +67,7 @@ public class TurretControls : MonoBehaviour {
 	}
 
 	void FollowPlayer(){
-		_agent.SetDestination(_target.position);
+		if (!_static) _agent.SetDestination(_target.position);
 	}
 
 	void BoostPlayer(bool active){
@@ -168,7 +168,7 @@ public class TurretControls : MonoBehaviour {
 	}	
 
 	public void SwitchStatic(){
+		_agent.SetDestination(transform.position);
 		_static = !_static;
-		if (_static) _agent.Stop();
 	}
 }
