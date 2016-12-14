@@ -47,7 +47,7 @@ public class Shooting : MonoBehaviour {
 
 	public void ShootStraight(Vector3 target){
 		var dir = target - transform.position;
-		_velocity = dir * 5;
+		_velocity = dir * 1.5f;
 		SpawnProjectile();
 	}
 
@@ -55,6 +55,7 @@ public class Shooting : MonoBehaviour {
 		_launchParticle.Play();
 		var projectile = (GameObject) Instantiate(_activeProjectile, _spawn.position, transform.rotation);
 		var rb = projectile.GetComponent<Rigidbody>();
-		rb.velocity = _velocity;
+		if (!_enemy) rb.AddForce(transform.right * 1000);
+		if (_enemy) rb.velocity = _velocity;
 	}
 }

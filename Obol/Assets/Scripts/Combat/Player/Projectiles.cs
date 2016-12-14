@@ -76,7 +76,7 @@ public class Projectiles : MonoBehaviour {
 		_trail.Stop();
 		_projectile.enabled = false;
 		_hit = true;
-		_col.radius = _CombatManager._equipRanged._radius;		
+		if (!_enemyShot) _col.radius = _CombatManager._equipRanged._radius;		
 	}
 
 	void Update(){

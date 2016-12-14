@@ -100,10 +100,10 @@ public class PlayerControls_Combat : MonoBehaviour {
        				newRotation.z = 0f;
         			transform.rotation = Quaternion.Slerp(transform.rotation, newRotation, Time.deltaTime * 10);
         			if (Input.GetMouseButton(0) && !_firing){
-        				Shoot(hit.collider.gameObject, hit.point);
+        				Shoot(hit.point);
         			}
         			if (Input.GetMouseButtonDown(0) && !_firing){
-        				Shoot(hit.collider.gameObject, hit.point);
+        				Shoot(hit.point);
         			}
 				}			
 			}			
@@ -114,46 +114,14 @@ public class PlayerControls_Combat : MonoBehaviour {
 		}	
 	}
 
-	void Shoot(GameObject go, Vector3 target){
-		var dist = Vector3.Distance(transform.position, target);	
-		if (go.tag == "Ground"){
-			if (dist <= 4.0f){
-				_shooting.ShootStraight(target);
-			}
-			else{
-        		_shooting.CalcVelocity(target);
-        	}
-        	StartCoroutine(FireRate());       					
-        }
-        else if (go.tag == "Destructible"){
-       		var h = go.transform.position.y;
-       		var _aimTarget = new Vector3(go.transform.position.x, h, go.transform.position.z);
-       		_shooting.CalcVelocity(_aimTarget);
-       		StartCoroutine(FireRate());
-       	}
-        else if (go.tag == "Enemy"){
-        	if (go.name == "Warden_Parent"){
-        		if (dist <= 10.0f){
-        			_shooting.ShootStraight(go.transform.GetChild(1).position);
-        		}
-        		else{
-        			_shooting.CalcVelocity(go.transform.GetChild(1).position);
-        		}
-        		
-        	}
-        	else if (dist <= 5.0f){
-        		_shooting.ShootStraight(go.transform.parent.position);
-        	}
-        	else{
-        		_shooting.CalcVelocity(go.transform.parent.position);
-        	}        	
-        	StartCoroutine(FireRate());
-        }
-        _anim.SetBool("Attack", true);		
+	void Shoot(Vector3 target){
+		_shooting.ShootStraight(target);
+		StartCoroutine(FireRate());	
 	}
 	//**** FIRE RATE - TO BE SET FROM WEAPON STATS LATER *****
 	public IEnumerator FireRate(){
 		_firing = true;	
+		_anim.SetBool("Attack", true);
 		switch(_CombatManager._equipRanged._id){
 			case 200:
 			_anim.speed = 1.0f;

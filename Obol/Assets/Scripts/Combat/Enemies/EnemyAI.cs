@@ -35,6 +35,7 @@ public class EnemyAI : MonoBehaviour {
 
 	public float _attackRate = 0.5f;
 	public bool _dropBoost;
+	public bool _dead;
 
 	void Start(){
 		_anim = transform.GetChild(0).GetComponentInChildren<Animator>();
@@ -124,12 +125,13 @@ public class EnemyAI : MonoBehaviour {
 		_health -= dam;
 		_ui.DamageText(_textSpawn, dam, false);
 		_attacking = false;
-		if (_health <= 0){
+		if (_health <= 0 && !_dead){
 			OnDeath();
 		}
 	}
 
 	void OnDeath(){
+		_dead = true;
 		StopAllCoroutines();			
 		_agent.enabled = false;
 		_counter._enemiesKilled++;
@@ -164,6 +166,8 @@ public class EnemyAI : MonoBehaviour {
 		yield return new WaitForSeconds(2.5f);
 		if (_counter._spawnPoints == 0){
 			if (_counter._enemiesKilled == _counter._enemiesSpawned && !_ui._end){
+				_player._agent.Stop();
+				_player._anim.SetBool("Running", false);
 				_ui.LevelEnd(true);
 				_ui._end = true;
 			}

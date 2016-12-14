@@ -16,6 +16,8 @@ public class TurretControls : MonoBehaviour {
 	public NavMeshAgent _agent;
 	public Transform _target;
 	public bool _offensive;
+	public Transform _front, _back;
+	public ParticleSystem []  _particles;
 
 	void Start(){
 		CollectData();			
@@ -27,6 +29,7 @@ public class TurretControls : MonoBehaviour {
 		_player = GameObject.Find("Player").GetComponent<Transform>();
 		_fireRate = _CombatManager._turretSlot._fireRate;
 		_damage = _CombatManager._turretSlot._dam;
+		_particles = gameObject.GetComponentsInChildren<ParticleSystem>();
 	}
 
 	void FixedUpdate(){
@@ -54,7 +57,8 @@ public class TurretControls : MonoBehaviour {
 			}			
 		}
 		else{
-			_target = _player;
+			if (!_offensive) _target = _back;
+			if (_offensive) _target = _front;
 		}
 		if (!_static) FollowPlayer();	
 	}	
@@ -63,7 +67,7 @@ public class TurretControls : MonoBehaviour {
 		Quaternion newRotation = Quaternion.LookRotation(_enemiesInRange[0].transform.position - transform.position);
 		newRotation.x = 0f;
        	newRotation.z = 0f;
-        transform.rotation = Quaternion.Slerp(transform.rotation, newRotation, Time.deltaTime * 15);
+        transform.rotation = Quaternion.Slerp(transform.rotation, newRotation, Time.deltaTime * 50);
 	}
 
 	void FollowPlayer(){
@@ -101,6 +105,9 @@ public class TurretControls : MonoBehaviour {
 	}
 
 	void AttackSingleTarget(){
+		for (int i = 0; i < _particles.Length; i++){
+			_particles[i].Play();
+		}
 		_enemiesInRange[0].BeenHit(_damage);
 		if (_enemiesInRange[0]._health <= 0){
 		_enemiesInRange.RemoveAt(0);
@@ -140,9 +147,9 @@ public class TurretControls : MonoBehaviour {
 	void OnTriggerEnter(Collider col){
 		if (_type == 3){
 			if (col.tag == "Player" && !_active){
-				_playerInRange = true;
-				BoostPlayer(true);
 				_active = true;
+				_playerInRange = true;
+				BoostPlayer(true);				
 			}
 		}
 		else{
