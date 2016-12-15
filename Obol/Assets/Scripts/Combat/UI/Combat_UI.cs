@@ -220,6 +220,7 @@ public class Combat_UI : MonoBehaviour {
 		var array = GameObject.FindGameObjectsWithTag("Shard");
 		for (int i = 0; i < array.Length; i++){
 			spareGold += array[i].GetComponent<Coin>()._value;
+			Destroy(array[i]);
 		}
 		_manager._obols += spareGold;
 		_counters._obolsCollected += spareGold;

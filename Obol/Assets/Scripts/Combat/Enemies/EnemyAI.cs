@@ -36,11 +36,13 @@ public class EnemyAI : MonoBehaviour {
 	public float _attackRate = 0.5f;
 	public bool _dropBoost;
 	public bool _dead;
+	public GameObject _healthBarGO;
+	public HealthBar _hbScript;
 
 	void Start(){
 		_anim = transform.GetChild(0).GetComponentInChildren<Animator>();
 		_col = transform.GetChild(0).GetComponentInChildren<Collider>();
-		_textSpawn = transform.FindChild("TextSpawn");		
+		_textSpawn = transform.FindChild("TextSpawn");			
 		_agent = gameObject.GetComponent<NavMeshAgent>();
 		_player = GameObject.Find("Player").GetComponent<PlayerControls_Combat>();
 		if (_ranged) _shooting = GetComponentInChildren<Shooting>();
@@ -52,7 +54,12 @@ public class EnemyAI : MonoBehaviour {
 		if (_exploder){
 			_attackGO.SetActive(false);
 			_deathGO.SetActive(false);
-		}		
+		}	
+		var healthBar = (GameObject) Instantiate(_healthBarGO, _textSpawn.position, Quaternion.identity, _ui.transform);
+		_hbScript = healthBar.GetComponent<HealthBar>();
+		_hbScript._target = _textSpawn;
+		_hbScript._parent = this;
+		_hbScript._maxHealth = _health;	
 		ChasePlayer();		
 	}
 
@@ -124,6 +131,7 @@ public class EnemyAI : MonoBehaviour {
 		var dam = Mathf.FloorToInt((float) damage * (1 - _damageReduction));	
 		_health -= dam;
 		_ui.DamageText(_textSpawn, dam, false);
+		if (!_dead) _hbScript.UpdateHealth();
 		_attacking = false;
 		if (_health <= 0 && !_dead){
 			OnDeath();
@@ -135,6 +143,7 @@ public class EnemyAI : MonoBehaviour {
 		StopAllCoroutines();			
 		_agent.enabled = false;
 		_counter._enemiesKilled++;
+		if (_counter._enemiesKilled > _counter._enemiesSpawned) _counter._enemiesKilled = _counter._enemiesSpawned;
 		_manager._currentXP += _exp;
 		_counter._xpGained += _exp;
 		_manager.CheckXP();
@@ -150,6 +159,7 @@ public class EnemyAI : MonoBehaviour {
 		}
 		GoldDrop();
 		_ui.ExpText(_exp);
+		_hbScript.DestroyGO();	
 		StartCoroutine(Die());
 	}
 

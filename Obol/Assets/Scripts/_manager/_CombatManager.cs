@@ -71,7 +71,7 @@ public class _CombatManager : MonoBehaviour {
 		_speedPenalty = _headSlot._weight + _chestSlot._weight + _legSlot._weight;		
 		_speed = 100.0f + (2.5f * _dexRanks) - _speedPenalty;
 		//Health
-		_maxHealth = 700 + 50 *_vitRanks;
+		_maxHealth = 500 + 50 *_vitRanks;
 		_currentHealth = _maxHealth;
 		//Weapon Stats
 		_attBonus = 1.0f + (float) 0.05f * _attRanks;

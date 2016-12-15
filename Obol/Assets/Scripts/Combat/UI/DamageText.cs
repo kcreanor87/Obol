@@ -21,6 +21,10 @@ public class DamageText : MonoBehaviour {
 	}
 
 	void Update(){
+		if (_target == null){
+			Destroy(gameObject);
+			return;
+		}
 		var pos = Camera.main.WorldToScreenPoint(_target.position);
 		var x = pos.x + _offset;
 		var y = pos.y + _riseAmount;

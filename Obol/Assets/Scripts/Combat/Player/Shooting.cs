@@ -40,22 +40,23 @@ public class Shooting : MonoBehaviour {
 		var a = 20 * Mathf.Deg2Rad;
 		dir.y = dist * Mathf.Tan(a);
 		dist += h/Mathf.Tan(a);
+		if (dist < 0) dist = 0 - dist;
 		var vel = Mathf.Sqrt(dist * Physics.gravity.magnitude / Mathf.Sin(2*a));
 		_velocity = vel * dir.normalized;
 		SpawnProjectile();		
 	}
 
 	public void ShootStraight(Vector3 target){
-		var dir = target - transform.position;
-		_velocity = dir * 1.5f;
-		SpawnProjectile();
+		CalcVelocity(target);
+		/*var dir = target - transform.position;
+		_velocity = dir.normalized;
+		SpawnProjectile();*/
 	}
 
 	void SpawnProjectile(){
 		_launchParticle.Play();
 		var projectile = (GameObject) Instantiate(_activeProjectile, _spawn.position, transform.rotation);
 		var rb = projectile.GetComponent<Rigidbody>();
-		if (!_enemy) rb.AddForce(transform.right * 1000);
-		if (_enemy) rb.velocity = _velocity;
+		rb.velocity = _velocity;
 	}
 }

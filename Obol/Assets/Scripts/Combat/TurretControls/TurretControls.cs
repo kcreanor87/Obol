@@ -30,10 +30,16 @@ public class TurretControls : MonoBehaviour {
 		_fireRate = _CombatManager._turretSlot._fireRate;
 		_damage = _CombatManager._turretSlot._dam;
 		_particles = gameObject.GetComponentsInChildren<ParticleSystem>();
+		_offensive = (_type ==  0 || _type == 1);
+		if (_offensive) _target = _front;
 	}
 
 	void FixedUpdate(){
 		if (_enemiesInRange.Count > 0 && _type != 3){
+			if (_enemiesInRange[0] == null){
+				_enemiesInRange.RemoveAt(0);
+				return;
+			} 
 			if (!_static && _offensive) _target = _enemiesInRange[0].transform;						
 			if (_type == 0){
 				RotateToTarget();
@@ -82,7 +88,6 @@ public class TurretControls : MonoBehaviour {
 	public IEnumerator SingleFireRate(){
 		AttackSingleTarget();
 		yield return new WaitForSeconds(_fireRate);
-		print("Attack single target");
 		_active = false;
 	}
 
