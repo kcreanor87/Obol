@@ -7,12 +7,25 @@ public class MainMenu : MonoBehaviour {
 	public GameObject _promptGO;
 	public GameObject _introButtonts;
 	public Button _resumeButton;
+	public Button _newGameButton;
+	public Button _noButton;
 
 	void Start(){
 		_promptGO = GameObject.Find("NewGamePrompt");
-		_introButtonts = GameObject.Find("IntroButtons");
-		_resumeButton.interactable = (PlayerPrefs.HasKey("Obols"));
+		_introButtonts = GameObject.Find("IntroButtons");	
+		CheckForData();	
 		_promptGO.SetActive(false);
+	}
+
+	void CheckForData(){
+		if (PlayerPrefs.HasKey("Obols")){
+			_resumeButton.interactable = true;
+			_resumeButton.Select();
+		}
+		else{
+			_resumeButton.interactable = false;
+			_newGameButton.Select();
+		}
 	}
 
 	public void ResumeGame(){
@@ -22,12 +35,14 @@ public class MainMenu : MonoBehaviour {
 
 	public void NewGamePrompt(){
 		_promptGO.SetActive(true);
+		_noButton.Select();
 		_introButtonts.SetActive(false);
 	}
 
 	public void CancelNewGame(){
 		_promptGO.SetActive(false);
 		_introButtonts.SetActive(true);
+		CheckForData();		
 	}
 
 	public void StartNewGame(){

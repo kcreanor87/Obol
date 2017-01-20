@@ -53,13 +53,7 @@ public class PlayerControls_NonCombat : MonoBehaviour {
 	}
 
 	void DetectInput(){
-		if (!_ui._inChat) DetectMoveController();
-		if (_ui._inChat){
-			if (Input.GetButton("Cancel")){
-				_moving = false;
-				_ui.OpenCanvas(_npcIndex);
-			}	
-		}
+		DetectMoveController();
 		DetectControllerAim();
 		Heal();		
 	}
@@ -89,7 +83,7 @@ public class PlayerControls_NonCombat : MonoBehaviour {
 		AnimateRun(spdX, spdY);
 	}
 
-	void Stop(){
+	public void Stop(){
 		_agent.SetDestination(transform.position);
 		_animBody.SetFloat("DirectionX", 0.0f);
 		_animBody.SetFloat("DirectionY", 0.0f);
@@ -106,14 +100,9 @@ public class PlayerControls_NonCombat : MonoBehaviour {
 			RaycastHit hit;
 			Ray ray = Camera.main.ScreenPointToRay(pos);
 			if (Physics.Raycast(ray, out hit, 100f, _layerMask)){
-				if (hit.collider.tag == "Ground" || hit.collider.tag == "Enemy" || hit.collider.tag == "NPC"){
-					if (hit.collider.tag == "Ground"){
-						_indicator.SetActive(true);
-      					_indicator.transform.position = hit.point;
-					}
-					else{
-						_indicator.SetActive(false);
-					}
+				if (hit.collider.tag == "Ground"){
+					_indicator.SetActive(true);
+      				_indicator.transform.position = hit.point;
 					Quaternion newRotation = Quaternion.LookRotation(hit.point - _body.position);
 					newRotation.x = 0f;
        				newRotation.z = 0f;
@@ -212,7 +201,7 @@ public class PlayerControls_NonCombat : MonoBehaviour {
 		_animArms.SetBool("Shooting", true);
 		yield return new WaitForSeconds(_CombatManager._equipRanged._fireRate);
 		_firing = false;
-
+		_animArms.SetBool("Shooting", false);
 	}
 
 	void Heal(){

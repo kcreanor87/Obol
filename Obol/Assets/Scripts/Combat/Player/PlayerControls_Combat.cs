@@ -201,7 +201,7 @@ public class PlayerControls_Combat : MonoBehaviour {
 		_animArms.SetBool("Shooting", true);
 		yield return new WaitForSeconds(_CombatManager._equipRanged._fireRate);
 		_firing = false;
-		_animArms.SetBool("Shooting", true);
+		_animArms.SetBool("Shooting", false);
 	}
 
 	void Heal(){

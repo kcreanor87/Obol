@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.EventSystems;
 
 public class NonCombat_UI : MonoBehaviour {
 
@@ -30,6 +31,15 @@ public class NonCombat_UI : MonoBehaviour {
 	public GameObject _levelUpText;
 	public GameObject _statsPrompt;
 
+	//Buttons to select on menu open
+	public Button _resumeButton;
+
+	public int _npcIndex;
+	public bool _promptActive;
+	public GameObject _promptGO;
+	public Text _promptText;
+	public bool _inMenu;
+
 	// Use this for initialization
 	void Start () {
 		_levelUpPrompt = GameObject.Find("LevelUpPrompt");
@@ -44,9 +54,13 @@ public class NonCombat_UI : MonoBehaviour {
 		_npcChatText = GameObject.Find("NPCtext").GetComponent<Text>();
 		_npcChatGO.SetActive(false);
 		_pauseMenu = GameObject.Find("PauseMenu");
+		_resumeButton = _pauseMenu.transform.FindChild("Resume").GetComponent<Button>();
 		_pauseMenu.SetActive(false);
 		_obols = GameObject.Find("CurrentObols").GetComponent<Text>();		
 		_currentHP = GameObject.Find("CurrentHP").GetComponent<Text>();
+		_promptGO = GameObject.Find("NPCPrompt");
+		_promptText = _promptGO.GetComponentInChildren<Text>();
+		_promptGO.SetActive(false);
 		_maxHP = GameObject.Find("MaxHP").GetComponent<Text>();
 		_hpBar = GameObject.Find("HP").GetComponent<RectTransform>();
 		_xpBar = GameObject.Find("XP").GetComponent<RectTransform>();
@@ -63,10 +77,12 @@ public class NonCombat_UI : MonoBehaviour {
 
 	void Update(){
 		PauseDetect();
+		CancelDetect();
+		if (_promptActive && !_paused) NPCDetect();
 	}
 
 	void PauseDetect(){
-		if (Input.GetKeyDown(KeyCode.Escape)){
+		if (Input.GetButtonDown("Pause")){
 			if (!_paused){
 				PauseMenu(true);
 			}
@@ -76,18 +92,36 @@ public class NonCombat_UI : MonoBehaviour {
 		}
 	}
 
+	void CancelDetect(){
+		if (Input.GetButtonDown("Cancel")){
+			CloseAllCanvases();
+			PauseMenu(false);
+		}
+	}
+
+	void NPCDetect(){
+		if (Input.GetButtonDown("Submit")){
+			OpenCanvas(_npcIndex);
+			ClosePrompt();
+		}
+	}
+
 	public void PauseMenu(bool paused){
 		if (paused){
+			CloseAllCanvases();
 			_pauseMenu.SetActive(true);
 			_playerHUD.SetActive(false);
 			_levelUpText.SetActive(_manager._availableRanks > 0);
 			_statsPrompt.SetActive(_manager._availableRanks == 0);
-			_paused = true;
+			_paused = true;		
+			_resumeButton.Select();
 		}
 		else{
+			CloseAllCanvases();
 			_pauseMenu.SetActive(false);
 			_playerHUD.SetActive(true);
 			_paused = false;
+			EventSystem.current.GetComponent<EventSystem>().SetSelectedGameObject(null);
 		}
 	}
 
@@ -116,14 +150,13 @@ public class NonCombat_UI : MonoBehaviour {
 			break;
 			case 2:
 			_stats.OpenCanvas();
-			PauseMenu(false);
-			_playerHUD.SetActive(false);
+			_pauseMenu.SetActive(false);
 			break;
 			case 3:
 			_portal.OpenCanvas();
 			break;
 		}
-		
+		_inMenu = true;
 	}
 
 	public void CloseCanvas(int index){
@@ -138,12 +171,25 @@ public class NonCombat_UI : MonoBehaviour {
 			_portal.CloseCanvas();
 			break;
 		}
-		_paused = false;
+		EventSystem.current.GetComponent<EventSystem>().SetSelectedGameObject(null);
 		_playerHUD.SetActive(true);
 		_saveGame.Save();
+		_inMenu = false;
 	}
 
 	public void ExitGame(){
 		Application.Quit();
+	}
+
+	public void OpenPrompt(int i){
+		_npcIndex = i;
+		_promptGO.SetActive(true);		
+		_promptText.text = (i == 3) ? "Travel" : "Talk";
+		_promptActive = true;
+	}
+
+	public void ClosePrompt(){
+		_promptGO.SetActive(false);
+		_promptActive = false;
 	}
 }
