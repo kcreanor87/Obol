@@ -186,11 +186,10 @@ public class EnemyAI : MonoBehaviour {
 	public IEnumerator Die(){
 		yield return new WaitForSeconds(2.5f);
 		if (_counter._spawnPoints == 0){
-			if (_counter._enemiesKilled == _counter._enemiesSpawned && !_ui._end){
+			if (_counter._enemiesKilled == _counter._enemiesSpawned && !_ui._gameOver){
 				_player._agent.Stop();
 				_player.Stop();
 				_ui.LevelEnd(true);
-				_ui._end = true;
 			}
 		}
 		Destroy(gameObject);

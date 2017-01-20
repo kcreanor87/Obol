@@ -8,7 +8,7 @@ public class _manager : MonoBehaviour {
 	public static int _obols;
 
 	public static int _portal;
-	public static int _level = 10;
+	public static int _level;
 	public static int _currentXP;
 	public static int _nextLvlXP;
 	public static int _prevXP;

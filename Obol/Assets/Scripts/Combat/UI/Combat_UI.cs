@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
+using UnityEngine.EventSystems;
 using System.Collections;
 
 public class Combat_UI : MonoBehaviour {
@@ -53,7 +54,7 @@ public class Combat_UI : MonoBehaviour {
 
 	public TurretControls _turret;
 
-	public bool _end;
+	public Button _resumeButton;
 
 	// Use this for initialization
 	void Start () {
@@ -64,6 +65,7 @@ public class Combat_UI : MonoBehaviour {
 		_fadeOut.SetActive(false);
 		_continueButton = GameObject.Find("Continue").GetComponent<Button>();
 		_continueButton.interactable = false;
+		_resumeButton = GameObject.Find("Resume").GetComponent<Button>();
 		_gameOverImage = GameObject.Find("GameOverImage").GetComponent<Image>();
 		_gatesDestroyedTxt = GameObject.Find("GatesDestroyed").GetComponent<Text>();
 		_enemiesTxt = GameObject.Find("EnemiesKilled").GetComponent<Text>();
@@ -95,12 +97,15 @@ public class Combat_UI : MonoBehaviour {
 	}
 
 	void Update(){
-		PauseDetect();
+		if (!_gameOver){
+			PauseDetect();
+			CancelDetect();
+		} 
 		if (_winBonus) AddBonus();
 	}
 
 	void PauseDetect(){
-		if (Input.GetKeyDown(KeyCode.Escape)){
+		if (Input.GetButtonDown("Pause")){
 			if (!_paused){
 				OpenCanvas(1);
 			}
@@ -110,11 +115,19 @@ public class Combat_UI : MonoBehaviour {
 		}
 	}
 
+	void CancelDetect(){
+		if (Input.GetButtonDown("Cancel")){
+			CloseAllCanvases();
+			OpenCanvas(0);
+		}
+	}
+
 	public void CloseAllCanvases(){
 		CloseCanvas(1);
 	}	
 
 	public void OpenCanvas(int index){
+		EventSystem.current.GetComponent<EventSystem>().SetSelectedGameObject(null);
 		_miniMap.enabled = false;
 		switch (index){
 			case 0:
@@ -131,6 +144,7 @@ public class Combat_UI : MonoBehaviour {
 			Time.timeScale = 0.0f;
 			CloseCanvas(0);
 			CloseCanvas(2);
+			_resumeButton.Select();
 			break;
 			case 2:
 			CloseCanvas(1);
@@ -173,12 +187,11 @@ public class Combat_UI : MonoBehaviour {
 		var HPwidth = (float) ((float)_CombatManager._currentHealth / _CombatManager._maxHealth) * _hpMax;
 		_hpBar.sizeDelta = new Vector2(HPwidth, 130);
 		//UpdateXP
-		var XPwidth = (float) ((float)(_manager._currentXP - _manager._prevXP) /( _manager._nextLvlXP - _manager._prevXP)) * 571;
+		var XPwidth = (float) ((float)(_manager._currentXP - _manager._prevXP)/( _manager._nextLvlXP - _manager._prevXP)) * 571;
 		_xpBar.sizeDelta = new Vector2(XPwidth, 14);
 		_levelUpPrompt.SetActive(_manager._availableRanks > 0);
 		_levelUpText.SetActive(_manager._availableRanks > 0);
 		_statsText.SetActive(_manager._availableRanks == 0);
-
 		_gateText.text = (_counters._spawnPoints > 0) ? "Gates Left:" : "Enemies Remaining";
 		_gateRemaining.text = (_counters._spawnPoints > 0) ? _counters._spawnPoints.ToString() : (_counters._enemiesSpawned - _counters._enemiesKilled).ToString();
 		_enemiesKilled.text = _counters._enemiesKilled.ToString();
