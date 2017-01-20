@@ -10,6 +10,8 @@ public class SpawnPoint : MonoBehaviour {
 	public CombatCounters _counterScript;
 	public int _spawned;
 	public float _timer;
+	public int _maxWave = 12;
+	public int _level = 1;
 
 	void Awake(){
 		_timer = 10.0f;
@@ -34,9 +36,17 @@ public class SpawnPoint : MonoBehaviour {
 	//Spawn a random prefab from the editor-populated list
 	void SpawnEnemy(){		
 		var enemyType = Random.Range(0, _enemyDatabase.Count);
-		Instantiate(_enemyDatabase[enemyType], transform.position, Quaternion.identity);
+		var enemy = (GameObject) Instantiate(_enemyDatabase[enemyType], transform.position, Quaternion.identity);
+		var enemyScript = enemy.GetComponent<EnemyAI>();
+		enemyScript._level = _level;
 		_spawned++;
-		_timer = Random.Range(0.5f, 4.0f);
+		if (_spawned >= _maxWave){
+			_timer = Random.Range(8.0f, 12.0f);
+			_spawned = 0;
+		}
+		else{
+			_timer = Random.Range(0.1f, 1.0f);
+		}		
 		StartCoroutine(Timer(_timer));		
 	}
 

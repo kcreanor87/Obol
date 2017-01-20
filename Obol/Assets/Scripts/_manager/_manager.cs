@@ -5,7 +5,7 @@ public class _manager : MonoBehaviour {
 
 	public static string _name;
 
-	public static int _obols = 200;
+	public static int _obols;
 
 	public static int _portal;
 	public static int _level;

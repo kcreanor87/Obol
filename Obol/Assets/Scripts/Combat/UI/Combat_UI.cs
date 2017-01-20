@@ -237,6 +237,7 @@ public class Combat_UI : MonoBehaviour {
 		}
 		else{
 			_continueButton.interactable = true;
+			_continueButton.Select();
 			Time.timeScale = 0.2f;
 		}
 		//once added, enable game over button
@@ -261,17 +262,17 @@ public class Combat_UI : MonoBehaviour {
 	}
 
 	void AddBonus(){
-		if (_tempGold >= 2){
-			_tempGold -= 2;
-			_counters._obolsCollected += 2;
+		if (_tempGold >= 10 * SceneManager.GetActiveScene().buildIndex){
+			_tempGold -= 10 * SceneManager.GetActiveScene().buildIndex;
+			_counters._obolsCollected += 10 * SceneManager.GetActiveScene().buildIndex;
 		}
 		else{
 			_counters._obolsCollected += _tempGold;
 			_tempGold = 0;
 		}
-		if (_tempXP >= 8){
-			_tempXP -= 8;
-			_counters._xpGained += 8;
+		if (_tempXP >= 40 * SceneManager.GetActiveScene().buildIndex){
+			_tempXP -= 40 * SceneManager.GetActiveScene().buildIndex;
+			_counters._xpGained += 40 * SceneManager.GetActiveScene().buildIndex;
 		}
 		else{
 			_counters._xpGained += _tempXP;
@@ -280,6 +281,7 @@ public class Combat_UI : MonoBehaviour {
 		if (_tempGold == 0 && _tempXP == 0){
 			_winBonus = false;
 			_continueButton.interactable = true;
+			_continueButton.Select();
 			Time.timeScale = 0.0f;
 			UpdateUI();
 		}
@@ -298,7 +300,8 @@ public class Combat_UI : MonoBehaviour {
 		_fadeOut.SetActive(true);
 		Time.timeScale = 1.0f;
 		_endCanvas.SetActive(false);
-		yield return new WaitForSeconds(1.2f);		
+		yield return new WaitForSeconds(1.2f);
+		_CombatManager._currentHealth = _CombatManager._maxHealth;	
 		SceneManager.LoadScene("Crypt");
 	}
 }

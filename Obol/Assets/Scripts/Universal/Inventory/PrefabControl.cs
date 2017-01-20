@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.UI;
 using System.Collections.Generic;
 
 public class PrefabControl : MonoBehaviour {
@@ -15,6 +16,11 @@ public class PrefabControl : MonoBehaviour {
 
 	public Transform _front, _back;
 
+	public bool _crypt;
+
+	public Button _static, _offensive, _defensive;
+	public Sprite _selected, _unselected;
+
 	void Start(){
 		FindGos();
 		EquipGOs();
@@ -24,18 +30,31 @@ public class PrefabControl : MonoBehaviour {
 		foreach (Transform child in GameObject.Find("Weapons").GetComponent<Transform>()){
 			_weaponGOs.Add(child.gameObject);
 		}
-		foreach (Transform child in GameObject.Find("Helmets").GetComponent<Transform>()){
+		foreach (Transform child in GameObject.Find("HelmetGOs").GetComponent<Transform>()){
 			_headGOs.Add(child.gameObject);
 		}
-		foreach (Transform child in GameObject.Find("Chest").GetComponent<Transform>()){
+		foreach (Transform child in GameObject.Find("ChestGOs").GetComponent<Transform>()){
 			_chestGOs.Add(child.gameObject);
 		}
-		foreach (Transform child in GameObject.Find("Legs").GetComponent<Transform>()){
+		foreach (Transform child in GameObject.Find("LegGOs").GetComponent<Transform>()){
 			_legGOs.Add(child.gameObject);
 		}
 		foreach (Transform child in GameObject.Find("TurretsList").GetComponent<Transform>()){
 			_turretGOs.Add(child.gameObject);
-		}				
+		}
+		if (!_crypt) CollectSprites();		
+	}
+
+	void CollectSprites(){
+		_offensive = GameObject.Find("Offensive").GetComponent<Button>();
+		_defensive = GameObject.Find("Defensive").GetComponent<Button>();
+		_static = GameObject.Find("ToggleTurretStatic").GetComponent<Button>();	
+		if (_CombatManager._turretSlot._type == 0 || _CombatManager._turretSlot._type == 1){
+			_offensive.image.sprite = _selected;
+		}
+		else{
+			_defensive.image.sprite = _selected;
+		}
 	}
 
 	public void EquipGOs(){
@@ -100,13 +119,18 @@ public class PrefabControl : MonoBehaviour {
 
 	public void SetTurretStatic(){
 		_turretControls.SwitchStatic();
+		if (!_crypt){
+			_static.image.sprite = (_turretControls._static) ? _selected : _unselected;
+			_offensive.image.sprite = _unselected;
+			_defensive.image.sprite = _unselected;
+		}		
 	}
 
 	public void ChangeTurretState(int index){
 		switch (index){
 			case 0:
 			_turretControls._offensive = true;
-			_turretControls._static = false;
+			_turretControls._static = false;			
 			break;
 			case 1:
 			_turretControls._target = _back;
@@ -114,5 +138,13 @@ public class PrefabControl : MonoBehaviour {
 			_turretControls._static = false;
 			break;
 		}
+		_static.image.sprite = (_turretControls._static) ? _selected : _unselected;
+		_offensive.image.sprite = (_turretControls._offensive) ? _selected : _unselected;
+		_defensive.image.sprite = (!_turretControls._offensive && !_turretControls._static) ? _selected : _unselected;
 	}
+
+	public void ToggleTurret(int index){
+		_CombatManager._turretSlot = _CombatManager._turretDb._turretDatabase[index];
+		UpdateTurret(index);
+	}	
 }

@@ -39,7 +39,10 @@ public class EnemyAI : MonoBehaviour {
 	public GameObject _healthBarGO;
 	public HealthBar _hbScript;
 
+	public int _level;
+
 	void Start(){
+		SetStats();
 		_anim = transform.GetChild(0).GetComponentInChildren<Animator>();
 		_col = transform.GetChild(0).GetComponentInChildren<Collider>();
 		_textSpawn = transform.FindChild("TextSpawn");			
@@ -61,6 +64,14 @@ public class EnemyAI : MonoBehaviour {
 		_hbScript._parent = this;
 		_hbScript._maxHealth = _health;	
 		ChasePlayer();		
+	}
+
+	void SetStats(){
+		_health = Mathf.FloorToInt((float) _health * Mathf.Pow(1.1f, _level));
+		_damage = Mathf.FloorToInt((float) _damage * Mathf.Pow(1.1f, _level));
+		_exp = Mathf.FloorToInt((float) _exp * Mathf.Pow(1.1f, _level));
+		_maxGold = Mathf.FloorToInt((float) _maxGold * Mathf.Pow(1.1f, _level));
+		_damageReduction = Mathf.Min(_damageReduction * Mathf.Pow(1.05f, _level), 0.9f);
 	}
 
 	void Update(){
@@ -177,7 +188,7 @@ public class EnemyAI : MonoBehaviour {
 		if (_counter._spawnPoints == 0){
 			if (_counter._enemiesKilled == _counter._enemiesSpawned && !_ui._end){
 				_player._agent.Stop();
-				_player._anim.SetBool("Running", false);
+				_player.Stop();
 				_ui.LevelEnd(true);
 				_ui._end = true;
 			}

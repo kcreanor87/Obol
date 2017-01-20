@@ -43,7 +43,7 @@ public class Projectiles : MonoBehaviour {
 				case "Destructible":
 				if (!_hit) Explode();
 				var destScript = col.GetComponent<Destructibles>();
-				destScript.BeenHit(_damage);	
+				if (destScript._currentHP > 0) destScript.BeenHit(_damage);	
 				break;
 			}
 		}

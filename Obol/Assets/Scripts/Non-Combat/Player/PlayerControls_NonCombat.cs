@@ -4,7 +4,8 @@ using System.Collections;
 public class PlayerControls_NonCombat : MonoBehaviour {
 
 	public NavMeshAgent _agent;
-	public Animator _anim;
+	public Animator _animBody;
+	public Animator _animArms;
 	public Vector3 _objectPos;
 	public Shooting _shooting;
 	public LayerMask _layerMask;
@@ -23,6 +24,11 @@ public class PlayerControls_NonCombat : MonoBehaviour {
 	public bool _moveToNPC;	
 
 	public bool _placing;
+	public int _aimTimer;
+
+	public Transform _body;
+
+	public bool _aiming;
 
 	void Awake () {		
 		Spawn();
@@ -36,118 +42,131 @@ public class PlayerControls_NonCombat : MonoBehaviour {
 		_indicator = GameObject.Find("Indicator");		
 		_saveGame = GameObject.Find("Loader").GetComponent<SaveGame>();
 		_ui = GameObject.Find("Non-Combat UI").GetComponent<NonCombat_UI>();
-		_anim = gameObject.GetComponentInChildren<Animator>();
+		_animBody = GameObject.Find("Player_Body").GetComponent<Animator>();
 		_agent = gameObject.GetComponent<NavMeshAgent>();
-		_textSpawn = transform.Find("TextSpawn");		
-		_shooting = transform.FindChild("Launcher").GetComponent<Shooting>();		
+		_textSpawn = transform.Find("TextSpawn");
+		_body = transform.FindChild("BodyParent");
+		_animArms = _body.FindChild("Player_Arms").GetComponent<Animator>();
+		_shooting = _body.FindChild("Launcher").GetComponent<Shooting>();		
 		_agent.enabled = true;	
 
 	}
 
 	void DetectInput(){
-		if (!Input.GetMouseButton(1) && !_ui._inChat) DetectMove();
+		if (!_ui._inChat) DetectMoveController();
 		if (_ui._inChat){
-			if (Input.GetMouseButtonDown(0)){
+			if (Input.GetButton("Cancel")){
 				_moving = false;
 				_ui.OpenCanvas(_npcIndex);
 			}	
 		}
-		DetectAim();
+		DetectControllerAim();
 		Heal();		
 	}
 
-	void DetectMove(){
-		if (Input.GetMouseButton(0)){
-			RaycastHit hit;
-			Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-			if (Physics.Raycast(ray, out hit, 100f, _layerMask) && !UnityEngine.EventSystems.EventSystem.current.IsPointerOverGameObject()){
-				_agent.speed = (_CombatManager._speed / 10.0f);		
-				_anim.speed = 1.0f;		
-				_anim.SetFloat("Speed", (_CombatManager._speed / 10.0f));
-				if (hit.collider.tag == "Ground"){
-					float dist = Vector3.Distance(hit.point, transform.position);
-					if (dist > 1.0f && !_ui._inChat){
-						_agent.SetDestination(hit.point);
-						_anim.SetBool("Running", true);
-						_moving = true;
-						_moveToNPC = false;
-						if (_ui._uiOpen) _ui.CloseAllCanvases();						
-					}
-				}
-				else if (hit.collider.tag == "NPC"){
-					_agent.SetDestination(hit.transform.FindChild("PlayerPos").position);
-					_moveToNPC = true;
-					_anim.SetBool("Running", true);
-					_moving = true;
-					if (_ui._uiOpen) _ui.CloseAllCanvases();
-					switch (hit.collider.name){
-						case "Smith":
-						_npcIndex = 1;
-						break;
-						case "Priest":
-						_npcIndex = 2;
-						break;
-						case "Portal":
-						_npcIndex = 3;
-						break;
-						case "Thief":
-						_npcIndex = 4;
-						break;
-					}
-				}		
-			}
+	void DetectMoveController(){
+		float spdX = Mathf.Abs(Input.GetAxis("Horizontal"));
+  		float spdY = Mathf.Abs(Input.GetAxis("Vertical"));
+		if (spdX >= 0.1f || spdY >= 0.1f){
+			var dir = new Vector3(Input.GetAxis("Horizontal"), 0, Input.GetAxis("Vertical"));
+			Quaternion newRotation = Quaternion.LookRotation(dir);
+			newRotation.x = 0f;
+  		   	newRotation.z = 0f;
+  		    transform.rotation = Quaternion.Slerp(transform.rotation, newRotation, Time.deltaTime * 10.0f);
+  		    _agent.SetDestination(transform.position + transform.forward);  		    
+  		    _agent.speed = _CombatManager._speed * Mathf.Max(spdX, spdY) / 10.0f;
+  		    _moving = true;
+  		    if (!_aiming){
+  		    	Quaternion bodyRotation = Quaternion.LookRotation((transform.position + transform.forward) - _body.position);
+				bodyRotation.x = 0f;
+       			bodyRotation.z = 0f;
+        		_body.rotation = Quaternion.Slerp(_body.rotation, bodyRotation, Time.deltaTime * 15.0f);        		
+  		    }
+		}	
+		else{
+			Stop();
 		}
-		if (_moving){
-			float dist = Vector3.Distance(transform.position, _agent.destination);
-			if (dist <= 0.3f){
-				Stop();
-				if (_moveToNPC){
-					_ui.OpenCanvas(_npcIndex);
-					_moveToNPC = false;
-				}
-			}
-		}
+		AnimateRun(spdX, spdY);
 	}
 
 	void Stop(){
 		_agent.SetDestination(transform.position);
-		_anim.SetBool("Running", false);
+		_animBody.SetFloat("DirectionX", 0.0f);
+		_animBody.SetFloat("DirectionY", 0.0f);
 		_moving = false;
 	}
-
-	void DetectAim(){
-		if (Input.GetMouseButton(1)){
-			Stop();
+	void DetectControllerAim(){
+		float dirX = Input.GetAxis("HorizontalRight");
+		float dirY = Input.GetAxis("VerticalRight");
+		if (Mathf.Abs(dirX) >= 0.1f || Mathf.Abs(dirY) >= 0.1f){
+			_aiming = true;
+			var posX = Screen.width * dirX / 2 + Screen.width/2;
+			var posY = Screen.height * dirY / 2 + Screen.height/2;
+			var pos = new Vector2(posX, posY);
 			RaycastHit hit;
-			Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+			Ray ray = Camera.main.ScreenPointToRay(pos);
 			if (Physics.Raycast(ray, out hit, 100f, _layerMask)){
 				if (hit.collider.tag == "Ground" || hit.collider.tag == "Enemy" || hit.collider.tag == "NPC"){
 					if (hit.collider.tag == "Ground"){
 						_indicator.SetActive(true);
-						_indicator.transform.position = hit.point;	
+      					_indicator.transform.position = hit.point;
 					}
 					else{
 						_indicator.SetActive(false);
-					}						
-					_agent.SetDestination(transform.position);
-					_anim.SetBool("Running", false);
-					_moving = false;
-					Quaternion newRotation = Quaternion.LookRotation(hit.point - transform.position);
+					}
+					Quaternion newRotation = Quaternion.LookRotation(hit.point - _body.position);
 					newRotation.x = 0f;
        				newRotation.z = 0f;
-        			transform.rotation = Quaternion.Slerp(transform.rotation, newRotation, Time.deltaTime * 10);
-        			if (Input.GetMouseButton(0) && !_firing){
+        			_body.rotation = Quaternion.Slerp(_body.rotation, newRotation, Time.deltaTime * 10);
+        			if (Input.GetAxisRaw("Fire1") < 0.0f && !_firing){
         				Shoot(hit.collider.gameObject, hit.point);
         			}
-        			if (Input.GetMouseButtonDown(0) && !_firing){
+        			if (Input.GetAxisRaw("Fire1") < 0.0f && !_firing){
         				Shoot(hit.collider.gameObject, hit.point);
         			}
 				}			
 			}			
-		}		
-		if (Input.GetMouseButtonUp(1)){
+		}
+		else{
 			_indicator.SetActive(false);
+			_aiming = false;
+		}
+	}
 
+	void AnimateRun(float x, float y){		
+		_animArms.SetBool("Running", (Mathf.Max(x, y) > 0.1f));
+		if (!_aiming){
+			_animBody.SetFloat("DirectionY", Mathf.Max(x, y));
+			_animBody.SetFloat("DirectionX", 0.0f);
+			_animBody.speed = Mathf.Max(x, y);			
+		}
+		else{
+			Vector3 targetDir = transform.position - _indicator.transform.position;
+			float angle = Vector3.Angle(transform.forward, targetDir);
+			float speed = angle/180;
+			float baseSpd = _agent.speed * speed * 0.3f;
+			_agent.speed = _agent.speed * 0.7f + baseSpd;
+			if (angle < 20.0f){
+				_animBody.SetFloat("DirectionY",  -1 * Mathf.Max(x, y));
+			}
+			else if (angle > 160.0f){
+				_animBody.SetFloat("DirectionY", Mathf.Max(x, y));
+			}
+			else if (angle < 90.0f){
+				angle = Vector3.Angle(transform.right, targetDir);
+				speed = (angle - 90.0f) / 90.0f;
+				float dir = 1.0f - (Mathf.Abs(speed));
+				_animBody.SetFloat("DirectionX", speed);
+				_animBody.SetFloat("DirectionY", dir);
+			}
+			else{
+				angle = Vector3.Angle(transform.right, targetDir);
+				speed = (angle - 90.0f) / 90.0f;
+				float dir = ( 1.0f - (Mathf.Abs(speed))) * -1;
+				_animBody.SetFloat("DirectionX", speed);
+				_animBody.SetFloat("DirectionY", dir);
+			}
+			_animBody.speed = Mathf.Max(x, y);
 		}	
 	}
 
@@ -185,29 +204,15 @@ public class PlayerControls_NonCombat : MonoBehaviour {
         		_shooting.CalcVelocity(go.transform.parent.position);
         	}        	
         	StartCoroutine(FireRate());
-        }
-        _anim.SetBool("Attack", true);		
+        }		
 	}
 
 	public IEnumerator FireRate(){
-		_firing = true;	
-		switch(_CombatManager._equipRanged._id){
-			case 200:
-			_anim.speed = 1.0f;
-			break;
-			case 201:
-			_anim.speed = 0.17f;
-			break;
-			case 202:
-			_anim.speed = 2.5f;
-			break;
-			case 203:
-			_anim.speed = .71f;
-			break;
-		}	
+		_firing = true;		
+		_animArms.SetBool("Shooting", true);
 		yield return new WaitForSeconds(_CombatManager._equipRanged._fireRate);
 		_firing = false;
-		_anim.SetBool("Attack", false);
+
 	}
 
 	void Heal(){

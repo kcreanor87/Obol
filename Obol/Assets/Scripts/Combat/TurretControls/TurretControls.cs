@@ -28,7 +28,7 @@ public class TurretControls : MonoBehaviour {
 		_agent = gameObject.GetComponentInParent<NavMeshAgent>();
 		_player = GameObject.Find("Player").GetComponent<Transform>();
 		_fireRate = _CombatManager._turretSlot._fireRate;
-		_damage = _CombatManager._turretSlot._dam;
+		_damage = Mathf.FloorToInt((float) _CombatManager._turretSlot._dam * (Mathf.Pow(1.1f, (_CombatManager._mechRanks + 1))));
 		_particles = gameObject.GetComponentsInChildren<ParticleSystem>();
 		_offensive = (_type ==  0 || _type == 1);
 		if (_offensive) _target = _front;
