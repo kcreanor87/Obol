@@ -73,6 +73,7 @@ public class NonCombat_UI : MonoBehaviour {
 		CloseCanvas(1);
 		CloseCanvas(2);
 		CloseCanvas(3);
+		_inMenu = false;
 	}
 
 	void Update(){

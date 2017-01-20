@@ -9,10 +9,8 @@ public class Smith : MonoBehaviour {
 	public List <Button> _chest = new List <Button>();
 	public List <Button> _legs = new List <Button>();
 
-	public Button _buyWeapon;
-	public Button _buyArmour;
-	public Button _equipWeapon;
-	public Button _equipArmour;
+	public Text _buyWeapon;
+	public Text _buyArmour;
 
 	public Weapon _activeWeapon;
 	public Armour _activeArmour;
@@ -51,11 +49,28 @@ public class Smith : MonoBehaviour {
 
 	public PrefabControl _prefabControls;
 
+	public Button _weaponSelect;
+	public Button _headSelect;
+	public Button _chestSelect;
+	public Button _legSelect;
+
+	public bool _open;
+	public int _activeMenu;
+
+	public List <Button> _tabs = new List <Button>();
+
+	public Color _highlighted;
+	public Color _normal;
+
+	public int _idStore;
+
 	public void OpenCanvas(){
 		_smithGO.SetActive(true);
 		SetOpenCanvas(3);
 		_hudCam.enabled = true;
 		_ui._uiOpen = true;
+		_open = true;
+		_activeMenu = 3;
 	}
 
 	public void CloseCanvas(){
@@ -63,10 +78,30 @@ public class Smith : MonoBehaviour {
 		_smithGO.SetActive(false);
 		_hudCam.enabled = false;
 		_ui._uiOpen = false;
+		_open = false;
 	}
 
 	void Awake(){
 		CollectElements();		
+	}
+
+	void Update(){
+		if (_open){
+			if (Input.GetButtonDown("RB")){
+				_activeMenu++;
+				if (_activeMenu == 4){
+					_activeMenu = 0;
+				}
+				SetOpenCanvas(_activeMenu);
+			}
+			else if (Input.GetButtonDown("LB")){
+				_activeMenu--;
+				if (_activeMenu < 0){
+					_activeMenu = 3;
+				}
+				SetOpenCanvas(_activeMenu);
+			}
+		}		
 	}
 
 	void CollectElements(){
@@ -78,7 +113,6 @@ public class Smith : MonoBehaviour {
 		_newWeapFire = GameObject.Find("NewWeapFR").GetComponent<Text>();
 		_newWeapRad = GameObject.Find("NewWeapRad").GetComponent<Text>();
 		_weaponCost = GameObject.Find("NewWeapCost").GetComponent<Text>();
-
 		_currentArmBns = GameObject.Find("CurrentArmDef").GetComponent<Text>();
 		_currentArmWeight = GameObject.Find("CurrentArmWeight").GetComponent<Text>();
 		_newArmName = GameObject.Find("ArmourName").GetComponent<Text>();
@@ -186,29 +220,38 @@ public class Smith : MonoBehaviour {
 	}
 
 	public void SetOpenCanvas(int type){
-
 		ResetCanvases();
-
+		_activeType = type;
 		switch(type){
 			case 0:
 			CheckHelmAvailability();
-			_headCanvas.SetActive(true);			
+			_headCanvas.SetActive(true);
+			SetActiveArmour(0);
+			_headSelect.Select();		
 			break;
 			case 1:
 			CheckChestAvailability();
-			_chestCanvas.SetActive(true);			
+			_chestCanvas.SetActive(true);
+			SetActiveArmour(0);
+			_chestSelect.Select();			
 			break;
 			case 2:
 			CheckLegAvailability();
-			_legCanvas.SetActive(true);			
+			_legCanvas.SetActive(true);	
+			SetActiveArmour(0);
+			_legSelect.Select();		
 			break;
 			case 3:
 			CheckWeaponAvailability();
-			_weaponCanvas.SetActive(true);			
+			_weaponCanvas.SetActive(true);	
+			SetActiveWeapon(0);
+			_weaponSelect.Select();		
 			break;
-		}
-		_activeType = type;
+		}		
 		_prefabControls.EquipGOs();
+		for (int i = 0; i < _tabs.Count; i++){
+			_tabs[i].GetComponent<Image>().color = (i == type) ? _highlighted : _normal;
+		}
 	}
 
 	void ResetCanvases(){
@@ -227,58 +270,99 @@ public class Smith : MonoBehaviour {
 		_itemSelected.SetActive(true);
 		_itemSelected.transform.position = _weapons[weapon].transform.position;
 		UpdateWeaponText();
-		_weaponStats.SetActive(true);
-		_buyWeapon.interactable = (!_activeWeapon._bought && _manager._obols >= _activeWeapon._cost);
-		_equipWeapon.interactable = (_activeWeapon._bought && (_CombatManager._equipRanged._id != _activeWeapon._id));
+		_weaponStats.SetActive(true);		
+		if (_activeWeapon._bought){
+			if (_activeWeapon._id == _CombatManager._equipRanged._id){
+				_buyWeapon.text = "Equipped";
+				_buyWeapon.color = Color.white;
+			}
+			else{
+				_buyWeapon.text = "Equip";
+				_buyWeapon.color = Color.white;
+			}
+		}
+		else{
+			_buyWeapon.text = "Buy";
+			_buyWeapon.color = (_activeWeapon._cost > _manager._obols) ? _highlighted : Color.white;
+		}
 		_prefabControls.PreviewItems(_activeType, weapon);
 	}
 
 	public void SetActiveArmour(int armour){
-		_itemSelected.SetActive(true);		
+		_itemSelected.SetActive(true);
+		_idStore = 0;	
 		switch(_activeType){
 			case 0:
 			_activeArmour = _CombatManager._armourDb._headDatabase[armour];
-			_equipArmour.interactable = (_activeArmour._bought && (_CombatManager._headSlot._id != _activeArmour._id));
 			_itemSelected.transform.position = _head[armour].transform.position;
+			_idStore = _CombatManager._headSlot._id;		
 			break;
 			case 1:
 			_activeArmour = _CombatManager._armourDb._chestDatabase[armour];
-			_equipArmour.interactable = (_activeArmour._bought && (_CombatManager._chestSlot._id != _activeArmour._id));
 			_itemSelected.transform.position = _chest[armour].transform.position;
+			_idStore = _CombatManager._chestSlot._id;	
 			break;
 			case 2:
 			_activeArmour = _CombatManager._armourDb._legDatabase[armour];
-			_equipArmour.interactable = (_activeArmour._bought && (_CombatManager._legSlot._id != _activeArmour._id));
 			_itemSelected.transform.position = _legs[armour].transform.position;
+			_idStore = _CombatManager._legSlot._id;	
 			break;
+		}
+		if (_activeArmour._bought){
+			if (_activeArmour._id == _idStore){
+				_buyArmour.text = "Equipped";
+				_buyArmour.color = Color.white;
+			}
+			else{
+				_buyArmour.text = "Equip";
+				_buyArmour.color = Color.white;
+			}			
+		}
+		else{
+			_buyArmour.text = "Buy";
+			_buyArmour.color = (_activeArmour._cost > _manager._obols) ? _highlighted : Color.white;
 		}
 		_prefabControls.PreviewItems(_activeType, armour);
 		UpdateArmourText();
 		_armourStats.SetActive(true);
 		_activeIndex = armour;
-		_buyArmour.interactable = (!_activeArmour._bought && _manager._obols >= _activeArmour._cost);
+	}
+	public void CheckStateWeapon(){
+		if (_CombatManager._weaponDb._rangedDatabase[_activeIndex]._bought == true){
+			EquipWeapon();
+		}
+		else{
+			BuyWeapon();
+		}
 	}
 
 	public void BuyWeapon(){
-		_manager._obols -= _activeWeapon._cost;
-		_CombatManager._weaponDb._rangedDatabase[_activeIndex]._bought = true;
-		_buyWeapon.interactable = false;
-		CheckWeaponAvailability();
-		SetActiveWeapon(_activeIndex);
-		_ui.UpdateUI();
+		if (_manager._obols >= _activeWeapon._cost && !_activeWeapon._bought){
+			_manager._obols -= _activeWeapon._cost;
+			_CombatManager._weaponDb._rangedDatabase[_activeIndex]._bought = true;
+			CheckWeaponAvailability();
+			SetActiveWeapon(_activeIndex);
+			EquipWeapon();
+			_ui.UpdateUI();
+		}
+		else if (_activeWeapon._bought && _activeWeapon._id != _CombatManager._equipRanged._id){
+			CheckWeaponAvailability();
+			SetActiveWeapon(_activeIndex);
+			EquipWeapon();
+			_ui.UpdateUI();
+		}
 	}
 
 	public void EquipWeapon(){
-		_equipWeapon.interactable = false;
 		_CombatManager._equipRanged = _activeWeapon;				
 		CheckWeaponAvailability();
 		_activeWeapon = _CombatManager._equipRanged;
 		_CombatManager.CalculateStats();
+		SetActiveWeapon(_activeIndex);
 		UpdateWeaponText();		
 	}
 
 	public void EquipArmour(){
-		_equipArmour.interactable = false;
 		switch(_activeType){
 			case 0:
 			_CombatManager._headSlot = _activeArmour;
@@ -297,28 +381,36 @@ public class Smith : MonoBehaviour {
 			break;
 		}
 		_CombatManager.CalculateStats();
+		SetActiveArmour(_activeIndex);
 		UpdateArmourText();
 	}
 
 	public void BuyArmour(){
-		_manager._obols -= _activeArmour._cost;
-		switch(_activeType){
-			case 0:
-			_CombatManager._armourDb._headDatabase[_activeIndex]._bought = true;
-			CheckHelmAvailability();
-			break;
-			case 1:
-			_CombatManager._armourDb._chestDatabase[_activeIndex]._bought = true;
-			CheckChestAvailability();
-			break;
-			case 2:
-			_CombatManager._armourDb._legDatabase[_activeIndex]._bought = true;
-			CheckLegAvailability();
-			break;
+		if (_manager._obols >= _activeArmour._cost && !_activeArmour._bought){
+			_manager._obols -= _activeArmour._cost;
+				switch(_activeType){
+				case 0:
+				_CombatManager._armourDb._headDatabase[_activeIndex]._bought = true;
+				CheckHelmAvailability();
+				break;
+				case 1:
+				_CombatManager._armourDb._chestDatabase[_activeIndex]._bought = true;
+				CheckChestAvailability();
+				break;
+				case 2:
+				_CombatManager._armourDb._legDatabase[_activeIndex]._bought = true;
+				CheckLegAvailability();
+				break;				
+			}
+			SetActiveArmour(_activeIndex);
+			EquipArmour();
+			_ui.UpdateUI();
 		}
-		_buyArmour.interactable = false;
-		SetActiveArmour(_activeIndex);
-		_ui.UpdateUI();
+		else if (_activeArmour._bought && _activeArmour._id != _idStore){
+			SetActiveArmour(_activeIndex);
+			EquipArmour();
+			_ui.UpdateUI();
+		}		
 	}
 
 	void UpdateWeaponText(){
@@ -338,6 +430,8 @@ public class Smith : MonoBehaviour {
 		ChangeTextColor(_newWeapRad, _activeWeapon._radius, _CombatManager._equipRanged._radius);
 
 		_weaponCost.text = (_activeWeapon._bought) ? "-" : _activeWeapon._cost.ToString();
+		_weaponCost.color = Color.white;
+		if (!_activeWeapon._bought && _manager._obols < _activeWeapon._cost) _weaponCost.color = Color.red; 
 	}
 
 	void ChangeTextColor(Text text, float valA, float valB){
@@ -376,7 +470,8 @@ public class Smith : MonoBehaviour {
 			ChangeTextColor(_newArmWeight, _CombatManager._legSlot._weight, _activeArmour._weight);
 			break;
 		}
-
 		_armourCost.text = (_activeArmour._bought) ? "-" : _activeArmour._cost.ToString();
+		_armourCost.color = Color.white;
+		if (!_activeArmour._bought && _manager._obols < _activeArmour._cost) _armourCost.color = Color.red;
 	}
 }

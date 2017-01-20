@@ -35,7 +35,7 @@ public class PlayerControls_NonCombat : MonoBehaviour {
 	}
 	
 	void Update () {
-		if (!_ui._paused && !_placing) DetectInput();
+		if (!_ui._paused && !_ui._uiOpen) DetectInput();
 	}
 
 	void Spawn(){
