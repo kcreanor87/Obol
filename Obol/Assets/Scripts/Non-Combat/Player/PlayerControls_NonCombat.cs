@@ -77,7 +77,7 @@ public class PlayerControls_NonCombat : MonoBehaviour {
         		_body.rotation = Quaternion.Slerp(_body.rotation, bodyRotation, Time.deltaTime * 15.0f);        		
   		    }
 		}	
-		else{
+		else if (_moving){
 			Stop();
 		}
 		AnimateRun(spdX, spdY);
@@ -89,11 +89,11 @@ public class PlayerControls_NonCombat : MonoBehaviour {
 		_animBody.SetFloat("DirectionY", 0.0f);
 		_moving = false;
 	}
+
 	void DetectControllerAim(){
 		float dirX = Input.GetAxis("HorizontalRight");
 		float dirY = Input.GetAxis("VerticalRight");
-		if (Mathf.Abs(dirX) >= 0.1f || Mathf.Abs(dirY) >= 0.1f){
-			_aiming = true;
+		if (Mathf.Abs(dirX) >= 0.1f || Mathf.Abs(dirY) >= 0.1f){			
 			var posX = Screen.width * dirX / 2 + Screen.width/2;
 			var posY = Screen.height * dirY / 2 + Screen.height/2;
 			var pos = new Vector2(posX, posY);
@@ -101,8 +101,14 @@ public class PlayerControls_NonCombat : MonoBehaviour {
 			Ray ray = Camera.main.ScreenPointToRay(pos);
 			if (Physics.Raycast(ray, out hit, 100f, _layerMask)){
 				if (hit.collider.tag == "Ground"){
-					_indicator.SetActive(true);
-      				_indicator.transform.position = hit.point;
+					if (_aiming){
+						float step = 70.0f * Time.deltaTime;
+						_indicator.transform.position = Vector3.MoveTowards(_indicator.transform.position, hit.point, step);
+					}
+					else{
+						_indicator.SetActive(true);
+      					_indicator.transform.position = hit.point;
+					}					
 					Quaternion newRotation = Quaternion.LookRotation(hit.point - _body.position);
 					newRotation.x = 0f;
        				newRotation.z = 0f;
@@ -110,11 +116,9 @@ public class PlayerControls_NonCombat : MonoBehaviour {
         			if (Input.GetAxisRaw("Fire1") < 0.0f && !_firing){
         				Shoot(hit.collider.gameObject, hit.point);
         			}
-        			if (Input.GetAxisRaw("Fire1") < 0.0f && !_firing){
-        				Shoot(hit.collider.gameObject, hit.point);
-        			}
 				}			
-			}			
+			}
+			_aiming = true;			
 		}
 		else{
 			_indicator.SetActive(false);
@@ -123,11 +127,13 @@ public class PlayerControls_NonCombat : MonoBehaviour {
 	}
 
 	void AnimateRun(float x, float y){		
-		_animArms.SetBool("Running", (Mathf.Max(x, y) > 0.1f));
+		float max = Mathf.Max(x, y);
+		_animArms.SetBool("Running", max > 0.1f);
 		if (!_aiming){
-			_animBody.SetFloat("DirectionY", Mathf.Max(x, y));
+			_animBody.SetFloat("DirectionY", max);
 			_animBody.SetFloat("DirectionX", 0.0f);
-			_animBody.speed = Mathf.Max(x, y);			
+			_animBody.speed = _CombatManager._speed / 100.0f;
+			_animArms.speed = _CombatManager._speed / 100.0f;		
 		}
 		else{
 			Vector3 targetDir = transform.position - _indicator.transform.position;
@@ -136,26 +142,28 @@ public class PlayerControls_NonCombat : MonoBehaviour {
 			float baseSpd = _agent.speed * speed * 0.3f;
 			_agent.speed = _agent.speed * 0.7f + baseSpd;
 			if (angle < 20.0f){
-				_animBody.SetFloat("DirectionY",  -1 * Mathf.Max(x, y));
+				_animBody.SetFloat("DirectionY",  -1 * max);
+				_animBody.SetFloat("DirectionX", 0.0f);
 			}
 			else if (angle > 160.0f){
-				_animBody.SetFloat("DirectionY", Mathf.Max(x, y));
+				_animBody.SetFloat("DirectionY", max);
+				_animBody.SetFloat("DirectionX", 0.0f);
 			}
 			else if (angle < 90.0f){
 				angle = Vector3.Angle(transform.right, targetDir);
 				speed = (angle - 90.0f) / 90.0f;
 				float dir = 1.0f - (Mathf.Abs(speed));
-				_animBody.SetFloat("DirectionX", speed);
-				_animBody.SetFloat("DirectionY", dir);
+				_animBody.SetFloat("DirectionX", speed * max);
+				_animBody.SetFloat("DirectionY", dir * max);
 			}
 			else{
 				angle = Vector3.Angle(transform.right, targetDir);
 				speed = (angle - 90.0f) / 90.0f;
 				float dir = ( 1.0f - (Mathf.Abs(speed))) * -1;
-				_animBody.SetFloat("DirectionX", speed);
-				_animBody.SetFloat("DirectionY", dir);
+				_animBody.SetFloat("DirectionX", speed * max);
+				_animBody.SetFloat("DirectionY", dir * max);
 			}
-			_animBody.speed = Mathf.Max(x, y);
+			_animBody.speed = _CombatManager._speed / 100.0f;
 		}	
 	}
 
@@ -199,9 +207,11 @@ public class PlayerControls_NonCombat : MonoBehaviour {
 	public IEnumerator FireRate(){
 		_firing = true;		
 		_animArms.SetBool("Shooting", true);
-		yield return new WaitForSeconds(_CombatManager._equipRanged._fireRate);
-		_firing = false;
+		_animArms.speed = 1.0f;
+		yield return new WaitForSeconds(0.1f);
 		_animArms.SetBool("Shooting", false);
+		yield return new WaitForSeconds(_CombatManager._equipRanged._fireRate - 0.1f);
+		_firing = false;	
 	}
 
 	void Heal(){

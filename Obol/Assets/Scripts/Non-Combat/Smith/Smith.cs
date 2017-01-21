@@ -74,7 +74,6 @@ public class Smith : MonoBehaviour {
 	}
 
 	public void CloseCanvas(){
-		_prefabControls.EquipGOs();
 		_smithGO.SetActive(false);
 		_hudCam.enabled = false;
 		_ui._uiOpen = false;

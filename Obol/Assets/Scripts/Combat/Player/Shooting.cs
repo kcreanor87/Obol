@@ -18,21 +18,22 @@ public class Shooting : MonoBehaviour {
 	public void SwitchProjectile(){
 		switch (_CombatManager._equipRanged._id){
 			case 200:
-			_activeProjectile = _projectileA;
-			break;
-			case 201:
 			_activeProjectile = _projectileB;
 			break;
+			case 201:
+			_activeProjectile = _projectileD;
+			break;
 			case 202:
-			_activeProjectile = _projectileC;
+			_activeProjectile = _projectileA;
 			break;
 			case 203:
-			_activeProjectile = _projectileD;
+			_activeProjectile = _projectileB;
 			break;
 		}
 	}
 
 	public void CalcVelocity(Vector3 target){
+		SwitchProjectile();
 		var dir = target - transform.position;
 		var h = dir.y;		
 		dir.y = 0;

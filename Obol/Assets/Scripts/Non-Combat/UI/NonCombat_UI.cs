@@ -137,6 +137,7 @@ public class NonCombat_UI : MonoBehaviour {
 		var XPwidth = (float) ((float)(_manager._currentXP - _manager._prevXP) /( _manager._nextLvlXP - _manager._prevXP)) * 571;
 		_xpBar.sizeDelta = new Vector2(XPwidth, 14);
 		_levelUpPrompt.SetActive(_manager._availableRanks > 0);
+		_saveGame.Save();
 	}
 
 	public void OpenCanvas(int index){
@@ -174,7 +175,6 @@ public class NonCombat_UI : MonoBehaviour {
 		}
 		EventSystem.current.GetComponent<EventSystem>().SetSelectedGameObject(null);
 		_playerHUD.SetActive(true);
-		_saveGame.Save();
 		_inMenu = false;
 	}
 

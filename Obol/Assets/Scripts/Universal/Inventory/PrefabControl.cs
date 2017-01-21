@@ -27,7 +27,7 @@ public class PrefabControl : MonoBehaviour {
 	}
 
 	void FindGos(){
-		foreach (Transform child in GameObject.Find("Weapons").GetComponent<Transform>()){
+		foreach (Transform child in GameObject.Find("WeaponParent").GetComponent<Transform>()){
 			_weaponGOs.Add(child.gameObject);
 		}
 		foreach (Transform child in GameObject.Find("HelmetGOs").GetComponent<Transform>()){
@@ -83,7 +83,7 @@ public class PrefabControl : MonoBehaviour {
 	}
 
 	void UpdateWeapons(int index){
-		for (int i = 0; i < _weaponGOs.Count; i++){
+		for (int i = 0; i < _weaponGOs.Count; i++){				
 			_weaponGOs[i].SetActive(index == i);
 		}
 	}
