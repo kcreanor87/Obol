@@ -25,6 +25,8 @@ public class Stats : MonoBehaviour {
 
 	public bool _combat;
 
+	public Button _introButton;
+
 	//Buttons for stat increases
 	public List<Button> _buttons = new List<Button>();
 
@@ -35,6 +37,7 @@ public class Stats : MonoBehaviour {
 	public void OpenCanvas(){
 		UpdateStats();
 		_statScreen.SetActive(true);
+		_introButton.Select();
 		if (!_combat) _ui._uiOpen = true;
 	}
 

@@ -188,6 +188,7 @@ public class Combat_UI : MonoBehaviour {
 		_hpBar.sizeDelta = new Vector2(HPwidth, 130);
 		//UpdateXP
 		var XPwidth = (float) ((float)(_manager._currentXP - _manager._prevXP)/( _manager._nextLvlXP - _manager._prevXP)) * 571;
+		if (XPwidth > 571) XPwidth = 571;
 		_xpBar.sizeDelta = new Vector2(XPwidth, 14);
 		_levelUpPrompt.SetActive(_manager._availableRanks > 0);
 		_levelUpText.SetActive(_manager._availableRanks > 0);

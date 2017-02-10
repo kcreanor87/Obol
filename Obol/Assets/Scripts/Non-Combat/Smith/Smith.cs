@@ -45,8 +45,6 @@ public class Smith : MonoBehaviour {
 
 	public NonCombat_UI _ui;
 
-	public Camera _hudCam;
-
 	public PrefabControl _prefabControls;
 
 	public Button _weaponSelect;
@@ -67,7 +65,6 @@ public class Smith : MonoBehaviour {
 	public void OpenCanvas(){
 		_smithGO.SetActive(true);
 		SetOpenCanvas(3);
-		_hudCam.enabled = true;
 		_ui._uiOpen = true;
 		_open = true;
 		_activeMenu = 3;
@@ -75,7 +72,6 @@ public class Smith : MonoBehaviour {
 
 	public void CloseCanvas(){
 		_smithGO.SetActive(false);
-		_hudCam.enabled = false;
 		_ui._uiOpen = false;
 		_open = false;
 	}
@@ -120,7 +116,6 @@ public class Smith : MonoBehaviour {
 		_armourCost = GameObject.Find("NewArmCost").GetComponent<Text>();
 
 		_ui = gameObject.GetComponent<NonCombat_UI>();
-		_hudCam = GameObject.Find("HUDcam").GetComponent<Camera>();
 
 		_prefabControls = GameObject.Find("Player").GetComponent<PrefabControl>();
 	}

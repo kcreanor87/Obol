@@ -18,7 +18,6 @@ public class SaveGame : MonoBehaviour {
 		SaveChatStates();
 		SaveObols();
 		NewGame._newGame = false;
-		print("Game Saved");
 	}
 
 	public void CombatSave(){
@@ -26,7 +25,6 @@ public class SaveGame : MonoBehaviour {
 		SaveRanks();
 		SaveLevels();
 		SaveObols();
-		print("Combat Save");
 	}
 
 	public void Load(){	
@@ -36,8 +34,7 @@ public class SaveGame : MonoBehaviour {
 		LoadItems();
 		LoadChatStates();
 		LoadLevels();
-		LoadObols();
-		print ("Game Loaded");			
+		LoadObols();			
 	}
 
 	void SaveEquipment(){

@@ -40,8 +40,14 @@ public class NonCombat_UI : MonoBehaviour {
 	public Text _promptText;
 	public bool _inMenu;
 
+	public GameObject _undertakerUI;
+	public Button _undertakerIntroButton;
+
+	public PrefabControl _prefabControl;
+
 	// Use this for initialization
 	void Start () {
+		_prefabControl = GameObject.Find("Player").GetComponent<PrefabControl>();
 		_levelUpPrompt = GameObject.Find("LevelUpPrompt");
 		_levelUpText = GameObject.Find("LevelUpText");
 		_statsPrompt = GameObject.Find("StatsPrompt");
@@ -53,6 +59,7 @@ public class NonCombat_UI : MonoBehaviour {
 		_npcChat = gameObject.GetComponent<NPCChat>();
 		_npcChatText = GameObject.Find("NPCtext").GetComponent<Text>();
 		_npcChatGO.SetActive(false);
+		_undertakerUI = GameObject.Find("UndertakerScreen");
 		_pauseMenu = GameObject.Find("PauseMenu");
 		_resumeButton = _pauseMenu.transform.FindChild("Resume").GetComponent<Button>();
 		_pauseMenu.SetActive(false);
@@ -73,6 +80,7 @@ public class NonCombat_UI : MonoBehaviour {
 		CloseCanvas(1);
 		CloseCanvas(2);
 		CloseCanvas(3);
+		CloseCanvas(4);
 		_inMenu = false;
 	}
 
@@ -135,6 +143,7 @@ public class NonCombat_UI : MonoBehaviour {
 		_hpBar.sizeDelta = new Vector2(HPwidth, 130);
 		//UpdateXP
 		var XPwidth = (float) ((float)(_manager._currentXP - _manager._prevXP) /( _manager._nextLvlXP - _manager._prevXP)) * 571;
+		if (XPwidth > 571) XPwidth = 571;
 		_xpBar.sizeDelta = new Vector2(XPwidth, 14);
 		_levelUpPrompt.SetActive(_manager._availableRanks > 0);
 		_saveGame.Save();
@@ -157,6 +166,12 @@ public class NonCombat_UI : MonoBehaviour {
 			case 3:
 			_portal.OpenCanvas();
 			break;
+			case 4:
+			_undertakerUI.SetActive(true);
+			_undertakerIntroButton.Select();
+			_uiOpen = true;
+			_inMenu = true;
+			break;
 		}
 		_inMenu = true;
 	}
@@ -172,6 +187,9 @@ public class NonCombat_UI : MonoBehaviour {
 			case 3:
 			_portal.CloseCanvas();
 			break;
+			case 4:
+			_undertakerUI.SetActive(false);
+			break;
 		}
 		EventSystem.current.GetComponent<EventSystem>().SetSelectedGameObject(null);
 		_playerHUD.SetActive(true);
@@ -183,10 +201,25 @@ public class NonCombat_UI : MonoBehaviour {
 	}
 
 	public void OpenPrompt(int i){
-		_npcIndex = i;
-		_promptGO.SetActive(true);		
-		_promptText.text = (i == 3) ? "Travel" : "Talk";
+		_npcIndex = i;			
+		switch (i){
+			case 1:
+			_promptText.text = "Forge";
+			break;			
+			case 3:
+			_promptText.text = "Travel";
+			break;
+			case 4:
+			_promptText.text = "Undertaker";
+			break;
+		}
+		_promptGO.SetActive(true);	
 		_promptActive = true;
+	}
+
+	public void ToggleTurret(int index){
+		_prefabControl.ToggleTurret(index);
+		CloseAllCanvases();
 	}
 
 	public void ClosePrompt(){

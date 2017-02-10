@@ -69,7 +69,7 @@ public class _CombatManager : MonoBehaviour {
 		print ("Stats recalculated");
 		//Speed
 		_speedPenalty = _headSlot._weight + _chestSlot._weight + _legSlot._weight;		
-		_speed = 70.0f + (2.5f * _dexRanks) - _speedPenalty;
+		_speed = 75.0f + (2.5f * _dexRanks) - _speedPenalty;
 		//Health
 		_maxHealth = 500 + 50 *_vitRanks;
 		_currentHealth = _maxHealth;

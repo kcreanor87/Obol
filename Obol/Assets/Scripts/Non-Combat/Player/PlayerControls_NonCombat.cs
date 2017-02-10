@@ -133,14 +133,15 @@ public class PlayerControls_NonCombat : MonoBehaviour {
 			_animBody.SetFloat("DirectionY", max);
 			_animBody.SetFloat("DirectionX", 0.0f);
 			_animBody.speed = _CombatManager._speed / 100.0f;
-			_animArms.speed = _CombatManager._speed / 100.0f;		
+			_animArms.speed = _CombatManager._speed / 100.0f;
+			_agent.speed = _CombatManager._speed/10.0f;		
 		}
 		else{
 			Vector3 targetDir = transform.position - _indicator.transform.position;
 			float angle = Vector3.Angle(transform.forward, targetDir);
 			float speed = angle/180;
-			float baseSpd = _agent.speed * speed * 0.3f;
-			_agent.speed = _agent.speed * 0.7f + baseSpd;
+			float baseSpd = _agent.speed * speed * 0.2f;
+			_agent.speed = _agent.speed * 0.8f + baseSpd;
 			if (angle < 20.0f){
 				_animBody.SetFloat("DirectionY",  -1 * max);
 				_animBody.SetFloat("DirectionX", 0.0f);
